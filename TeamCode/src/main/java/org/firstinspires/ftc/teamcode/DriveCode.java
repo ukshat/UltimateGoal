@@ -82,10 +82,10 @@ public class DriveCode extends LinearOpMode {
      * @return         the largest power out of the array
      */
     public static double findLargest(double[] powers){
-        double largest = powers[0];
+        double largest = Math.abs(powers[0]);
         for(double d: powers){
-            if(d > largest){
-                largest = d;
+            if(Math.abs(d) > largest){
+                largest = Math.abs(d);
             }
         }
         return largest;
