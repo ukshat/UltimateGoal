@@ -1,12 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-// Register this Op Mode on the Android phone
-@TeleOp (name = "Drive Code", group = "Op Modes")
-public class DriveCode extends LinearOpMode {
+public class TrigDriveCode extends LinearOpMode {
 
     // Create the four motors, one for each mecanum wheel
     private DcMotor fl_motor;
@@ -15,21 +12,14 @@ public class DriveCode extends LinearOpMode {
     private DcMotor br_motor;
 
     @Override
-    public void runOpMode() {
-        // Find each motor on the hardware map
+    public void runOpMode() throws InterruptedException {
+
         fl_motor = hardwareMap.dcMotor.get("LeftFront");
         fr_motor = hardwareMap.dcMotor.get("RightFront");
         bl_motor = hardwareMap.dcMotor.get("LeftRear");
         br_motor = hardwareMap.dcMotor.get("RightRear");
 
-        fl_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        fr_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        bl_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        br_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-
         waitForStart();
-
         while(opModeIsActive()){
 
             // Create variables to hold the direction that the left stick was moved
@@ -47,8 +37,8 @@ public class DriveCode extends LinearOpMode {
             fr_motor.setPower(powers[1]);
             bl_motor.setPower(powers[2]);
             br_motor.setPower(powers[3]);
-
         }
+
     }
 
     /**
@@ -60,17 +50,20 @@ public class DriveCode extends LinearOpMode {
      * @return          An array of length 4 with motor powers from -1 to 1, ordered fl-fr-bl-br
      */
     public static double[] calculateMotorPower(double x, double y, double rotation) {
-        // Assign an amount of power to variable of each motor
-        double flPower = x + y + rotation;
-        double frPower = -x + y - rotation;
-        double blPower = -x + y + rotation;
-        double brPower = x + y - rotation;
 
-        // In the case that any power is out of the bounds of setPower(), we have to scale
-        // all powers down so that the largest power is exactly 1, and the rest are
-        // proportional to the largest power
+        // Find the distance that the stick is moved
+        double r = Math.hypot(x, y);
 
-        // Find the largest power of the four powers
+        // Find the angle in which the robot is moving and subtract 45 degrees
+        double robotAngle = Math.atan2(y, x) - Math.PI / 4;
+
+        // Calculate motor powers based on angle of the robot
+        double flPower = r * Math.cos(robotAngle) + rotation;
+        double frPower = r * Math.sin(robotAngle) - rotation;
+        double blPower = r * Math.sin(robotAngle) + rotation;
+        double brPower = r * Math.cos(robotAngle) - rotation;
+
+        // Find the largest power of the 4 powers
         double[] powers = {flPower, frPower, blPower, brPower};
         double largestPower = findLargest(powers);
 
@@ -86,9 +79,9 @@ public class DriveCode extends LinearOpMode {
         // If the largest power is not out of bounds, there is no need to adjust values
 
         // Normalize the four powers and return a new array with them
-        return new double[]{(normalizer * flPower), (normalizer * frPower), (normalizer * blPower), (normalizer * brPower)};
-    }
+        return new double[]{flPower * normalizer, frPower * normalizer, blPower * normalizer, brPower * normalizer};
 
+    }
     /**
      * Returns the largest value out of a double array
      * @param powers   an array of motor powers
