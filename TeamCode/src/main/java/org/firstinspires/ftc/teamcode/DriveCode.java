@@ -26,7 +26,10 @@ public class DriveCode extends LinearOpMode {
         fr_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         bl_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         br_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
+        fl_motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        fr_motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        bl_motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        br_motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         waitForStart();
 
