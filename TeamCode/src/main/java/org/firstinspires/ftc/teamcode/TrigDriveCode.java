@@ -1,8 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-
+@TeleOp(name = "Trig Drive Code")
 public class TrigDriveCode extends LinearOpMode {
 
     // Create the four motors, one for each mecanum wheel
