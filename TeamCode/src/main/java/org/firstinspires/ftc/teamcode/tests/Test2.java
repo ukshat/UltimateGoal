@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.tests;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+
 @TeleOp(name="move right 2 sec")
 public class Test2 extends LinearOpMode {
 
@@ -17,6 +19,10 @@ public class Test2 extends LinearOpMode {
         fr_motor = hardwareMap.dcMotor.get("RightFront");
         bl_motor = hardwareMap.dcMotor.get("LeftRear");
         br_motor = hardwareMap.dcMotor.get("RightRear");
+
+        fl_motor.setDirection(DcMotor.Direction.REVERSE);
+        bl_motor.setDirection(DcMotor.Direction.REVERSE);
+
         waitForStart();
         setPowers(0.5);
         Thread.sleep(2000);

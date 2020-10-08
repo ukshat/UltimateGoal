@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 // Register this Op Mode on the Android phone
 @TeleOp (name = "Simple Drive Code")
-public class DriveCode extends LinearOpMode {
+public class SimpleDriveCode extends LinearOpMode {
 
     // Create the four motors, one for each mecanum wheel
     private DcMotor fl_motor;
@@ -30,6 +30,9 @@ public class DriveCode extends LinearOpMode {
         fr_motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         bl_motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         br_motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        fl_motor.setDirection(DcMotor.Direction.REVERSE);
+        bl_motor.setDirection(DcMotor.Direction.REVERSE);
 
         waitForStart();
 

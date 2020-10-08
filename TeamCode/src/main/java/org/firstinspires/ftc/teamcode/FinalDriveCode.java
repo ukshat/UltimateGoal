@@ -3,8 +3,8 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-@TeleOp(name = "Trig Drive Code")
-public class TrigDriveCode extends LinearOpMode {
+@TeleOp(name = "Drive Code")
+public class FinalDriveCode extends LinearOpMode {
 
     // Create the four motors, one for each mecanum wheel
     private DcMotor fl_motor;
@@ -15,10 +15,25 @@ public class TrigDriveCode extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
+        // Initialize motors based on the hardware map
         fl_motor = hardwareMap.dcMotor.get("LeftFront");
         fr_motor = hardwareMap.dcMotor.get("RightFront");
         bl_motor = hardwareMap.dcMotor.get("LeftRear");
         br_motor = hardwareMap.dcMotor.get("RightRear");
+
+        // Run with encoders to ensure that errors don't happen
+        fl_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        fr_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        bl_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        br_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        fl_motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        fr_motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        bl_motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        br_motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        // Set the motors on the left in reverse because the motors are flipped
+        fl_motor.setDirection(DcMotor.Direction.REVERSE);
+        bl_motor.setDirection(DcMotor.Direction.REVERSE);
 
         waitForStart();
         while(opModeIsActive()){
@@ -38,6 +53,13 @@ public class TrigDriveCode extends LinearOpMode {
             fr_motor.setPower(powers[1]);
             bl_motor.setPower(powers[2]);
             br_motor.setPower(powers[3]);
+
+            // Show current motor powers on the driver station
+            telemetry.addData("left front motor", powers[0]);
+            telemetry.addData("right front motor", powers[1]);
+            telemetry.addData("left back motor", powers[2]);
+            telemetry.addData("right back motor", powers[3]);
+            telemetry.update();
         }
 
     }
@@ -64,7 +86,11 @@ public class TrigDriveCode extends LinearOpMode {
         double blPower = r * Math.sin(robotAngle) + rotation;
         double brPower = r * Math.cos(robotAngle) - rotation;
 
-        // Find the largest power of the 4 powers
+        // In the case that any power is out of the bounds of setPower(), we have to scale
+        // all powers down so that the largest power is exactly 1, and the rest are
+        // proportional to the largest power
+
+        // Find the largest power of the four powers
         double[] powers = {flPower, frPower, blPower, brPower};
         double largestPower = findLargest(powers);
 
@@ -80,7 +106,7 @@ public class TrigDriveCode extends LinearOpMode {
         // If the largest power is not out of bounds, there is no need to adjust values
 
         // Normalize the four powers and return a new array with them
-        return new double[]{flPower * normalizer, frPower * normalizer, blPower * normalizer, brPower * normalizer};
+        return new double[]{(normalizer * flPower), (normalizer * frPower), (normalizer * blPower), (normalizer * brPower)};
 
     }
     /**

@@ -28,6 +28,9 @@ public class AutonomousByEncoders extends LinearOpMode {
         bl_motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         br_motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+        fl_motor.setDirection(DcMotor.Direction.REVERSE);
+        bl_motor.setDirection(DcMotor.Direction.REVERSE);
+
         fl_motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         fr_motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         bl_motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);

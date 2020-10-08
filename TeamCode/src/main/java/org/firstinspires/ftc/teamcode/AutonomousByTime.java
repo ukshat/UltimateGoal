@@ -38,12 +38,13 @@ public class AutonomousByTime extends LinearOpMode {
         runtime.reset();
         waitForStart();
 
-        while(runtime.milliseconds() < 2000){
-            fl_motor.setPower(1);
-            fr_motor.setPower(-1);
-            bl_motor.setPower(-1);
-            br_motor.setPower(1);
-        }
+        fl_motor.setPower(1);
+        fr_motor.setPower(-1);
+        bl_motor.setPower(-1);
+        br_motor.setPower(1);
+
+        sleep(2000);
+
         fl_motor.setPower(0);
         fr_motor.setPower(0);
         bl_motor.setPower(0);
