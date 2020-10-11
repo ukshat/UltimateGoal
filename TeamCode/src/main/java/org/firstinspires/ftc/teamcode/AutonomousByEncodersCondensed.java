@@ -50,7 +50,7 @@ public class AutonomousByEncodersCondensed extends LinearOpMode {
         double radians = degrees * Math.PI / 180;
         double x = power * Math.cos(radians);
         double y = power * Math.sin(radians);
-        double[] pows = TrigDriveCode.calculateMotorPower(x, y, 0);
+        double[] pows = FinalDriveCode.calculateMotorPower(x, y, 0);
 
         for(int i = 0; i < 4; i++){
             motors[i].setTargetPosition((int)(distance / TICK_LENGTH));
