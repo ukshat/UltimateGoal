@@ -28,56 +28,95 @@ public class AutonomousByEncodersCondensed extends LinearOpMode {
         waitForStart();
     }
 
-    private void outerEndRun(byte r /* input -1 for left side, +1 for right side*/){
-        {//RIGHT_Right
-            move(0, 36, 0.5); //move to stack
+    private void innerBotRun(byte r /* input -1 for left side, +1 for right side*/){
+        move(0, 36, 0.5); //move to stack
 
-            int rings = getStack();
+        int rings = getStack(r);
 
-            move(0, 24, 0.5); //move to launch range
+        move(0, 24, 0.5); //move to launch range
 
-            rotate(-21.59531045, 0.5);
-            launch((byte)1);
+        rotate(-3.576334375 * r, 0.5);
+        launch((byte)1);
 
-            rotate(-(26.56505118 - 21.59531045), 0.5);
-            launch((byte)2);
+        rotate(-(9.462322208 - 3.576334375) * r, 0.5);
+        launch((byte)2);
 
-            rotate(-(21.59531045 - 31.13897244), 0.5);
-            launch((byte)3);
+        rotate(-(15.15406805 - 9.462322208) * r, 0.5);
+        launch((byte)3);
 
-            rotate(31.13897244, 0.5);
+        rotate(15.15406805 * r, 0.5);
 
-            switch (rings){
-                case 0:
-                    move(0, 12, 0.5);
-                    break;
-                case 1:
-                    move(0, 36, 0.5);
-                    rotate(180, 0.5);
-                    break;
-                case 4:
-                    move(0, 60, 0.5);
-                    break;
-                default:
-                    move(0, 12, 0.5);
-                    break;
-            }
-            dropWobbleGoal();
-            switch (rings){
-                case 0:
-                    move(180, 12, 0.5);
-                    break;
-                case 1:
-                    move(0, 36, 0.5);
-                    rotate(180, 0.5);
-                    break;
-                case 4:
-                    move(180, 60, 0.5);
-                    break;
-                default:
-                    move(180, 12, 0.5);
-                    break;
-            }
+        switch (rings){
+            case 0:
+                //LONG ROUTE
+                break;
+            case 1:
+                move(0, 36, 0.5);
+                break;
+            case 4:
+                //LONG ROUTE
+                break;
+            default:
+                move(0, 36, 0.5);
+                break;
+        }
+        dropWobbleGoal();
+        switch (rings) {
+            case 0:
+                //LONG ROUTE
+                break;
+            case 1:
+                move(180, 24, 0.5);
+                break;
+            case 4:
+                //LONG ROUTE
+                break;
+            default:
+                move(180, 24, 0.5);
+                break;
+        }
+    }
+
+    private void outerBotRun(byte r /* input -1 for left side, +1 for right side*/){
+        move(0, 36, 0.5); //move to stack
+
+        int rings = getStack(r);
+
+        move(0, 24, 0.5); //move to launch range
+
+        rotate(-21.59531045 * r, 0.5);
+        launch((byte)1);
+
+        rotate(-(26.56505118 - 21.59531045) * r, 0.5);
+        launch((byte)2);
+
+        rotate(-(31.13897244 - 26.56505118) * r, 0.5);
+        launch((byte)3);
+
+        rotate(31.13897244 * r, 0.5);
+
+        switch (rings){
+            case 0:
+                move(0, 12, 0.5);
+                break;
+            case 1:
+                move(0, 36, 0.5);
+                break;
+            case 4:
+                move(0, 60, 0.5);
+                break;
+            default:
+                move(0, 12, 0.5);
+                break;
+        }
+        dropWobbleGoal();
+        switch (rings) {
+            case 1:
+                move(180, 24, 0.5);
+                break;
+            case 4:
+                move(180, 48, 0.5);
+                break;
         }
     }
 
@@ -85,7 +124,7 @@ public class AutonomousByEncodersCondensed extends LinearOpMode {
 
     private void launch(byte target){}
 
-    private int getStack(){return 0;}
+    private int getStack(byte r){return 0;}
 
     void rotate(double degrees, double power){
         double radians = degrees * Math.PI / 180;
