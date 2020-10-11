@@ -22,6 +22,9 @@ public class AutonomousByEncodersCondensed extends LinearOpMode {
             motors[i].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }
 
+        motors[0].setDirection(DcMotor.Direction.REVERSE);
+        motors[2].setDirection(DcMotor.Direction.REVERSE);
+
         waitForStart();
 
         // 304.8 mm is how much we want to move
@@ -43,7 +46,56 @@ public class AutonomousByEncodersCondensed extends LinearOpMode {
         motors[3].setPower(0);
 
         //new Code
-        move(-90, 304.8, 1);
+        {//RIGHT_Right
+            move(0, 36, 0.5); //move to stack
+
+            int rings = getStack();
+
+            move(0, 24, 0.5); //move to stack
+
+            //power shots
+
+            switch (rings){
+                case 0:
+                    move(0, 36, 0.5);
+                    break;
+                case 1:
+                    move(68.19859, 64.6, 0.5);
+                    break;
+                case 4:
+                    move(0, 3.5 * 24, 0.5);
+                    break;
+            }
+            dropWobbleGoal();
+        }
+
+    }
+
+    private void dropWobbleGoal(){}
+
+    private int getStack(){return 0;}
+
+    void rotate(double degrees, double power){
+        double radians = degrees * Math.PI / 180;
+        double[] pows = {power, -power, power, -power};
+        if (degrees < 0){
+            for(int i = 0; i < 4; i++){
+                pows[i] *= -1;
+            }
+        }
+
+        double arcLength =  9.487480983 * radians;
+
+        for(int i = 0; i < 4; i++){
+            motors[i].setTargetPosition((int)(arcLength / TICK_LENGTH));
+            motors[i].setPower(pows[i]);
+        }
+
+        moving();
+
+        for(int i = 0; i < 4; i++){
+            motors[i].setPower(0);
+        }
     }
 
     void move(double degrees, double distance, double power){
