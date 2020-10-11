@@ -26,52 +26,64 @@ public class AutonomousByEncodersCondensed extends LinearOpMode {
         motors[2].setDirection(DcMotor.Direction.REVERSE);
 
         waitForStart();
+    }
 
-        // 304.8 mm is how much we want to move
-        // 0.22165663 mm is the length of one tick
-
-        //old code
-        double distance = 304.8;
-        for(int i = 0; i < 4; i++){
-            motors[i].setTargetPosition((int)(distance / TICK_LENGTH));
-        }
-        motors[0].setPower(-1);
-        motors[1].setPower(1);
-        motors[2].setPower(1);
-        motors[3].setPower(-1);
-        moving();
-        motors[0].setPower(0);
-        motors[1].setPower(0);
-        motors[2].setPower(0);
-        motors[3].setPower(0);
-
-        //new Code
+    private void outerEndRun(byte r /* input -1 for left side, +1 for right side*/){
         {//RIGHT_Right
             move(0, 36, 0.5); //move to stack
 
             int rings = getStack();
 
-            move(0, 24, 0.5); //move to stack
+            move(0, 24, 0.5); //move to launch range
 
-            //power shots
+            rotate(-21.59531045, 0.5);
+            launch((byte)1);
+
+            rotate(-(26.56505118 - 21.59531045), 0.5);
+            launch((byte)2);
+
+            rotate(-(21.59531045 - 31.13897244), 0.5);
+            launch((byte)3);
+
+            rotate(31.13897244, 0.5);
 
             switch (rings){
                 case 0:
-                    move(0, 36, 0.5);
+                    move(0, 12, 0.5);
                     break;
                 case 1:
-                    move(68.19859, 64.6, 0.5);
+                    move(0, 36, 0.5);
+                    rotate(180, 0.5);
                     break;
                 case 4:
-                    move(0, 3.5 * 24, 0.5);
+                    move(0, 60, 0.5);
+                    break;
+                default:
+                    move(0, 12, 0.5);
                     break;
             }
             dropWobbleGoal();
+            switch (rings){
+                case 0:
+                    move(180, 12, 0.5);
+                    break;
+                case 1:
+                    move(0, 36, 0.5);
+                    rotate(180, 0.5);
+                    break;
+                case 4:
+                    move(180, 60, 0.5);
+                    break;
+                default:
+                    move(180, 12, 0.5);
+                    break;
+            }
         }
-
     }
 
     private void dropWobbleGoal(){}
+
+    private void launch(byte target){}
 
     private int getStack(){return 0;}
 
