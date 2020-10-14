@@ -40,15 +40,15 @@ public class Test5 extends LinearOpMode {
 
         waitForStart();
 
-        fl_motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        fr_motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        bl_motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        br_motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
         fl_motor.setTargetPosition((int)(1000 / TICK_LENGTH));
         fr_motor.setTargetPosition((int)(1000 / TICK_LENGTH));
         bl_motor.setTargetPosition((int)(1000 / TICK_LENGTH));
         br_motor.setTargetPosition((int)(1000 / TICK_LENGTH));
+
+        fl_motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        fr_motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        bl_motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        br_motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         fl_motor.setPower(1);
         fr_motor.setPower(1);

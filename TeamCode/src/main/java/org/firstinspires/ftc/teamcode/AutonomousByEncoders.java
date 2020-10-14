@@ -43,15 +43,15 @@ public class AutonomousByEncoders extends LinearOpMode {
 
         double distance = 304.8;
 
-        fl_motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        fr_motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        bl_motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        br_motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
         fl_motor.setTargetPosition((int)(distance / TICK_LENGTH));
         fr_motor.setTargetPosition((int)(distance / TICK_LENGTH));
         bl_motor.setTargetPosition((int)(distance / TICK_LENGTH));
         br_motor.setTargetPosition((int)(distance / TICK_LENGTH));
+
+        fl_motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        fr_motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        bl_motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        br_motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         fl_motor.setPower(-1);
         fr_motor.setPower(1);
