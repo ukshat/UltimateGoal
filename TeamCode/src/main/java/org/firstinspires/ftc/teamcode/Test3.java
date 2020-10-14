@@ -1,12 +1,11 @@
-package org.firstinspires.ftc.teamcode.tests;
+package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-@TeleOp(name="move right 2 sec")
-public class Test2 extends LinearOpMode {
+@TeleOp(name="rotate 2 sec")
+public class Test3 extends LinearOpMode {
 
     private DcMotor fl_motor;
     private DcMotor fr_motor;
@@ -31,8 +30,8 @@ public class Test2 extends LinearOpMode {
     void setPowers(double power){
         fl_motor.setPower(power);
         fr_motor.setPower(-power);
-        bl_motor.setPower(-power);
-        br_motor.setPower(power);
+        bl_motor.setPower(power);
+        br_motor.setPower(-power);
     }
 
 }
