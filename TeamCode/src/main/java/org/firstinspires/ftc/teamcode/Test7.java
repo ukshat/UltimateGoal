@@ -1,9 +1,9 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.tests;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-public class Test6 extends LinearOpMode {
+public class Test7 extends LinearOpMode {
 
     DcMotor[/*Front Left, Front Right, Back Left, Back Right*/] motors;
 
@@ -31,7 +31,7 @@ public class Test6 extends LinearOpMode {
 
         waitForStart();
 
-        move(0, 1000, 0.5);
+        rotate(360 * 5, 0.5);
     }
 
     /**
