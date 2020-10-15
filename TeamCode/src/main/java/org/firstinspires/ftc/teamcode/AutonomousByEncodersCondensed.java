@@ -8,7 +8,7 @@ public class AutonomousByEncodersCondensed extends LinearOpMode {
     DcMotor[/*Front Left, Front Right, Back Left, Back Right*/] motors;
 
     static final double TILE_LENGTH = 23.5;
-    static final double TICK_LENGTH = 0.22165663;
+    static final double TICK_LENGTH = 100 / Math.PI;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -216,7 +216,7 @@ public class AutonomousByEncodersCondensed extends LinearOpMode {
 
         //set motor distances and powers
         for(int i = 0; i < 4; i++){
-            motors[i].setTargetPosition((int)(arcLength / TICK_LENGTH));
+            motors[i].setTargetPosition((int)(arcLength * TICK_LENGTH));
             motors[i].setPower(pows[i]);
         }
 
@@ -248,7 +248,7 @@ public class AutonomousByEncodersCondensed extends LinearOpMode {
 
         //assign powers and distances to motors
         for(int i = 0; i < 4; i++){
-            motors[i].setTargetPosition((int)(distance / TICK_LENGTH));
+            motors[i].setTargetPosition((int)(distance * TICK_LENGTH));
             motors[i].setPower(pows[i]);
         }
 

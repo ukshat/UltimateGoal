@@ -10,7 +10,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 @Autonomous (name = "Forward 1 meter")
 public class Test5 extends LinearOpMode {
 
-    static final double TICK_LENGTH = 0.22165663;
+    //1 inch is 100/pi ticks
+    static final double TICK_LENGTH = 100 / Math.PI;
     private DcMotor fl_motor;
     private DcMotor fr_motor;
     private DcMotor bl_motor;
@@ -40,10 +41,10 @@ public class Test5 extends LinearOpMode {
 
         waitForStart();
 
-        fl_motor.setTargetPosition((int)(1000 / TICK_LENGTH));
-        fr_motor.setTargetPosition((int)(1000 / TICK_LENGTH));
-        bl_motor.setTargetPosition((int)(1000 / TICK_LENGTH));
-        br_motor.setTargetPosition((int)(1000 / TICK_LENGTH));
+        fl_motor.setTargetPosition((int)(1000 * TICK_LENGTH));
+        fr_motor.setTargetPosition((int)(1000 * TICK_LENGTH));
+        bl_motor.setTargetPosition((int)(1000 * TICK_LENGTH));
+        br_motor.setTargetPosition((int)(1000 * TICK_LENGTH));
 
         fl_motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         fr_motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);

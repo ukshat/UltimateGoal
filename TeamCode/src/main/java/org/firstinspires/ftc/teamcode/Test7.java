@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.tests;
+package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -8,7 +8,7 @@ public class Test7 extends LinearOpMode {
     DcMotor[/*Front Left, Front Right, Back Left, Back Right*/] motors;
 
     static final double TILE_LENGTH = 23.5;
-    static final double TICK_LENGTH = 0.22165663;
+    static final double TICK_LENGTH = 100 / Math.PI;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -218,7 +218,7 @@ public class Test7 extends LinearOpMode {
 
         //set motor distances and powers
         for(int i = 0; i < 4; i++){
-            motors[i].setTargetPosition((int)(arcLength / TICK_LENGTH));
+            motors[i].setTargetPosition((int)(arcLength * TICK_LENGTH));
             motors[i].setPower(pows[i]);
         }
 
@@ -250,7 +250,7 @@ public class Test7 extends LinearOpMode {
 
         //assign powers and distances to motors
         for(int i = 0; i < 4; i++){
-            motors[i].setTargetPosition((int)(distance / TICK_LENGTH));
+            motors[i].setTargetPosition((int)(distance * TICK_LENGTH));
             motors[i].setPower(pows[i]);
         }
 
