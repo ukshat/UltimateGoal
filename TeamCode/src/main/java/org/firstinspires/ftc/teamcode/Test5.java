@@ -7,11 +7,11 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-@Autonomous (name = "Forward 1 meter")
+@Autonomous (name = "Forward 1 yard")
 public class Test5 extends LinearOpMode {
 
     //1 inch is 100/pi ticks
-    static final double TICK_LENGTH = 100 / Math.PI;
+    static final double TICK_LENGTH = 34.2795262044082261656;
     private DcMotor fl_motor;
     private DcMotor fr_motor;
     private DcMotor bl_motor;
@@ -35,26 +35,26 @@ public class Test5 extends LinearOpMode {
         bl_motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         br_motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        // Set the motors on the left in reverse because the motors are flipped
-        fl_motor.setDirection(DcMotor.Direction.REVERSE);
-        bl_motor.setDirection(DcMotor.Direction.REVERSE);
+        // Set the motors on the right in reverse because the motors are flipped
+        fr_motor.setDirection(DcMotor.Direction.REVERSE);
+        br_motor.setDirection(DcMotor.Direction.REVERSE);
 
         waitForStart();
 
-        fl_motor.setTargetPosition((int)(1000 * TICK_LENGTH));
-        fr_motor.setTargetPosition((int)(1000 * TICK_LENGTH));
-        bl_motor.setTargetPosition((int)(1000 * TICK_LENGTH));
-        br_motor.setTargetPosition((int)(1000 * TICK_LENGTH));
+        fl_motor.setTargetPosition((int)(36 * TICK_LENGTH));
+        fr_motor.setTargetPosition((int)(36 * TICK_LENGTH));
+        bl_motor.setTargetPosition((int)(36 * TICK_LENGTH));
+        br_motor.setTargetPosition((int)(36 * TICK_LENGTH));
 
         fl_motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         fr_motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         bl_motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         br_motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        fl_motor.setPower(1);
-        fr_motor.setPower(1);
-        bl_motor.setPower(1);
-        br_motor.setPower(1);
+        fl_motor.setPower(0.5);
+        fr_motor.setPower(0.5);
+        bl_motor.setPower(0.5);
+        br_motor.setPower(0.5);
 
         moving();
 
