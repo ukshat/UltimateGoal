@@ -10,7 +10,7 @@ public class AutonomousByEncoders extends LinearOpMode {
     DcMotor bl_motor;
     DcMotor br_motor;
 
-    static final double TICK_LENGTH = 0.22165663;
+    static final double TICK_LENGTH = 100 / Math.PI;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -38,15 +38,13 @@ public class AutonomousByEncoders extends LinearOpMode {
 
         waitForStart();
 
-        // 304.8 mm is how much we want to move
-        // 0.22165663 mm is the length of one tick
 
         double distance = 304.8;
 
-        fl_motor.setTargetPosition((int)(distance / TICK_LENGTH));
-        fr_motor.setTargetPosition((int)(distance / TICK_LENGTH));
-        bl_motor.setTargetPosition((int)(distance / TICK_LENGTH));
-        br_motor.setTargetPosition((int)(distance / TICK_LENGTH));
+        fl_motor.setTargetPosition((int)(distance * TICK_LENGTH));
+        fr_motor.setTargetPosition((int)(distance * TICK_LENGTH));
+        bl_motor.setTargetPosition((int)(distance * TICK_LENGTH));
+        br_motor.setTargetPosition((int)(distance * TICK_LENGTH));
 
         fl_motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         fr_motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
