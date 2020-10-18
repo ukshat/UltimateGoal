@@ -1,14 +1,13 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+@Autonomous (name = "test 8")
 public class Test8_StopAndR extends LinearOpMode {
 
     DcMotor[/*Front Left, Front Right, Back Left, Back Right*/] motors;
-
-    static final double TILE_LENGTH = 23.5;
-    static final double TICK_LENGTH = 100 / Math.PI;
 
     @Override
     public void runOpMode() throws InterruptedException {

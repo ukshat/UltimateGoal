@@ -1,8 +1,10 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+@Autonomous(name = "forward 18")
 public class Test9_F18 extends LinearOpMode {
 
     DcMotor[/*Front Left, Front Right, Back Left, Back Right*/] motors;

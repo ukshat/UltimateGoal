@@ -24,9 +24,9 @@ public class Test8 extends LinearOpMode {
             motors[i].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }
 
-        //set left side motors to rotate in opposite direction
-        motors[0].setDirection(DcMotor.Direction.REVERSE);
-        motors[2].setDirection(DcMotor.Direction.REVERSE);
+        //set right side motors to rotate in opposite direction
+        motors[1].setDirection(DcMotor.Direction.REVERSE);
+        motors[3].setDirection(DcMotor.Direction.REVERSE);
 
         waitForStart();
 
