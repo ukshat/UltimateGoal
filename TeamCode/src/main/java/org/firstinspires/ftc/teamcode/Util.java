@@ -157,9 +157,24 @@ public class Util {
         }
     }
 
-    static void moving(DcMotor[] motors){
+    static void moving(DcMotor[] motors/*, double power, double dist*/){
         //runs infinite loop until motor stops moving
-        while (motors[0].isBusy() || motors[1].isBusy() || motors[2].isBusy() || motors[3].isBusy()){}
+//        boolean[] change = new boolean[4];
+        while (motors[0].isBusy() || motors[1].isBusy() || motors[2].isBusy() || motors[3].isBusy()){
+//            for(int i = 0; i < 4; i++){
+//                if(motors[i].getTargetPosition() - motors[i].getCurrentPosition() < 4 * TICKS_PER_INCH) {
+//                    motors[i].setPower(motors[i].getPower() - power * 0.9);
+//                }/*else if(motors[i].getTargetPosition() - motors[i].getCurrentPosition() < 0.3 * motors[i].getTargetPosition()){
+//                    motors[i].setPower(motors[i].getPower() * 0.6);
+//                    change[1] = false;
+//                }else if(motors[i].getTargetPosition() - motors[i].getCurrentPosition() < 0.2 * motors[i].getTargetPosition()){
+//                    motors[i].setPower(motors[i].getPower() * 0.5);
+//                }*/
+//            }
+//            if(){
+//
+//            }
+        }
         return;
     }
 }
