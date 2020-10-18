@@ -1,11 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-
+@Autonomous (name = "left one yard")
 public class Test6 extends LinearOpMode {
 
-    DcMotor[/*Front Left, Front Right, Back Left, Back Right*/] motors;
+    DcMotor[/*Front Left, Front Right, Back Left, Back Right*/] motors = new DcMotor[4];
 
     static final double TICK_LENGTH = 34.2795262044082261656;
 
@@ -30,7 +31,7 @@ public class Test6 extends LinearOpMode {
 
         waitForStart();
 
-        move(0, 200, 0.5);
+        move(90, 36, 0.5);
     }
 
     /**
@@ -42,7 +43,7 @@ public class Test6 extends LinearOpMode {
      * */
     void move(double degrees, double distance, double power){
         //convert degrees to radians
-        double radians = degrees * Math.PI / 180;
+        double radians = (degrees + 90) * Math.PI / 180;
 
         //calculate dimensions of tentative unit right triangle described by given parameters
         double x = power * Math.cos(radians);

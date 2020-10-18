@@ -10,6 +10,7 @@ public class AutonomousByEncodersCondensed extends LinearOpMode {
     static final double TILE_LENGTH = 23.5;
     static final double TICK_LENGTH = 100 / Math.PI;
 
+
     @Override
     public void runOpMode() throws InterruptedException {
         //init motors

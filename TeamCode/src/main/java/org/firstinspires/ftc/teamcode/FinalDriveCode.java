@@ -32,8 +32,8 @@ public class FinalDriveCode extends LinearOpMode {
         br_motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // Set the motors on the left in reverse because the motors are flipped
-        fl_motor.setDirection(DcMotor.Direction.REVERSE);
-        bl_motor.setDirection(DcMotor.Direction.REVERSE);
+        fr_motor.setDirection(DcMotor.Direction.REVERSE);
+        br_motor.setDirection(DcMotor.Direction.REVERSE);
 
         waitForStart();
         while(opModeIsActive()){

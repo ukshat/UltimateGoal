@@ -26,10 +26,6 @@ public class Test5 extends LinearOpMode {
         br_motor = hardwareMap.dcMotor.get("RightRear");
 
         // Run with encoders to ensure that errors don't happen
-        fl_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        fr_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        bl_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        br_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         fl_motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         fr_motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         bl_motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -40,6 +36,11 @@ public class Test5 extends LinearOpMode {
         br_motor.setDirection(DcMotor.Direction.REVERSE);
 
         waitForStart();
+
+        fl_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        fr_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        bl_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        br_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         fl_motor.setTargetPosition((int)(36 * TICK_LENGTH));
         fr_motor.setTargetPosition((int)(36 * TICK_LENGTH));
@@ -62,7 +63,6 @@ public class Test5 extends LinearOpMode {
         fr_motor.setPower(0);
         bl_motor.setPower(0);
         br_motor.setPower(0);
-
     }
     void moving(){
         while (fl_motor.isBusy() || fr_motor.isBusy() || bl_motor.isBusy() || br_motor.isBusy()){}
