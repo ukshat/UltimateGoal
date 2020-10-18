@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 @Autonomous(name = "left 36")
 public class Test11_L36 extends LinearOpMode {
 
-    DcMotor[/*Front Left, Front Right, Back Left, Back Right*/] motors;
+    DcMotor[/*Front Left, Front Right, Back Left, Back Right*/] motors = new DcMotor[4];
 
     static final double TILE_LENGTH = 23.5;
     static final double TICK_LENGTH = 100 / Math.PI;
@@ -32,13 +32,14 @@ public class Test11_L36 extends LinearOpMode {
 
         waitForStart();
 
-        motors[0].setPower(-1);
-        motors[1].setPower(1);
-        motors[2].setPower(1);
-        motors[3].setPower(-1);
+        motors[0].setPower(-0.5);
+        motors[1].setPower(0.5);
+        motors[2].setPower(0.5);
+        motors[3].setPower(-0.5);
 
         for(int i = 0; i < 4; i++){
             motors[i].setTargetPosition((int)(18 * Util.TICKS_PER_INCH));
+            motors[i].setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }
 
         Util.moving(motors);

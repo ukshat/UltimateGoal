@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 @Autonomous (name = "test 8")
 public class Test8_StopAndR extends LinearOpMode {
 
-    DcMotor[/*Front Left, Front Right, Back Left, Back Right*/] motors;
+    DcMotor[/*Front Left, Front Right, Back Left, Back Right*/] motors = new DcMotor[4];
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -33,6 +33,7 @@ public class Test8_StopAndR extends LinearOpMode {
             motors[i].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             motors[i].setPower(0.5);
             motors[i].setTargetPosition((int)(36 * Util.TICKS_PER_INCH));
+            motors[i].setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }
 
         Util.moving(motors);

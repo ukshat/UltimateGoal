@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 @Autonomous(name = "forward 36")
 public class Test12_FM36 extends LinearOpMode {
 
-    DcMotor[/*Front Left, Front Right, Back Left, Back Right*/] motors;
+    DcMotor[/*Front Left, Front Right, Back Left, Back Right*/] motors = new DcMotor[4];
 
     static final double TILE_LENGTH = 23.5;
     static final double TICK_LENGTH = 100 / Math.PI;
@@ -33,6 +33,6 @@ public class Test12_FM36 extends LinearOpMode {
 
         waitForStart();
 
-        Util.move(0, 36, 0.5, motors);
+        Util.move(90, 36, 0.5, motors);
     }
 }

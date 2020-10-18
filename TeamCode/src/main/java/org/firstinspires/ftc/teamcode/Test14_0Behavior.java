@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 @Autonomous(name = "test 14")
 public class Test14_0Behavior extends LinearOpMode {
 
-    DcMotor[/*Front Left, Front Right, Back Left, Back Right*/] motors;
+    DcMotor[/*Front Left, Front Right, Back Left, Back Right*/] motors = new DcMotor[4];
 
     static final double TILE_LENGTH = 23.5;
     static final double TICK_LENGTH = 100 / Math.PI;

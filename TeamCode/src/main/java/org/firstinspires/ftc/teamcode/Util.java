@@ -146,6 +146,7 @@ public class Util {
         //assign powers and distances to motors
         for(int i = 0; i < 4; i++){
             motors[i].setTargetPosition((int)(distance * TICKS_PER_INCH));
+            motors[i].setMode(DcMotor.RunMode.RUN_TO_POSITION);
             motors[i].setPower(pows[i]);
         }
 
