@@ -21,7 +21,6 @@ public class Test11_L36 extends LinearOpMode {
 
         //set modes & zero power behaviour
         for(int i = 0; i < 4; i++){
-            motors[i].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             motors[i].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             motors[i].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }
@@ -38,6 +37,7 @@ public class Test11_L36 extends LinearOpMode {
         motors[3].setPower(-0.5);
 
         for(int i = 0; i < 4; i++){
+            motors[i].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             motors[i].setTargetPosition((int)(18 * Util.TICKS_PER_INCH));
             motors[i].setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }

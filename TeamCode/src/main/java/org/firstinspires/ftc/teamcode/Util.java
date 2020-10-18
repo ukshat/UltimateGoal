@@ -112,6 +112,7 @@ public class Util {
 
         //set motor distances and powers
         for(int i = 0; i < 4; i++){
+            motors[i].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             motors[i].setTargetPosition((int)(arcLength * TICKS_PER_INCH));
             motors[i].setMode(DcMotor.RunMode.RUN_TO_POSITION);
             motors[i].setPower(pows[i]);
@@ -145,6 +146,7 @@ public class Util {
 
         //assign powers and distances to motors
         for(int i = 0; i < 4; i++){
+            motors[i].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             motors[i].setTargetPosition((int)(distance * TICKS_PER_INCH));
             motors[i].setMode(DcMotor.RunMode.RUN_TO_POSITION);
             motors[i].setPower(pows[i]);

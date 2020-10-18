@@ -31,7 +31,9 @@ public class Test13_R5 extends LinearOpMode {
         motors[2].setDirection(DcMotor.Direction.REVERSE);
 
         waitForStart();
-
+        for(int i = 0; i < 4; i++) {
+            motors[i].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        }
         Util.rotate(5*360, 0.5, motors);
     }
 }
