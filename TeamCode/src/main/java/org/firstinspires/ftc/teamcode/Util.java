@@ -93,12 +93,12 @@ public class Util {
      * @params degrees amount in degrees to rotate the robot (must be between -180 and 180)
      * @params power speed at which motors will run -- affects speed of rotation
      * */
-    static void rotate(double degrees, double power, DcMotor[] motors){
+    static void rotate(double degrees, double power, DcMotor[] motors, byte[] motorDirs){
         //convert degrees to radians
         double radians = degrees * Math.PI / 180;
 
         //motor powers for rotation will always be like this
-        double[] pows = {power, -power, power, -power};
+        byte[] pows = {1, -1, 1, -1};
 
         //if turning counter clockwise, reverse motor powers
         if (degrees < 0){
@@ -113,9 +113,9 @@ public class Util {
         //set motor distances and powers
         for(int i = 0; i < 4; i++){
             motors[i].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            motors[i].setTargetPosition((int)(arcLength * TICKS_PER_INCH));
+            motors[i].setTargetPosition((int)(arcLength * TICKS_PER_INCH * motorDirs[i] * pows[i]));
             motors[i].setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            motors[i].setPower(pows[i]);
+            motors[i].setPower(power);
         }
 
         moving(motors);
@@ -133,9 +133,9 @@ public class Util {
      * @params distance distance at which to move robot
      * @params power speed at which motors will run -- affects speed of movement
      * */
-    static void move(double degrees, double distance, double power, DcMotor[] motors){
+    static void move(double degrees, double distance, double power, DcMotor[] motors, byte[] motorDirs){
         //convert degrees to radians
-        double radians = degrees * Math.PI / 180;
+        double radians = -degrees * Math.PI / 180;
 
         //calculate dimensions of tentative unit right triangle described by given parameters
         double x = power * Math.cos(radians);
@@ -146,10 +146,10 @@ public class Util {
 
         //assign powers and distances to motors
         for(int i = 0; i < 4; i++){
+            motors[i].setPower(Math.abs(pows[i]));
             motors[i].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            motors[i].setTargetPosition((int)(distance * TICKS_PER_INCH));
+            motors[i].setTargetPosition((int)(distance * TICKS_PER_INCH * motorDirs[i] * pows[i] / Math.abs(pows[i])));
             motors[i].setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            motors[i].setPower(pows[i]);
         }
 
         moving(motors);
@@ -166,7 +166,7 @@ public class Util {
         while (motors[0].isBusy() || motors[1].isBusy() || motors[2].isBusy() || motors[3].isBusy()){
 //            for(int i = 0; i < 4; i++){
 //                if(motors[i].getTargetPosition() - motors[i].getCurrentPosition() < 4 * TICKS_PER_INCH) {
-//                    motors[i].setPower(motors[i].getPower() - power * 0.9);
+//                    motors[i].setPower(motors[i].getPower() - power * 0.99999);
 //                }/*else if(motors[i].getTargetPosition() - motors[i].getCurrentPosition() < 0.3 * motors[i].getTargetPosition()){
 //                    motors[i].setPower(motors[i].getPower() * 0.6);
 //                    change[1] = false;
@@ -174,10 +174,12 @@ public class Util {
 //                    motors[i].setPower(motors[i].getPower() * 0.5);
 //                }*/
 //            }
-//            if(){
-//
-//            }
         }
         return;
+    }
+
+    static byte[] setDefaultDirs(byte[] motorDirs){
+        byte[] arr = {-1, 1, -1, 1};
+        return arr;
     }
 }
