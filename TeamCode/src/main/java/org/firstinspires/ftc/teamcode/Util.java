@@ -160,20 +160,22 @@ public class Util {
         }
     }
 
-    static void moving(DcMotor[] motors/*, double power, double dist*/){
-        //runs infinite loop until motor stops moving
-//        boolean[] change = new boolean[4];
+    static void moving(DcMotor[] motors , boolean slowDown){
+
+        final int firstTick = Math.abs (motors[0].getTargetPosition());
+        final double [] powers = [motors[0].getPower(), motors[1].getPower(), motors[2].getPower(), motors[3].getPower()];
+        final int decrements = 20;
+        final double ratio = 7.0/12;
         while (motors[0].isBusy() || motors[1].isBusy() || motors[2].isBusy() || motors[3].isBusy()){
-//            for(int i = 0; i < 4; i++){
-//                if(motors[i].getTargetPosition() - motors[i].getCurrentPosition() < 4 * TICKS_PER_INCH) {
-//                    motors[i].setPower(motors[i].getPower() - power * 0.99999);
-//                }/*else if(motors[i].getTargetPosition() - motors[i].getCurrentPosition() < 0.3 * motors[i].getTargetPosition()){
-//                    motors[i].setPower(motors[i].getPower() * 0.6);
-//                    change[1] = false;
-//                }else if(motors[i].getTargetPosition() - motors[i].getCurrentPosition() < 0.2 * motors[i].getTargetPosition()){
-//                    motors[i].setPower(motors[i].getPower() * 0.5);
-//                }*/
-//            }
+
+            if (slowDown){
+                //get the total distance and subtract the distance we travelled. Multiply the result
+                // by the total distance
+
+
+
+            }
+
         }
         return;
     }
