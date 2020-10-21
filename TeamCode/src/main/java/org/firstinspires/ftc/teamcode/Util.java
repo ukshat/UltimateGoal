@@ -162,18 +162,24 @@ public class Util {
 
     static void moving(DcMotor[] motors , boolean slowDown){
 
-        final int firstTick = Math.abs (motors[0].getTargetPosition());
-        final double [] powers = motors[0].getPower(), motors[1].getPower(), motors[2].getPower(), motors[3].getPower()];
+        final int totalTick = Math.abs (motors[0].getTargetPosition());
         final int decrements = 20;
         final double ratio = 7.0/12;
+        int point = (int)( 1-ratio * totalTick) ;
+        final double  decrement = motors[0].getPower() / 20;
+        final int pointDecrement = point/decrements;
+        int decrementCount = 0;
         while (motors[0].isBusy() || motors[1].isBusy() || motors[2].isBusy() || motors[3].isBusy()){
-            int[] currTick = new int{motors[0].getCurrentPosition(), motors[1].getCurrentPosition(), motors[2].getCurrentPosition(), motors[3].getCurrentPosition()};
-            if (slowDown){
-                //get the total distance and subtract the distance we travelled. Multiply the result
-                // by the total distance
+            int ticksLeft = totalTick - motors[0].getCurrentPosition();
+            if (ticksLeft <= ratio * totalTick && slowDown){
+
+                if(ticksLeft == point && decrementCount < decrements){
+                    motors[0].setPower(motors[0].getPower() - decrement);
+                    point -= pointDecrement;
+                    decrementCount++;
 
 
-
+                }
             }
 
         }
