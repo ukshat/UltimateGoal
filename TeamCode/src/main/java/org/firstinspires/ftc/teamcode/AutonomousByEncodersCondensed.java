@@ -245,7 +245,7 @@ public class AutonomousByEncodersCondensed extends LinearOpMode {
         double y = power * Math.sin(radians);
 
         //calculate motor powers
-        double[] pows = FinalDriveCode.calculateMotorPower(x, y, 0);
+        double[] pows = Util.calculateMotorPower(x, y, 0);
 
         //assign powers and distances to motors
         for(int i = 0; i < 4; i++){
