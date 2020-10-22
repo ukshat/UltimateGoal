@@ -19,21 +19,8 @@ public class Test13_R5 extends LinearOpMode {
         motors[2] = hardwareMap.dcMotor.get("LeftRear");
         motors[3] = hardwareMap.dcMotor.get("RightRear");
 
-        //set modes & zero power behaviour
-        for(int i = 0; i < 4; i++){
-            motors[i].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            motors[i].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            motors[i].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        }
-
-        //set left side motors to rotate in opposite direction
-        motors[0].setDirection(DcMotor.Direction.REVERSE);
-        motors[2].setDirection(DcMotor.Direction.REVERSE);
-
         waitForStart();
-        for(int i = 0; i < 4; i++) {
-            motors[i].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        }
-        Util.rotate(5*360, 0.5, motors);
+
+        Util.rotate(360, 0.5, motors, (byte)0);
     }
 }
