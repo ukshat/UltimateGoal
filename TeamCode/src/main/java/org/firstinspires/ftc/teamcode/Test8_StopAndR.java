@@ -36,7 +36,7 @@ public class Test8_StopAndR extends LinearOpMode {
             motors[i].setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }
 
-        Util.moving(motors);
+        Util.moving(motors, true);
 
         for(int i = 0; i < 4; i++){
             motors[i].setPower(0);

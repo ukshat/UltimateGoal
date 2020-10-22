@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 public class Util {
 
@@ -93,32 +94,24 @@ public class Util {
      * @params degrees amount in degrees to rotate the robot (must be between -180 and 180)
      * @params power speed at which motors will run -- affects speed of rotation
      * */
-    static void rotate(double degrees, double power, DcMotor[] motors, byte[] motorDirs){
+    static void rotate(double degrees, double power, DcMotor[] motors, byte config){
         //convert degrees to radians
         double radians = degrees * Math.PI / 180;
 
-        //motor powers for rotation will always be like this
-        byte[] pows = {1, -1, 1, -1};
-
-        //if turning counter clockwise, reverse motor powers
-        if (degrees < 0){
-            for(int i = 0; i < 4; i++){
-                pows[i] *= -1;
-            }
-        }
-
         //distance that each wheel will travel in rotation type movement
-        double arcLength =  9.487480983 * radians;
+        double arcLength =  ARC_LENGTH * radians;
+
+        setDirection((byte)(config + 4), motors);
 
         //set motor distances and powers
         for(int i = 0; i < 4; i++){
             motors[i].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            motors[i].setTargetPosition((int)(arcLength * TICKS_PER_INCH * motorDirs[i] * pows[i]));
+            motors[i].setTargetPosition((int)(arcLength * TICKS_PER_INCH));
             motors[i].setMode(DcMotor.RunMode.RUN_TO_POSITION);
             motors[i].setPower(power);
         }
 
-        moving(motors);
+        moving(motors, true);
 
         //stop motors
         for(int i = 0; i < 4; i++){
@@ -127,32 +120,25 @@ public class Util {
     }
 
     /**
-     * moves the robot in a given linear direction for a given distance and speed
-     *
+     * Configs:
+     *  0: forward
+     *  1: right
+     *  2: backward
+     *  3: left
      * @params degrees linear direction to move the robot (0 degrees is forward
      * @params distance distance at which to move robot
      * @params power speed at which motors will run -- affects speed of movement
      * */
-    static void move(double degrees, double distance, double power, DcMotor[] motors, byte[] motorDirs){
-        //convert degrees to radians
-        double radians = -degrees * Math.PI / 180;
-
-        //calculate dimensions of tentative unit right triangle described by given parameters
-        double x = power * Math.cos(radians);
-        double y = power * Math.sin(radians);
-
-        //calculate motor powers
-        double[] pows = calculateMotorPower(x, y, 0);
-
-        //assign powers and distances to motors
+    static void move(byte config, double distance, double speed, DcMotor[] motors){
+        setDirection(config, motors);
         for(int i = 0; i < 4; i++){
-            motors[i].setPower(Math.abs(pows[i]));
+            motors[i].setPower(speed);
             motors[i].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            motors[i].setTargetPosition((int)(distance * TICKS_PER_INCH * motorDirs[i] * pows[i] / Math.abs(pows[i])));
+            motors[i].setTargetPosition((int)(distance * TICKS_PER_INCH));
             motors[i].setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }
 
-        moving(motors);
+        moving(motors, true);
 
         //stop motors
         for(int i = 0; i < 4; i++){
@@ -160,34 +146,48 @@ public class Util {
         }
     }
 
-    static void moving(DcMotor[] motors , boolean slowDown){
+    static void moving(DcMotor[] motors, boolean slowDown){
 
-        final int totalTick = Math.abs (motors[0].getTargetPosition());
+        final int totalTick = motors[0].getTargetPosition();
         final int decrements = 20;
         final double ratio = 7.0/12;
-        int point = (int)( 1-ratio * totalTick) ;
-        final double  decrement = motors[0].getPower() / 20;
-        final int pointDecrement = point/decrements;
-        int decrementCount = 0;
+        int point = (int)((1 - ratio) * totalTick);
+        final double  decrement = motors[0].getPower() / 21;
+        final int pointDecrement = point/decrements + 1;
         while (motors[0].isBusy() || motors[1].isBusy() || motors[2].isBusy() || motors[3].isBusy()){
             int ticksLeft = totalTick - motors[0].getCurrentPosition();
-            if (ticksLeft <= ratio * totalTick && slowDown){
-
-                if(ticksLeft == point && decrementCount < decrements){
-                    motors[0].setPower(motors[0].getPower() - decrement);
-                    point -= pointDecrement;
-                    decrementCount++;
-
-
-                }
+            if (ticksLeft == point && slowDown && motors[0].getPower() > 0.08){
+                motors[0].setPower(motors[0].getPower() - decrement);
+                motors[1].setPower(motors[0].getPower() - decrement);
+                motors[2].setPower(motors[0].getPower() - decrement);
+                motors[3].setPower(motors[0].getPower() - decrement);
+                point -= pointDecrement;
             }
-
         }
         return;
     }
 
-    static byte[] setDefaultDirs(byte[] motorDirs){
-        byte[] arr = {-1, 1, -1, 1};
-        return arr;
+    /**
+     * Configs:
+     *  0: forward
+     *  1: right
+     *  2: backward
+     *  3: left
+     *  4: clockwise
+     *  5: counterclockwise
+     * @param config
+     * @param motors
+     */
+    static void setDirection(byte config, DcMotor[] motors){
+
+        for(int i = 0; i < 4; i++){
+            motors[i].setDirection(DcMotor.Direction.FORWARD);
+            if (config == 0 && i % 2 == 0) motors[i].setDirection(DcMotor.Direction.REVERSE);
+            else if (config == 1 && i <=1) motors[i].setDirection(DcMotor.Direction.REVERSE);
+            else if (config == 2 && i % 2 == 1) motors[i].setDirection(DcMotor.Direction.REVERSE);
+            else if (config == 3 && i >= 2) motors[i].setDirection(DcMotor.Direction.REVERSE);
+            else if (config == 4) motors[i].setDirection(DcMotor.Direction.REVERSE);
+        }
     }
+
 }
