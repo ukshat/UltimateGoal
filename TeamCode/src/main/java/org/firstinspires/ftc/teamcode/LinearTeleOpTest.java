@@ -7,8 +7,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-import static org.firstinspires.ftc.teamcode.FinalDriveCode.findLargest;
-
 public class LinearTeleOpTest extends LinearOpMode {
     //declare opmode members
     private ElapsedTime runtime = new ElapsedTime();
@@ -38,6 +36,16 @@ public class LinearTeleOpTest extends LinearOpMode {
         rightIntake = hardwareMap.dcMotor.get("Right Intake Wheel");
         leftShoot = hardwareMap.dcMotor.get("Left Shooting Wheel");
         rightShoot = hardwareMap.dcMotor.get("Right Shooting Wheel");
+
+        // Run with encoders to ensure that errors don't happen
+        fl_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        fr_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        bl_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        br_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        fl_motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        fr_motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        bl_motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        br_motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         //set the leftDrive to reverse so that the motors direction is the same
         fl_motor.setDirection(DcMotor.Direction.REVERSE);

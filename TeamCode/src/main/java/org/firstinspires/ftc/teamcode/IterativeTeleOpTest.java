@@ -27,6 +27,7 @@ public class IterativeTeleOpTest extends OpMode {
     public void init() {
         //initialize telemetry
         telemetry.addData("Status", "Initialized");
+
         //initialize leftdrive and rightdrive
         //find hardware map of motors
         fl_motor = hardwareMap.dcMotor.get("LeftFront");
