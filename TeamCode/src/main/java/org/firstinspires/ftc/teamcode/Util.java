@@ -132,8 +132,8 @@ public class Util {
     static void move(byte config, double distance, double speed, DcMotor[] motors){
         setDirection(config, motors);
         for(int i = 0; i < 4; i++){
-            motors[i].setPower(speed);
             motors[i].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            motors[i].setPower(speed);
             motors[i].setTargetPosition((int)(distance * TICKS_PER_INCH));
             motors[i].setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }

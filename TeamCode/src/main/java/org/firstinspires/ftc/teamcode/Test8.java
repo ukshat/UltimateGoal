@@ -36,7 +36,7 @@ public class Test8 extends LinearOpMode {
             motors[i].setTargetPosition((int)(18 * Util.TICKS_PER_INCH));
         }
 
-        Util.moving(motors);
+        Util.moving(motors, false);
 
         for(int i = 0; i < 4; i++){
             motors[i].setPower(0);
