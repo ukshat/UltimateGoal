@@ -2,10 +2,8 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 
 public class LinearTeleOpTest extends LinearOpMode {
     //declare opmode members
@@ -71,7 +69,8 @@ public class LinearTeleOpTest extends LinearOpMode {
             double y = gamepad1.left_stick_y;
 
             // Create a variable to hold the amount of rotation
-            double rotation = gamepad1.right_stick_x;
+            double rotation;
+            rotation = gamepad1.right_stick_x;
 
             // Calculate motor powers and assign to an array
             double[] powers = calculateMotorPower(x, y, rotation);
@@ -83,6 +82,8 @@ public class LinearTeleOpTest extends LinearOpMode {
             br_motor.setPower(powers[3]);
 
             //set powers for mechs and assign them to a button
+
+            /*
             if(gamepad1.a){
                 leftIntake.setPower(intakePower);
                 rightIntake.setPower(intakePower);
@@ -93,9 +94,14 @@ public class LinearTeleOpTest extends LinearOpMode {
                 rightShoot.setPower(shootingPower);
             }
 
-            if(gamepad2.y) {
+            if(gamepad1.y) {
                 wobbleGoal.setPosition(1);
             }
+            */
+
+            boolean gamepadControl;
+            gamepadControl = true;
+            changeGamepad(gamepadControl, intakePower, shootingPower);
 
 
             //showing elapse game time and wheel power
@@ -159,6 +165,44 @@ public class LinearTeleOpTest extends LinearOpMode {
             }
         }
         return largest;
+    }
+
+    private void changeGamepad(boolean gamepad, double intake, double shooting){
+        if(gamepad2.x && gamepad2.b){
+            gamepad = false;
+        }
+        if(gamepad1.x && gamepad1.b){
+            gamepad = true;
+        }
+        if(gamepad){
+            if(gamepad1.a){
+                leftIntake.setPower(intake);
+                rightIntake.setPower(intake);
+            }
+
+            if(gamepad1.b){
+                leftShoot.setPower(shooting);
+                rightShoot.setPower(shooting);
+            }
+
+            if(gamepad1.y) {
+                wobbleGoal.setPosition(1);
+            }
+        } else {
+            if(gamepad2.a){
+                leftIntake.setPower(intake);
+                rightIntake.setPower(intake);
+            }
+
+            if(gamepad2.b){
+                leftShoot.setPower(shooting);
+                rightShoot.setPower(shooting);
+            }
+
+            if(gamepad2.y) {
+                wobbleGoal.setPosition(1);
+            }
+        }
     }
 
 }

@@ -72,6 +72,7 @@ public class IterativeTeleOpTest extends OpMode {
         // Calculate motor powers and assign to an array
         double[] powers = calculateMotorPower(x, y, rotation);
 
+        /*
         if(gamepad2.y){
             wobbleGoal.setPosition(1);
         }
@@ -85,7 +86,11 @@ public class IterativeTeleOpTest extends OpMode {
             leftIntake.setPower(intakePower);
             rightIntake.setPower(intakePower);
         }
+         */
 
+        boolean gamepadControl;
+        gamepadControl = true;
+        changeGamepad(gamepadControl, intakePower, shootingPower);
 
         // Set powers for each motor
         fl_motor.setPower(powers[0]);
@@ -157,6 +162,44 @@ public class IterativeTeleOpTest extends OpMode {
             }
         }
         return largest;
+    }
+
+    private void changeGamepad(boolean gamepad, double intake, double shooting){
+        if(gamepad2.x && gamepad2.b){
+            gamepad = false;
+        }
+        if(gamepad1.x && gamepad1.b){
+            gamepad = true;
+        }
+        if(gamepad){
+            if(gamepad1.a){
+                leftIntake.setPower(intake);
+                rightIntake.setPower(intake);
+            }
+
+            if(gamepad1.b){
+                leftShoot.setPower(shooting);
+                rightShoot.setPower(shooting);
+            }
+
+            if(gamepad1.y) {
+                wobbleGoal.setPosition(1);
+            }
+        } else {
+            if(gamepad2.a){
+                leftIntake.setPower(intake);
+                rightIntake.setPower(intake);
+            }
+
+            if(gamepad2.b){
+                leftShoot.setPower(shooting);
+                rightShoot.setPower(shooting);
+            }
+
+            if(gamepad2.y) {
+                wobbleGoal.setPosition(1);
+            }
+        }
     }
 
 }
