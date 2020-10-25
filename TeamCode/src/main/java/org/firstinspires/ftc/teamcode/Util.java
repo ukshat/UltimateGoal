@@ -2,11 +2,12 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class Util {
 
     static final double TICKS_PER_INCH = 34.2795262044082261656;
-    static final double ARC_LENGTH = 9.487480983;
+    static final double ARC_LENGTH = 9.487480983 * 5 / 4;
     static final double TICK_LENGTH = 0.029171931783333794357;
 
     /**
@@ -146,6 +147,53 @@ public class Util {
         }
     }
 
+    static void moving(DcMotor[] motors, boolean slowDown, Telemetry telem){
+
+        final int totalTick = motors[0].getTargetPosition();
+        final int decrements = 20;
+        final double ratio = 7.0/12;
+        int point = (int)((1 - ratio) * totalTick);
+        final double  decrement = motors[0].getPower() / 21;
+        final int pointDecrement = point/decrements + 1;
+        while (motors[0].isBusy() || motors[1].isBusy() || motors[2].isBusy() || motors[3].isBusy()){
+            int ticksLeft = totalTick - motors[0].getCurrentPosition();
+            if (ticksLeft == point && slowDown && motors[0].getPower() > 0.08){
+                motors[0].setPower(motors[0].getPower() - decrement);
+                motors[1].setPower(motors[0].getPower() - decrement);
+                motors[2].setPower(motors[0].getPower() - decrement);
+                motors[3].setPower(motors[0].getPower() - decrement);
+
+                telem.addData("Current Power: ", motors[0].getPower());
+
+                point -= pointDecrement;
+            }
+        }
+        return;
+    }
+
+    static void moving2(DcMotor[] motors, boolean slowDown, Telemetry telem){
+        final int totalTick = motors[0].getTargetPosition();
+        final double ratio = 7.0/12;
+        int point = (int)((1 - ratio) * totalTick);
+        final int pointDecrement = point/20 + 1;
+        int currentDec = 0;
+
+        while (motors[0].isBusy() || motors[1].isBusy() || motors[2].isBusy() || motors[3].isBusy()){
+            int ticksLeft = totalTick - motors[0].getCurrentPosition();
+            if (ticksLeft == point && slowDown){
+                currentDec++;
+                for(int i = 0; i < 4; i++){
+                    motors[i].setPower(0.5 - Math.pow(currentDec / 30.0, 2));
+                }
+
+                telem.addData("Current Power: ", motors[0].getPower());
+
+                point -= pointDecrement;
+            }
+        }
+        return;
+    }
+
     static void moving(DcMotor[] motors, boolean slowDown){
 
         final int totalTick = motors[0].getTargetPosition();
@@ -161,6 +209,9 @@ public class Util {
                 motors[1].setPower(motors[0].getPower() - decrement);
                 motors[2].setPower(motors[0].getPower() - decrement);
                 motors[3].setPower(motors[0].getPower() - decrement);
+
+                //telem.addData("Current Power: ", motors[0].getPower());
+
                 point -= pointDecrement;
             }
         }
