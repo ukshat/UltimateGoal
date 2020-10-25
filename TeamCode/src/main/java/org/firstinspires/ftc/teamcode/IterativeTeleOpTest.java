@@ -45,7 +45,6 @@ public class IterativeTeleOpTest extends OpMode {
         //reverse leftdrive
         fl_motor.setDirection(DcMotor.Direction.REVERSE);
         bl_motor.setDirection(DcMotor.Direction.REVERSE);
-
         rightIntake.setDirection(DcMotor.Direction.REVERSE);
         leftShoot.setDirection(DcMotor.Direction.REVERSE);
     }
@@ -65,6 +64,7 @@ public class IterativeTeleOpTest extends OpMode {
 
         double shootingPower = 1;
         double intakePower = 0.7;
+        double wobblePower = 1;
 
         // Create a variable to hold the amount of rotation
         double rotation = gamepad1.right_stick_x;
@@ -72,6 +72,7 @@ public class IterativeTeleOpTest extends OpMode {
         // Calculate motor powers and assign to an array
         double[] powers = calculateMotorPower(x, y, rotation);
 
+        /*
         if(gamepad2.y){
             wobbleGoal.setPosition(1);
         }
@@ -85,7 +86,11 @@ public class IterativeTeleOpTest extends OpMode {
             leftIntake.setPower(intakePower);
             rightIntake.setPower(intakePower);
         }
+         */
 
+        boolean gamepadControl;
+        gamepadControl = true;
+        changeGamepad(gamepadControl, intakePower, shootingPower, wobblePower);
 
         // Set powers for each motor
         fl_motor.setPower(powers[0]);
@@ -157,6 +162,44 @@ public class IterativeTeleOpTest extends OpMode {
             }
         }
         return largest;
+    }
+
+    private void changeGamepad(boolean gamepad, double intake, double shooting, double wobble){
+        if(gamepad2.x && gamepad2.b){
+            gamepad = false;
+        }
+        if(gamepad1.x && gamepad1.b){
+            gamepad = true;
+        }
+        if(gamepad){
+            if(gamepad1.a){
+                leftIntake.setPower(intake);
+                rightIntake.setPower(intake);
+            }
+
+            if(gamepad1.b){
+                leftShoot.setPower(shooting);
+                rightShoot.setPower(shooting);
+            }
+
+            if(gamepad1.y) {
+                wobbleGoal.setPosition(wobble);
+            }
+        } else {
+            if(gamepad2.a){
+                leftIntake.setPower(intake);
+                rightIntake.setPower(intake);
+            }
+
+            if(gamepad2.b){
+                leftShoot.setPower(shooting);
+                rightShoot.setPower(shooting);
+            }
+
+            if(gamepad2.y) {
+                wobbleGoal.setPosition(wobble);
+            }
+        }
     }
 
 }
