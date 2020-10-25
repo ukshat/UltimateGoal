@@ -132,8 +132,8 @@ public class Util {
     static void move(byte config, double distance, double speed, DcMotor[] motors){
         setDirection(config, motors);
         for(int i = 0; i < 4; i++){
-            motors[i].setPower(speed);
             motors[i].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            motors[i].setPower(speed);
             motors[i].setTargetPosition((int)(distance * TICKS_PER_INCH));
             motors[i].setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }
@@ -156,7 +156,7 @@ public class Util {
         final int pointDecrement = point/decrements + 1;
         while (motors[0].isBusy() || motors[1].isBusy() || motors[2].isBusy() || motors[3].isBusy()){
             int ticksLeft = totalTick - motors[0].getCurrentPosition();
-            if (ticksLeft == point && slowDown && motors[0].getPower() > 0){
+            if (ticksLeft == point && slowDown && motors[0].getPower() > 0.08){
                 motors[0].setPower(motors[0].getPower() - decrement);
                 motors[1].setPower(motors[0].getPower() - decrement);
                 motors[2].setPower(motors[0].getPower() - decrement);
