@@ -45,24 +45,23 @@ public class LinearTeleOpTest extends LinearOpMode {
         bl_motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         br_motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        //set the leftDrive to reverse so that the motors direction is the same
+        //set some motors to reverse so that the motors direction is the same
         fl_motor.setDirection(DcMotor.Direction.REVERSE);
         bl_motor.setDirection(DcMotor.Direction.REVERSE);
-
         rightIntake.setDirection(DcMotor.Direction.REVERSE);
         leftShoot.setDirection(DcMotor.Direction.REVERSE);
 
         //wait for driver to press play
         waitForStart();
-
         runtime.reset();
 
         //run until the end of match (stop button)
         while(opModeIsActive()){
-            //set variables for each drive wheel to save power level for telemetry
 
-            double intakePower = 0.7;
+            //set variables for each drive wheel to save power level for telemetry
+            double intakePower = 1;
             double shootingPower = 1;
+            double wobblePower = 1;
 
             // Create variables to hold the direction that the left stick was moved
             double x = gamepad1.left_stick_x;
@@ -99,12 +98,13 @@ public class LinearTeleOpTest extends LinearOpMode {
             }
             */
 
+            // make sure gamepad control is correct and set powers
             boolean gamepadControl;
             gamepadControl = true;
-            changeGamepad(gamepadControl, intakePower, shootingPower);
+            changeGamepad(gamepadControl, intakePower, shootingPower, wobblePower);
 
 
-            //showing elapse game time and wheel power
+            //showing elapsed game time and wheel power
             telemetry.addData("Status", "RunTime: " + runtime.toString());
             telemetry.addData("left front motor", powers[0]);
             telemetry.addData("right front motor", powers[1]);
@@ -167,7 +167,7 @@ public class LinearTeleOpTest extends LinearOpMode {
         return largest;
     }
 
-    private void changeGamepad(boolean gamepad, double intake, double shooting){
+    private void changeGamepad(boolean gamepad, double intake, double shooting, double wobble){
         if(gamepad2.x && gamepad2.b){
             gamepad = false;
         }
@@ -186,7 +186,7 @@ public class LinearTeleOpTest extends LinearOpMode {
             }
 
             if(gamepad1.y) {
-                wobbleGoal.setPosition(1);
+                wobbleGoal.setPosition(wobble);
             }
         } else {
             if(gamepad2.a){
@@ -200,7 +200,7 @@ public class LinearTeleOpTest extends LinearOpMode {
             }
 
             if(gamepad2.y) {
-                wobbleGoal.setPosition(1);
+                wobbleGoal.setPosition(wobble);
             }
         }
     }

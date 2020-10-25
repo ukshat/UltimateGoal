@@ -45,7 +45,6 @@ public class IterativeTeleOpTest extends OpMode {
         //reverse leftdrive
         fl_motor.setDirection(DcMotor.Direction.REVERSE);
         bl_motor.setDirection(DcMotor.Direction.REVERSE);
-
         rightIntake.setDirection(DcMotor.Direction.REVERSE);
         leftShoot.setDirection(DcMotor.Direction.REVERSE);
     }
@@ -65,6 +64,7 @@ public class IterativeTeleOpTest extends OpMode {
 
         double shootingPower = 1;
         double intakePower = 0.7;
+        double wobblePower = 1;
 
         // Create a variable to hold the amount of rotation
         double rotation = gamepad1.right_stick_x;
@@ -90,7 +90,7 @@ public class IterativeTeleOpTest extends OpMode {
 
         boolean gamepadControl;
         gamepadControl = true;
-        changeGamepad(gamepadControl, intakePower, shootingPower);
+        changeGamepad(gamepadControl, intakePower, shootingPower, wobblePower);
 
         // Set powers for each motor
         fl_motor.setPower(powers[0]);
@@ -164,7 +164,7 @@ public class IterativeTeleOpTest extends OpMode {
         return largest;
     }
 
-    private void changeGamepad(boolean gamepad, double intake, double shooting){
+    private void changeGamepad(boolean gamepad, double intake, double shooting, double wobble){
         if(gamepad2.x && gamepad2.b){
             gamepad = false;
         }
@@ -183,7 +183,7 @@ public class IterativeTeleOpTest extends OpMode {
             }
 
             if(gamepad1.y) {
-                wobbleGoal.setPosition(1);
+                wobbleGoal.setPosition(wobble);
             }
         } else {
             if(gamepad2.a){
@@ -197,7 +197,7 @@ public class IterativeTeleOpTest extends OpMode {
             }
 
             if(gamepad2.y) {
-                wobbleGoal.setPosition(1);
+                wobbleGoal.setPosition(wobble);
             }
         }
     }
