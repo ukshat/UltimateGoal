@@ -6,8 +6,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-@Autonomous(name = "rotate 5 times")
-public class TEST_Rotate5 extends LinearOpMode {
+@Autonomous(name = "rotate 10 times")
+public class TEST_Rotate extends LinearOpMode {
 
     DcMotor[/*Front Left, Front Right, Back Left, Back Right*/] motors = new DcMotor[4];
 
@@ -30,6 +30,7 @@ public class TEST_Rotate5 extends LinearOpMode {
         waitForStart();
 
         rotate(360, 0.5, motors, (byte)0);
+
     }
 
     static void rotate(double degrees, double power, DcMotor[] motors, byte config){
