@@ -74,6 +74,7 @@ public class TEST_Rotate5 extends LinearOpMode {
                 motors[3].setPower(motors[0].getPower() - decrement);
 
                 telem.addData("Current Power: ", motors[0].getPower());
+                telem.update();
 
                 point -= pointDecrement;
             }

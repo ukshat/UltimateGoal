@@ -62,7 +62,8 @@ public class TEST_Success extends LinearOpMode {
                 motors[2].setPower(motors[0].getPower() - decrement);
                 motors[3].setPower(motors[0].getPower() - decrement);
 
-                telem.addData("Current Power: ", motors[0].getPower());
+                telem.addData("Current Power: ", "%.3f",  motors[0].getPower());
+                telem.update();
 
                 point -= pointDecrement;
             }

@@ -11,8 +11,6 @@ public class TEST_LeftStrafe extends LinearOpMode {
 
     DcMotor[/*Front Left, Front Right, Back Left, Back Right*/] motors = new DcMotor[4];
 
-    static final double TILE_LENGTH = 23.5;
-    static final double TICK_LENGTH = 100 / Math.PI;
     private static final double TICKS_PER_INCH = 34.2795262044082261656;
     static Telemetry telem;
 
@@ -65,6 +63,7 @@ public class TEST_LeftStrafe extends LinearOpMode {
                 motors[3].setPower(motors[0].getPower() - decrement);
 
                 telem.addData("Current Power: ", motors[0].getPower());
+                telem.update();
 
                 point -= pointDecrement;
             }

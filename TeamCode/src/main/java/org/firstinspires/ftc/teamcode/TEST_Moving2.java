@@ -62,6 +62,7 @@ public class TEST_Moving2 extends LinearOpMode {
                 }
 
                 telem.addData("Current Power: ", motors[0].getPower());
+                telem.update();
 
                 point -= pointDecrement;
             }
