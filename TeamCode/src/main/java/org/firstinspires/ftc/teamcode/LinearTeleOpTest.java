@@ -180,7 +180,7 @@ public class LinearTeleOpTest extends LinearOpMode {
                 rightIntake.setPower(intake);
             }
 
-            if(shooting > 0){
+            if(shooting > 0.4){
                 rightShoot.setPower(gamepad1.right_trigger);
                 leftShoot.setPower(gamepad1.right_trigger);
             }
@@ -194,7 +194,7 @@ public class LinearTeleOpTest extends LinearOpMode {
                 rightIntake.setPower(intake);
             }
 
-            if(shooting > 0){
+            if(shooting > 0.4){
                 rightShoot.setPower(gamepad1.right_trigger);
                 leftShoot.setPower(gamepad1.right_trigger);
             }
