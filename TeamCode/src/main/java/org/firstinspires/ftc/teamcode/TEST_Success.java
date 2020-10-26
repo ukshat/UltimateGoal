@@ -39,6 +39,8 @@ public class TEST_Success extends LinearOpMode {
             motors[i].setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }
 
+        telemetry.addData("Hello ", "world\n");
+        telemetry.update();
         moving(motors, true, telemetry);
 
         for(int i = 0; i < 4; i++){
@@ -48,6 +50,8 @@ public class TEST_Success extends LinearOpMode {
 
     static void moving(DcMotor[] motors, boolean slowDown, Telemetry telem){
 
+        telem.addData("Current Power: ", "%.3f",  motors[0].getPower());
+        telem.update();
         final int totalTick = motors[0].getTargetPosition();
         final int decrements = 20;
         final double ratio = 7.0/12;

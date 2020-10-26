@@ -6,8 +6,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-@Autonomous(name = "left 36")
-public class TEST_LeftStrafe extends LinearOpMode {
+@Autonomous(name = "right 36")
+public class TEST_RightStrafe extends LinearOpMode {
 
     DcMotor[/*Front Left, Front Right, Back Left, Back Right*/] motors = new DcMotor[4];
 
@@ -26,19 +26,20 @@ public class TEST_LeftStrafe extends LinearOpMode {
 
         waitForStart();
 
-        move((byte)3, 36, 0.5, motors);
+        move((byte)1, 36, 0.5, motors);
     }
 
     static void move(byte config, double distance, double speed, DcMotor[] motors){
         setDirection(config, motors);
         for(int i = 0; i < 4; i++){
+            motors[i].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             motors[i].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             motors[i].setPower(speed);
             motors[i].setTargetPosition((int)(distance * TICKS_PER_INCH));
             motors[i].setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }
 
-        moving(motors, true, telem);
+        moving(motors, false, telem);
 
         //stop motors
         for(int i = 0; i < 4; i++){

@@ -61,11 +61,14 @@ public class TEST_Moving2 extends LinearOpMode {
                     motors[i].setPower(0.5 - Math.pow(currentDec / 30.0, 2));
                 }
 
-                telem.addData("Current Power: ", motors[0].getPower());
+                telem.addData("Current Power: ", "%.3f", motors[0].getPower());
                 telem.update();
 
                 point -= pointDecrement;
             }
+            try {
+                Thread.sleep(20);
+            } catch (InterruptedException e) {}
         }
         return;
     }
