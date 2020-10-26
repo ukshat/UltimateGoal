@@ -14,7 +14,7 @@ public class TEST_Rotate5 extends LinearOpMode {
     static final double TILE_LENGTH = 23.5;
 
     static final double TICKS_PER_INCH = 34.2795262044082261656;
-    static final double ARC_LENGTH = 9.487480983 * 5 / 4;
+    static final double ARC_LENGTH = 9.487480983 * (5 / 4) * (11/10);
     static final double TICK_LENGTH = 0.029171931783333794357;
     static Telemetry telem;
 
@@ -78,6 +78,9 @@ public class TEST_Rotate5 extends LinearOpMode {
 
                 point -= pointDecrement;
             }
+            try {
+                Thread.sleep(20);
+            } catch (InterruptedException e) {}
         }
         return;
     }
