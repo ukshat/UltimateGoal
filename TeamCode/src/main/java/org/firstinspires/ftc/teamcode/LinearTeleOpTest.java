@@ -60,7 +60,7 @@ public class LinearTeleOpTest extends LinearOpMode {
 
             //set variables for each drive wheel to save power level for telemetry
             double intakePower = 1;
-            double shootingPower = 1;
+            double shootingPower = gamepad1.right_trigger;
             double wobblePower = 1;
 
             // Create variables to hold the direction that the left stick was moved
@@ -168,10 +168,10 @@ public class LinearTeleOpTest extends LinearOpMode {
     }
 
     private void changeGamepad(boolean gamepad, double intake, double shooting, double wobble){
-        if(gamepad2.x && gamepad2.b){
+        if(gamepad2.left_stick_button){
             gamepad = false;
         }
-        if(gamepad1.x && gamepad1.b){
+        if(gamepad1.left_stick_button){
             gamepad = true;
         }
         if(gamepad){
@@ -180,9 +180,9 @@ public class LinearTeleOpTest extends LinearOpMode {
                 rightIntake.setPower(intake);
             }
 
-            if(gamepad1.b){
-                leftShoot.setPower(shooting);
-                rightShoot.setPower(shooting);
+            if(shooting > 0){
+                rightShoot.setPower(gamepad1.right_trigger);
+                leftShoot.setPower(gamepad1.right_trigger);
             }
 
             if(gamepad1.y) {
@@ -194,9 +194,9 @@ public class LinearTeleOpTest extends LinearOpMode {
                 rightIntake.setPower(intake);
             }
 
-            if(gamepad2.b){
-                leftShoot.setPower(shooting);
-                rightShoot.setPower(shooting);
+            if(shooting > 0){
+                rightShoot.setPower(gamepad1.right_trigger);
+                leftShoot.setPower(gamepad1.right_trigger);
             }
 
             if(gamepad2.y) {
