@@ -7,8 +7,9 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class Util {
 
     static final double TICKS_PER_INCH = 34.2795262044082261656;
-    static final double ARC_LENGTH = 9.487480983 * 5 / 4;
+    static final double ARC_LENGTH = 9.487480983 * (5.0 / 4) * (11.0/10) * (5/5.25);
     static final double TICK_LENGTH = 0.029171931783333794357;
+    static final double HORIZONTAL_STRAFE = 36.0 / 31;
 
     /**
      * Calculates the number of ticks per inch the robot moves
@@ -135,7 +136,7 @@ public class Util {
         for(int i = 0; i < 4; i++){
             motors[i].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             motors[i].setPower(speed);
-            motors[i].setTargetPosition((int)(distance * TICKS_PER_INCH));
+            motors[i].setTargetPosition((int)(distance * TICKS_PER_INCH * (config % 2 == 1 ? HORIZONTAL_STRAFE : 1)));
             motors[i].setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }
 
@@ -216,6 +217,24 @@ public class Util {
             }
         }
         return;
+    }
+
+    static void moving(DcMotor[] motors, Telemetry telem){
+        final int totalTick = motors[0].getTargetPosition();
+
+        while (motors[0].isBusy() || motors[1].isBusy() || motors[2].isBusy() || motors[3].isBusy()){
+            try {Thread.sleep(75);} catch (InterruptedException e) {} //sleep
+
+            int currPos = motors[0].getCurrentPosition();
+
+            double pow = f(currPos, totalTick);
+
+            for(DcMotor motor : motors) motor.setPower(pow);
+        }
+    }
+
+    static double f(int x, int n){
+        return ((-Math.pow(x, 2)) + (Math.pow(n * 10.0 / 9, 2))) / (2 * Math.pow(n * 10.0 / 9, 2));
     }
 
     /**
