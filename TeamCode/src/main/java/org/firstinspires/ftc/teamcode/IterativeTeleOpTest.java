@@ -62,7 +62,7 @@ public class IterativeTeleOpTest extends OpMode {
         double x = gamepad1.left_stick_x;
         double y = gamepad1.left_stick_y;
 
-        double shootingPower = 1;
+        double shootingPower = gamepad1.right_trigger;
         double intakePower = 0.7;
         double wobblePower = 1;
 
@@ -165,10 +165,10 @@ public class IterativeTeleOpTest extends OpMode {
     }
 
     private void changeGamepad(boolean gamepad, double intake, double shooting, double wobble){
-        if(gamepad2.x && gamepad2.b){
+        if(gamepad2.left_stick_button){
             gamepad = false;
         }
-        if(gamepad1.x && gamepad1.b){
+        if(gamepad1.left_stick_button){
             gamepad = true;
         }
         if(gamepad){
@@ -177,9 +177,9 @@ public class IterativeTeleOpTest extends OpMode {
                 rightIntake.setPower(intake);
             }
 
-            if(gamepad1.b){
-                leftShoot.setPower(shooting);
-                rightShoot.setPower(shooting);
+            if(shooting > 0.4){
+                rightShoot.setPower(gamepad1.right_trigger);
+                leftShoot.setPower(gamepad1.right_trigger);
             }
 
             if(gamepad1.y) {
@@ -191,9 +191,9 @@ public class IterativeTeleOpTest extends OpMode {
                 rightIntake.setPower(intake);
             }
 
-            if(gamepad2.b){
-                leftShoot.setPower(shooting);
-                rightShoot.setPower(shooting);
+            if(shooting > 0.4){
+                rightShoot.setPower(gamepad1.right_trigger);
+                leftShoot.setPower(gamepad1.right_trigger);
             }
 
             if(gamepad2.y) {
