@@ -18,11 +18,13 @@ public class LinearTeleOpTest extends LinearOpMode {
     private DcMotor bl_motor;
     private DcMotor br_motor;
 
+    /*
     private Servo wobbleGoal;
     private DcMotor leftIntake;
     private DcMotor rightIntake;
     private DcMotor leftShoot;
     private DcMotor rightShoot;
+    */
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -34,11 +36,14 @@ public class LinearTeleOpTest extends LinearOpMode {
         fr_motor = hardwareMap.dcMotor.get("RightFront");
         bl_motor = hardwareMap.dcMotor.get("LeftRear");
         br_motor = hardwareMap.dcMotor.get("RightRear");
+
+        /*
         wobbleGoal = hardwareMap.servo.get("Wobble Goal");
         leftIntake = hardwareMap.dcMotor.get("Left Intake Wheel");
         rightIntake = hardwareMap.dcMotor.get("Right Intake Wheel");
         leftShoot = hardwareMap.dcMotor.get("Left Shooting Wheel");
         rightShoot = hardwareMap.dcMotor.get("Right Shooting Wheel");
+         */
 
         // Run with encoders to ensure that errors don't happen
         fl_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -53,9 +58,10 @@ public class LinearTeleOpTest extends LinearOpMode {
         //set some motors to reverse so that the motors direction is the same
         fr_motor.setDirection(DcMotor.Direction.REVERSE);
         br_motor.setDirection(DcMotor.Direction.REVERSE);
+        /*
         rightIntake.setDirection(DcMotor.Direction.REVERSE);
         leftShoot.setDirection(DcMotor.Direction.REVERSE);
-
+         */
         //wait for driver to press play
         waitForStart();
         runtime.reset();
@@ -63,11 +69,13 @@ public class LinearTeleOpTest extends LinearOpMode {
         //run until the end of match (stop button)
         while(opModeIsActive()){
 
+            /*
             //set variables for each drive wheel to save power level for telemetry
             double intakePower = 1;
             double shootingPower = gamepad1.right_trigger;
             double wobblePower = 1;
 
+             */
             // Create variables to hold the direction that the left stick was moved
             double x = gamepad1.left_stick_x;
             double y = gamepad1.left_stick_y;
@@ -86,26 +94,11 @@ public class LinearTeleOpTest extends LinearOpMode {
 
             //set powers for mechs and assign them to a button
 
-            /*
-            if(gamepad1.a){
-                leftIntake.setPower(intakePower);
-                rightIntake.setPower(intakePower);
-            }
-
-            if(gamepad1.b){
-                leftShoot.setPower(shootingPower);
-                rightShoot.setPower(shootingPower);
-            }
-
-            if(gamepad1.y) {
-                wobbleGoal.setPosition(1);
-            }
-            */
-
             // make sure gamepad control is correct and set powers
+            /*
             boolean gamepadControl = true;
             changeGamepad(gamepadControl, intakePower, shootingPower, wobblePower);
-
+             */
 
             //showing elapsed game time and wheel power
             telemetry.addData("Status", "RunTime: " + runtime.toString());
@@ -113,11 +106,13 @@ public class LinearTeleOpTest extends LinearOpMode {
             telemetry.addData("right front motor", powers[1]);
             telemetry.addData("left back motor", powers[2]);
             telemetry.addData("right back motor", powers[3]);
+            /*
             telemetry.addData("left intake wheel motor", intakePower);
             telemetry.addData("right intake wheel motor", intakePower);
             telemetry.addData("left shooting wheel motor", shootingPower);
             telemetry.addData("right shooting wheel motor", shootingPower);
             telemetry.update();
+             */
 
         }
     }
@@ -170,6 +165,7 @@ public class LinearTeleOpTest extends LinearOpMode {
         return largest;
     }
 
+    /*
     private void changeGamepad(boolean gamepad, double intake, double shooting, double wobble){
         if(gamepad2.left_stick_button){
             gamepad = false;
@@ -207,6 +203,7 @@ public class LinearTeleOpTest extends LinearOpMode {
             }
         }
     }
+     */
 
 }
 
