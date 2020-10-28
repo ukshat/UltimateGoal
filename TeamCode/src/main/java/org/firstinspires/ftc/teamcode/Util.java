@@ -234,7 +234,7 @@ public class Util {
     }
 
     static double f(int x, int n){
-        return ((-Math.pow(x, 2)) + (Math.pow(n * 10.0 / 9, 2))) / (2 * Math.pow(n * 10.0 / 9, 2));
+        return -Math.pow((2.8 * Math.pow(x - n / 2, 2)) / (n * n), 2) + 0.5;
     }
 
     /**
