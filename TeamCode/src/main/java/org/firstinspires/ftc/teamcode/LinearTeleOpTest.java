@@ -112,7 +112,7 @@ public class LinearTeleOpTest extends LinearOpMode {
             telemetry.addData("right front motor", powers[1]);
             telemetry.addData("left back motor", powers[2]);
             telemetry.addData("right back motor", powers[3]);
-            
+
             telemetry.addData("left intake wheel motor", intakePower);
             telemetry.addData("right intake wheel motor", intakePower);
             telemetry.addData("left shooting wheel motor", shootingPower);
@@ -156,7 +156,8 @@ public class LinearTeleOpTest extends LinearOpMode {
         // If the largest power is not out of bounds, there is no need to adjust values
 
         // Normalize the four powers and return a new array with them
-        return new double[]{(normalizer * flPower), (normalizer * frPower), (normalizer * blPower), (normalizer * brPower)};
+        //return new double[]{(normalizer * flPower), (normalizer * frPower), (normalizer * blPower), (normalizer * brPower)};
+        return new double[]{0.5};
 
 
     }
