@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -11,20 +12,25 @@ public class TEST_Rotate extends LinearOpMode {
 
     DcMotor[/*Front Left, Front Right, Back Left, Back Right*/] motors = new DcMotor[4];
 
-    static final double TILE_LENGTH = 23.5;
-
+    BNO055IMU imu;
+    BNO055IMU.Parameters params;
     static final double TICKS_PER_INCH = 34.2795262044082261656;
     static final double ARC_LENGTH = 9.487480983 * (5.0 / 4) * (11.0/10) * (5/5.25);
-    static final double TICK_LENGTH = 0.029171931783333794357;
     static Telemetry telem;
 
     @Override
     public void runOpMode() throws InterruptedException {
         //init motors
+        imu = (BNO055IMU) hardwareMap.get("imu");
+
         motors[0] = hardwareMap.dcMotor.get("LeftFront");
         motors[1] = hardwareMap.dcMotor.get("RightFront");
         motors[2] = hardwareMap.dcMotor.get("LeftRear");
         motors[3] = hardwareMap.dcMotor.get("RightRear");
+
+        params = new BNO055IMU.Parameters();
+        params.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        imu.initialize(params);
 
         telem = telemetry;
         waitForStart();
