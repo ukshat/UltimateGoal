@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @TeleOp(name="Basic: Linear OpMode", group="Linear Opmode")
-@Disabled
+//@Disabled
 
 public class LinearTeleOpTest extends LinearOpMode {
     //declare opmode members
@@ -69,6 +69,7 @@ public class LinearTeleOpTest extends LinearOpMode {
         //run until the end of match (stop button)
         while(opModeIsActive()){
 
+            wait(20);
             /*
             //set variables for each drive wheel to save power level for telemetry
             double intakePower = 1;
@@ -87,10 +88,14 @@ public class LinearTeleOpTest extends LinearOpMode {
             double[] powers = calculateMotorPower(x, y, rotation);
 
             // Set powers for each motor
+            /*
             fl_motor.setPower(powers[0]);
             fr_motor.setPower(powers[1]);
             bl_motor.setPower(powers[2]);
             br_motor.setPower(powers[3]);
+            */
+
+            fl_motor.setPower(0.5);
 
             //set powers for mechs and assign them to a button
 
