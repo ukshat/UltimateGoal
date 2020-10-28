@@ -106,12 +106,13 @@ public class LinearTeleOpTest extends LinearOpMode {
              */
 
             //showing elapsed game time and wheel power
+            /*
             telemetry.addData("Status", "RunTime: " + runtime.toString());
             telemetry.addData("left front motor", powers[0]);
             telemetry.addData("right front motor", powers[1]);
             telemetry.addData("left back motor", powers[2]);
             telemetry.addData("right back motor", powers[3]);
-            /*
+            
             telemetry.addData("left intake wheel motor", intakePower);
             telemetry.addData("right intake wheel motor", intakePower);
             telemetry.addData("left shooting wheel motor", shootingPower);
