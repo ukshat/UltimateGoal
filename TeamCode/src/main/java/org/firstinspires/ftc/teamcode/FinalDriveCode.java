@@ -31,7 +31,7 @@ public class FinalDriveCode extends LinearOpMode {
         bl_motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         br_motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        // Set the motors on the left in reverse because the motors are flipped
+        // Set the motors on the right in reverse because the motors are flipped
         fr_motor.setDirection(DcMotor.Direction.REVERSE);
         br_motor.setDirection(DcMotor.Direction.REVERSE);
 
@@ -55,10 +55,10 @@ public class FinalDriveCode extends LinearOpMode {
             br_motor.setPower(powers[3]);
 
             // Show current motor powers on the driver station
-            telemetry.addData("left front motor", powers[0]);
-            telemetry.addData("right front motor", powers[1]);
-            telemetry.addData("left back motor", powers[2]);
-            telemetry.addData("right back motor", powers[3]);
+            telemetry.addData("left front motor", powers[0] + "\n");
+            telemetry.addData("right front motor", powers[1] + "\n");
+            telemetry.addData("left back motor", powers[2] + "\n");
+            telemetry.addData("right back motor", powers[3] + "\n");
             telemetry.update();
         }
 

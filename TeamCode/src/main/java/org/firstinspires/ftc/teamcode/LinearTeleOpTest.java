@@ -46,8 +46,8 @@ public class LinearTeleOpTest extends LinearOpMode {
         br_motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         //set some motors to reverse so that the motors direction is the same
-        fl_motor.setDirection(DcMotor.Direction.REVERSE);
-        bl_motor.setDirection(DcMotor.Direction.REVERSE);
+        fr_motor.setDirection(DcMotor.Direction.REVERSE);
+        br_motor.setDirection(DcMotor.Direction.REVERSE);
         rightIntake.setDirection(DcMotor.Direction.REVERSE);
         leftShoot.setDirection(DcMotor.Direction.REVERSE);
 
@@ -68,8 +68,7 @@ public class LinearTeleOpTest extends LinearOpMode {
             double y = gamepad1.left_stick_y;
 
             // Create a variable to hold the amount of rotation
-            double rotation;
-            rotation = gamepad1.right_stick_x;
+            double rotation = gamepad1.right_stick_x;
 
             // Calculate motor powers and assign to an array
             double[] powers = calculateMotorPower(x, y, rotation);
@@ -99,8 +98,7 @@ public class LinearTeleOpTest extends LinearOpMode {
             */
 
             // make sure gamepad control is correct and set powers
-            boolean gamepadControl;
-            gamepadControl = true;
+            boolean gamepadControl = true;
             changeGamepad(gamepadControl, intakePower, shootingPower, wobblePower);
 
 
