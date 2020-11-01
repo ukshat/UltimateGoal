@@ -47,7 +47,7 @@ public class TEST_SimpleRotate extends LinearOpMode {
         double angle = orientation.firstAngle;
         final double startAngle = angle;
 
-        while (angle < Math.toRadians(88) || angle > Math.toRadians(92)){
+        while (angle < 88 || angle > 92){
             orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             angle = orientation.firstAngle;
             for (DcMotor motor: motors){
