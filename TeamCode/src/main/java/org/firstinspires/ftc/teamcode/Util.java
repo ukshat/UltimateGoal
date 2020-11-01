@@ -205,9 +205,9 @@ public class Util {
         for(int i = 0; i < 4; i++){
             motors[i].setDirection(DcMotor.Direction.FORWARD);
             if (config == 0 && i % 2 == 0) motors[i].setDirection(DcMotor.Direction.REVERSE);
-            else if (config == 1 && i <=1) motors[i].setDirection(DcMotor.Direction.REVERSE);
+            else if (config == 1 && i >= 1) motors[i].setDirection(DcMotor.Direction.REVERSE);
             else if (config == 2 && i % 2 == 1) motors[i].setDirection(DcMotor.Direction.REVERSE);
-            else if (config == 3 && i >= 2) motors[i].setDirection(DcMotor.Direction.REVERSE);
+            else if (config == 3 && i <= 3) motors[i].setDirection(DcMotor.Direction.REVERSE);
             else if (config == 4) motors[i].setDirection(DcMotor.Direction.REVERSE);
         }
     }

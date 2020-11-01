@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import android.graphics.drawable.GradientDrawable;
-
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -41,13 +39,14 @@ public class TEST_Rotate extends LinearOpMode {
         telem = telemetry;
         waitForStart();
 
-        rotate(360, 0.5, 0);
+        rotate(360, 0);
 
     }
 
-    void rotate(double degrees, double power, int config){
+    void rotate(double degrees, int config){
         Orientation orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         double angle = orientation.firstAngle;
+        final double startAngle = angle;
         setDirection(config, motors);
 
         while (angle < Math.toRadians(degrees - 2) || angle > Math.toRadians(degrees + 2)){
@@ -57,7 +56,9 @@ public class TEST_Rotate extends LinearOpMode {
                 motor.setPower(0.2);
             }
         }
-
+        for (DcMotor motor: motors){
+            motor.setPower(0);
+        }
 
     }
 
