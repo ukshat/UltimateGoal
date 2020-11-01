@@ -72,22 +72,6 @@ public class IterativeTeleOpTest extends OpMode {
         // Calculate motor powers and assign to an array
         double[] powers = calculateMotorPower(x, y, rotation);
 
-        /*
-        if(gamepad2.y){
-            wobbleGoal.setPosition(1);
-        }
-
-        if(gamepad1.b){
-            leftShoot.setPower(shootingPower);
-            rightShoot.setPower(shootingPower);
-        }
-
-        if(gamepad1.a){
-            leftIntake.setPower(intakePower);
-            rightIntake.setPower(intakePower);
-        }
-         */
-
         boolean gamepadControl;
         gamepadControl = true;
         changeGamepad(gamepadControl, intakePower, shootingPower, wobblePower);
@@ -116,7 +100,8 @@ public class IterativeTeleOpTest extends OpMode {
 
     }
 
-    private double[] calculateMotorPower(double x, double y, double rotation) {
+    public static double[] calculateMotorPower(double x, double y, double rotation) {
+
         // Find the distance that the stick is moved
         double r = Math.hypot(x, y);
 
@@ -124,17 +109,19 @@ public class IterativeTeleOpTest extends OpMode {
         double robotAngle = Math.atan2(y, x) - Math.PI / 4;
 
         // Calculate motor powers based on angle of the robot
-        double flPower = r * Math.cos(robotAngle) + rotation;
-        double frPower = r * Math.sin(robotAngle) - rotation;
-        double blPower = r * Math.sin(robotAngle) + rotation;
-        double brPower = r * Math.cos(robotAngle) - rotation;
+
+        double[] powers = new double[4];
+
+        powers[0] = r * Math.cos(robotAngle) + rotation;
+        powers[1] = r * Math.sin(robotAngle) - rotation;
+        powers[2] = r * Math.sin(robotAngle) + rotation;
+        powers[3] = r * Math.cos(robotAngle) - rotation;
 
         // In the case that any power is out of the bounds of setPower(), we have to scale
         // all powers down so that the largest power is exactly 1, and the rest are
         // proportional to the largest power
 
         // Find the largest power of the four powers
-        double[] powers = {flPower, frPower, blPower, brPower};
         double largestPower = findLargest(powers);
 
         // Create a variable to scale each power down
@@ -146,11 +133,12 @@ public class IterativeTeleOpTest extends OpMode {
             normalizer /= Math.abs(largestPower);
         }
 
+
         // If the largest power is not out of bounds, there is no need to adjust values
 
         // Normalize the four powers and return a new array with them
-        return new double[]{(normalizer * flPower), (normalizer * frPower), (normalizer * blPower), (normalizer * brPower)};
-
+        double[] pows = {(normalizer * powers[0]), (normalizer * powers[1]), (normalizer * powers[2]), (normalizer * powers[3])};
+        return pows;
 
     }
 

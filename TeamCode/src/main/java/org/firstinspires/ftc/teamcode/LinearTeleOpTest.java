@@ -18,13 +18,11 @@ public class LinearTeleOpTest extends LinearOpMode {
     private DcMotor bl_motor;
     private DcMotor br_motor;
 
-    /*
     private Servo wobbleGoal;
     private DcMotor leftIntake;
     private DcMotor rightIntake;
     private DcMotor leftShoot;
     private DcMotor rightShoot;
-    */
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -37,13 +35,11 @@ public class LinearTeleOpTest extends LinearOpMode {
         bl_motor = hardwareMap.dcMotor.get("LeftRear");
         br_motor = hardwareMap.dcMotor.get("RightRear");
 
-        /*
         wobbleGoal = hardwareMap.servo.get("Wobble Goal");
         leftIntake = hardwareMap.dcMotor.get("Left Intake Wheel");
         rightIntake = hardwareMap.dcMotor.get("Right Intake Wheel");
         leftShoot = hardwareMap.dcMotor.get("Left Shooting Wheel");
         rightShoot = hardwareMap.dcMotor.get("Right Shooting Wheel");
-         */
 
         // Run with encoders to ensure that errors don't happen
         fl_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -58,10 +54,10 @@ public class LinearTeleOpTest extends LinearOpMode {
         //set some motors to reverse so that the motors direction is the same
         fr_motor.setDirection(DcMotor.Direction.REVERSE);
         br_motor.setDirection(DcMotor.Direction.REVERSE);
-        /*
+
         rightIntake.setDirection(DcMotor.Direction.REVERSE);
         leftShoot.setDirection(DcMotor.Direction.REVERSE);
-         */
+
         //wait for driver to press play
         waitForStart();
         runtime.reset();
@@ -69,14 +65,11 @@ public class LinearTeleOpTest extends LinearOpMode {
         //run until the end of match (stop button)
         while(opModeIsActive()){
 
-            wait(20);
-            /*
             //set variables for each drive wheel to save power level for telemetry
             double intakePower = 1;
             double shootingPower = gamepad1.right_trigger;
             double wobblePower = 1;
 
-             */
             // Create variables to hold the direction that the left stick was moved
             double x = gamepad1.left_stick_x;
             double y = gamepad1.left_stick_y;
@@ -88,25 +81,19 @@ public class LinearTeleOpTest extends LinearOpMode {
             double[] powers = calculateMotorPower(x, y, rotation);
 
             // Set powers for each motor
-            /*
             fl_motor.setPower(powers[0]);
             fr_motor.setPower(powers[1]);
             bl_motor.setPower(powers[2]);
             br_motor.setPower(powers[3]);
-            */
-
-            fl_motor.setPower(0.5);
 
             //set powers for mechs and assign them to a button
 
             // make sure gamepad control is correct and set powers
-            /*
-            boolean gamepadControl = true;
+            boolean gamepadControl;
+            gamepadControl = true;
             changeGamepad(gamepadControl, intakePower, shootingPower, wobblePower);
-             */
 
             //showing elapsed game time and wheel power
-            /*
             telemetry.addData("Status", "RunTime: " + runtime.toString());
             telemetry.addData("left front motor", powers[0]);
             telemetry.addData("right front motor", powers[1]);
@@ -118,12 +105,12 @@ public class LinearTeleOpTest extends LinearOpMode {
             telemetry.addData("left shooting wheel motor", shootingPower);
             telemetry.addData("right shooting wheel motor", shootingPower);
             telemetry.update();
-             */
 
         }
     }
 
-    private double[] calculateMotorPower(double x, double y, double rotation) {
+    public static double[] calculateMotorPower(double x, double y, double rotation) {
+
         // Find the distance that the stick is moved
         double r = Math.hypot(x, y);
 
@@ -131,17 +118,19 @@ public class LinearTeleOpTest extends LinearOpMode {
         double robotAngle = Math.atan2(y, x) - Math.PI / 4;
 
         // Calculate motor powers based on angle of the robot
-        double flPower = r * Math.cos(robotAngle) + rotation;
-        double frPower = r * Math.sin(robotAngle) - rotation;
-        double blPower = r * Math.sin(robotAngle) + rotation;
-        double brPower = r * Math.cos(robotAngle) - rotation;
+
+        double[] powers = new double[4];
+
+        powers[0] = r * Math.cos(robotAngle) + rotation;
+        powers[1] = r * Math.sin(robotAngle) - rotation;
+        powers[2] = r * Math.sin(robotAngle) + rotation;
+        powers[3] = r * Math.cos(robotAngle) - rotation;
 
         // In the case that any power is out of the bounds of setPower(), we have to scale
         // all powers down so that the largest power is exactly 1, and the rest are
         // proportional to the largest power
 
         // Find the largest power of the four powers
-        double[] powers = {flPower, frPower, blPower, brPower};
         double largestPower = findLargest(powers);
 
         // Create a variable to scale each power down
@@ -153,12 +142,12 @@ public class LinearTeleOpTest extends LinearOpMode {
             normalizer /= Math.abs(largestPower);
         }
 
+
         // If the largest power is not out of bounds, there is no need to adjust values
 
         // Normalize the four powers and return a new array with them
-        //return new double[]{(normalizer * flPower), (normalizer * frPower), (normalizer * blPower), (normalizer * brPower)};
-        return new double[]{0.5};
-
+        double[] pows = {(normalizer * powers[0]), (normalizer * powers[1]), (normalizer * powers[2]), (normalizer * powers[3])};
+        return pows;
 
     }
 
@@ -172,7 +161,6 @@ public class LinearTeleOpTest extends LinearOpMode {
         return largest;
     }
 
-    /*
     private void changeGamepad(boolean gamepad, double intake, double shooting, double wobble){
         if(gamepad2.left_stick_button){
             gamepad = false;
@@ -210,7 +198,6 @@ public class LinearTeleOpTest extends LinearOpMode {
             }
         }
     }
-     */
 
 }
 
