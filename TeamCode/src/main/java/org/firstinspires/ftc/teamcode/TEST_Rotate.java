@@ -1,11 +1,17 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.graphics.drawable.GradientDrawable;
+
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 @Autonomous(name = "rotate 10 times")
 public class TEST_Rotate extends LinearOpMode {
@@ -35,34 +41,26 @@ public class TEST_Rotate extends LinearOpMode {
         telem = telemetry;
         waitForStart();
 
-        rotate(360, 0.5, motors, (byte)0);
+        rotate(360, 0.5, 0);
 
     }
 
-    static void rotate(double degrees, double power, DcMotor[] motors, byte config){
-        //convert degrees to radians
-        double radians = degrees * Math.PI / 180;
+    void rotate(double degrees, double power, int config){
+        Orientation orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        double angle = orientation.firstAngle;
+        setDirection(config, motors);
 
-        //distance that each wheel will travel in rotation type movement
-        double arcLength =  ARC_LENGTH * radians;
-
-        setDirection((byte)(config + 4), motors);
-
-        //set motor distances and powers
-        for(int i = 0; i < 4; i++){
-            motors[i].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            motors[i].setTargetPosition((int)(arcLength * TICKS_PER_INCH));
-            motors[i].setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            motors[i].setPower(power);
+        while (angle < Math.toRadians(degrees - 2) || angle > Math.toRadians(degrees + 2)){
+            orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            angle = orientation.firstAngle;
+            for (DcMotor motor: motors){
+                motor.setPower(0.2);
+            }
         }
 
-        moving(motors, true, telem);
 
-        //stop motors
-        for(int i = 0; i < 4; i++){
-            motors[i].setPower(0);
-        }
     }
+
 
     static void moving(DcMotor[] motors, boolean slowDown, Telemetry telem){
 
@@ -89,7 +87,7 @@ public class TEST_Rotate extends LinearOpMode {
         return;
     }
 
-    static void setDirection(byte config, DcMotor[] motors){
+    static void setDirection(int config, DcMotor[] motors){
 
         for(int i = 0; i < 4; i++){
             motors[i].setDirection(DcMotor.Direction.FORWARD);
