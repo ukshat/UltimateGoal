@@ -71,7 +71,8 @@ public class Util {
         // If the largest power is not out of bounds, there is no need to adjust values
 
         // Normalize the four powers and return a new array with them
-        return new double[]{(normalizer * flPower), (normalizer * frPower), (normalizer * blPower), (normalizer * brPower)};
+        double[] pows = {(normalizer * flPower), (normalizer * frPower), (normalizer * blPower), (normalizer * brPower)};
+        return pows;
 
     }
 
