@@ -52,8 +52,8 @@ public class LinearTeleOpTest extends LinearOpMode {
         br_motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         //set some motors to reverse so that the motors direction is the same
-        fr_motor.setDirection(DcMotor.Direction.REVERSE);
-        br_motor.setDirection(DcMotor.Direction.REVERSE);
+        fl_motor.setDirection(DcMotor.Direction.REVERSE);
+        bl_motor.setDirection(DcMotor.Direction.REVERSE);
 
         rightIntake.setDirection(DcMotor.Direction.REVERSE);
         leftShoot.setDirection(DcMotor.Direction.REVERSE);
