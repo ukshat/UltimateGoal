@@ -38,6 +38,8 @@ public class FinalDriveCode extends LinearOpMode {
         waitForStart();
         while(opModeIsActive()){
 
+            try {Thread.sleep(25);} catch (InterruptedException e) {} //sleep
+
             // Create variables to hold the direction that the left stick was moved
             double x = gamepad1.left_stick_x;
             double y = gamepad1.left_stick_y;
