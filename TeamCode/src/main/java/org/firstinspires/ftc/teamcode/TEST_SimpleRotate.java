@@ -36,6 +36,11 @@ public class TEST_SimpleRotate extends LinearOpMode {
         motors[2].setDirection(DcMotorSimple.Direction.FORWARD);
         motors[3].setDirection(DcMotorSimple.Direction.FORWARD);
 
+        motors[0].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motors[1].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motors[2].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motors[3].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         params = new BNO055IMU.Parameters();
         params.angleUnit = BNO055IMU.AngleUnit.DEGREES;
         imu.initialize(params);
@@ -47,7 +52,7 @@ public class TEST_SimpleRotate extends LinearOpMode {
         double angle = orientation.firstAngle;
         final double startAngle = angle;
 
-        while (angle < 88 || angle > 92){
+        while ((angle < 88 || angle > 92) && opModeIsActive()){
             orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             angle = orientation.firstAngle;
             for (int i = 0; i < motors.length; i++){
