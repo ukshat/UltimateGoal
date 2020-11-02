@@ -12,7 +12,6 @@ public class TEST_RightStrafe extends LinearOpMode {
     DcMotor[/*Front Left, Front Right, Back Left, Back Right*/] motors = new DcMotor[4];
 
     private static final double TICKS_PER_INCH = 34.2795262044082261656;
-    static Telemetry telem;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -22,14 +21,13 @@ public class TEST_RightStrafe extends LinearOpMode {
         motors[2] = hardwareMap.dcMotor.get("LeftRear");
         motors[3] = hardwareMap.dcMotor.get("RightRear");
 
-        telem = telemetry;
-
         waitForStart();
 
-        move((byte)1, 36, 0.5, motors);
+        move((byte)1, 36, 0.5);
     }
 
-    static void move(byte config, double distance, double speed, DcMotor[] motors){
+    void move(byte config, double distance, double speed){
+        distance *= 36/30.5;
         setDirection(config, motors);
         for(int i = 0; i < 4; i++){
             motors[i].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -39,7 +37,7 @@ public class TEST_RightStrafe extends LinearOpMode {
             motors[i].setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }
 
-        moving(motors, false, telem);
+        moving();
 
         //stop motors
         for(int i = 0; i < 4; i++){
@@ -47,32 +45,11 @@ public class TEST_RightStrafe extends LinearOpMode {
         }
     }
 
-    static void moving(DcMotor[] motors, boolean slowDown, Telemetry telem){
-
-        final int totalTick = motors[0].getTargetPosition();
-        final int decrements = 20;
-        final double ratio = 7.0/12;
-        int point = (int)((1 - ratio) * totalTick);
-        final double  decrement = motors[0].getPower() / 21;
-        final int pointDecrement = point/decrements + 1;
-        while (motors[0].isBusy() || motors[1].isBusy() || motors[2].isBusy() || motors[3].isBusy()){
-            int ticksLeft = totalTick - motors[0].getCurrentPosition();
-            if (ticksLeft == point && slowDown && motors[0].getPower() > 0.08){
-                motors[0].setPower(motors[0].getPower() - decrement);
-                motors[1].setPower(motors[0].getPower() - decrement);
-                motors[2].setPower(motors[0].getPower() - decrement);
-                motors[3].setPower(motors[0].getPower() - decrement);
-
-                telem.addData("Current Power: ", motors[0].getPower());
-                telem.update();
-
-                point -= pointDecrement;
-            }
-        }
+    void moving(){
+        while (motors[0].isBusy() || motors[1].isBusy() || motors[2].isBusy() || motors[3].isBusy()){}
         return;
     }
-
-    static void setDirection(byte config, DcMotor[] motors){
+    void setDirection(byte config, DcMotor[] motors){
 
         for(int i = 0; i < 4; i++){
             motors[i].setDirection(DcMotor.Direction.FORWARD);
