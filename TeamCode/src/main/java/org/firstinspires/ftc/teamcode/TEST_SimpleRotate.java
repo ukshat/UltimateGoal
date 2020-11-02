@@ -12,16 +12,12 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
-@Autonomous (name = "simple rotate 90 degrees") 
+@Autonomous (name = "simple rotate 90 degrees")
 public class TEST_SimpleRotate extends LinearOpMode {
 
     DcMotor[/*Front Left, Front Right, Back Left, Back Right*/] motors = new DcMotor[4];
-
     BNO055IMU imu;
     BNO055IMU.Parameters params;
-    static final double TICKS_PER_INCH = 34.2795262044082261656;
-    static final double ARC_LENGTH = 9.487480983 * (5.0 / 4) * (11.0/10) * (5/5.25);
-    static Telemetry telem;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -47,24 +43,24 @@ public class TEST_SimpleRotate extends LinearOpMode {
         params.angleUnit = BNO055IMU.AngleUnit.DEGREES;
         imu.initialize(params);
 
-        telem = telemetry;
         waitForStart();
 
         Orientation orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         double angle = orientation.firstAngle;
         final double startAngle = angle;
+        //orientation.toAxesReference(AxesReference.INTRINSIC);
 
-        while ((angle < 88 || angle > 92) && opModeIsActive()){
+        while (angle < 180 * 0.9236 && opModeIsActive()){
             orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             angle = orientation.firstAngle;
             for (int i = 0; i < motors.length; i++){
                 motors[i].setPower(0.2);
             }
             sleep(20);
-
         }
         telemetry.addData("Start: ", startAngle + "\n");
         telemetry.addData("Finish: ", angle);
+        telemetry.update();
         for (DcMotor motor: motors){
             motor.setPower(0);
         }
