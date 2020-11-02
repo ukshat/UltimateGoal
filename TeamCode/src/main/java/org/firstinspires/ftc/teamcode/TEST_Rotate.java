@@ -39,15 +39,15 @@ public class TEST_Rotate extends LinearOpMode {
         telem = telemetry;
         waitForStart();
 
-        rotate(360, 0);
+        rotate(360);
 
     }
 
-    void rotate(double degrees, int config){
+    void rotate(double degrees){
         Orientation orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         double angle = orientation.firstAngle;
         final double startAngle = angle;
-        setDirection(config, motors);
+        setDirection(degrees < 0 ? 4 : 5, motors);
 
         while (angle < Math.toRadians(degrees - 2) || angle > Math.toRadians(degrees + 2)){
             orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
@@ -63,32 +63,7 @@ public class TEST_Rotate extends LinearOpMode {
     }
 
 
-    static void moving(DcMotor[] motors, boolean slowDown, Telemetry telem){
-
-        final int totalTick = motors[0].getTargetPosition();
-        final int decrements = 20;
-        final double ratio = 7.0/12;
-        int point = (int)((1 - ratio) * totalTick);
-        final double  decrement = motors[0].getPower() / 21;
-        final int pointDecrement = point/decrements + 1;
-        while (motors[0].isBusy() || motors[1].isBusy() || motors[2].isBusy() || motors[3].isBusy()){
-            int ticksLeft = totalTick - motors[0].getCurrentPosition();
-            if (ticksLeft == point && slowDown && motors[0].getPower() > 0.08){
-                motors[0].setPower(motors[0].getPower() - decrement);
-                motors[1].setPower(motors[0].getPower() - decrement);
-                motors[2].setPower(motors[0].getPower() - decrement);
-                motors[3].setPower(motors[0].getPower() - decrement);
-
-                telem.addData("Current Power: ", motors[0].getPower());
-                telem.update();
-
-                point -= pointDecrement;
-            }
-        }
-        return;
-    }
-
-    static void setDirection(int config, DcMotor[] motors){
+    void setDirection(int config, DcMotor[] motors){
 
         for(int i = 0; i < 4; i++){
             motors[i].setDirection(DcMotor.Direction.FORWARD);
