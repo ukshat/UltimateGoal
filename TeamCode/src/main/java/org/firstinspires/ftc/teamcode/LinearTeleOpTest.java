@@ -162,27 +162,38 @@ public class LinearTeleOpTest extends LinearOpMode {
     }
 
     private void changeGamepad(boolean gamepad, double intake, double shooting, double wobble){
+        // sets a variable to false if left stick button is pressed on gamepad 2
         if(gamepad2.left_stick_button){
             gamepad = false;
         }
+        // sets a variable to false if left stick button is pressed on gamepad 1
         if(gamepad1.left_stick_button){
             gamepad = true;
         }
+        // if gamepad is equal to true it sets these powers and buttons
         if(gamepad){
+            // if gamepad is equal to true and a it sets the button for the intake to the a on the gamepad
             if(gamepad1.a){
                 leftIntake.setPower(intake);
                 rightIntake.setPower(intake);
             }
 
+            // if gamepad is equal to true and right trigger is more than 0.4 it sets the button
+            // for the shooting to the right trigger on the gamepad
             if(shooting > 0.4){
                 rightShoot.setPower(gamepad1.right_trigger);
                 leftShoot.setPower(gamepad1.right_trigger);
             }
 
+            // if gamepad is equal to true and y it sets the button for the shooting to the y
+            // on the gamepad
             if(gamepad1.y) {
                 wobbleGoal.setPosition(wobble);
             }
-        } else {
+        }
+        // if gamepad is not set to true it is set to false which is why in any other scenario
+        // we set all the buttons and power to gamepad 2 rather than 1
+        else {
             if(gamepad2.a){
                 leftIntake.setPower(intake);
                 rightIntake.setPower(intake);
