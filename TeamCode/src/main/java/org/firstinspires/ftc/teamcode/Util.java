@@ -1,15 +1,20 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 public class Util {
 
     static final double TICKS_PER_INCH = 34.2795262044082261656;
     static final double ARC_LENGTH = 9.487480983 * (5.0 / 4) * (11.0/10) * (5/5.25);
     static final double TICK_LENGTH = 0.029171931783333794357;
-    static final double HORIZONTAL_STRAFE = 36.0 / 31;
+    static final double HORIZONTAL_STRAFE = 36.0 / 30.75;
 
     /**
      * Calculates the number of ticks per inch the robot moves
@@ -100,29 +105,50 @@ public class Util {
      * @params degrees amount in degrees to rotate the robot (must be between -180 and 180)
      * @params power speed at which motors will run -- affects speed of rotation
      * */
-    static void rotate(double degrees, double power, DcMotor[] motors, byte config){
-        //convert degrees to radians
-        double radians = degrees * Math.PI / 180;
+    static void rotate(double degrees, BNO055IMU imu, DcMotor[] motors){
 
-        //distance that each wheel will travel in rotation type movement
-        double arcLength =  ARC_LENGTH * radians;
+        Orientation orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        double angle = orientation.firstAngle;
+        final double startAngle = angle;
+        if (degrees < 0){
+            setDirection((byte)(4), motors );
+            while (angle > degrees*0.925){
+                try {
+                    Thread.sleep(20);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+                angle = orientation.firstAngle;
+                for (DcMotor motor: motors){
+                    motor.setPower(0.2);
+                }
+            }
 
-        setDirection((byte)(config + 4), motors);
-
-        //set motor distances and powers
-        for(int i = 0; i < 4; i++){
-            motors[i].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            motors[i].setTargetPosition((int)(arcLength * TICKS_PER_INCH));
-            motors[i].setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            motors[i].setPower(power);
         }
 
-        moving(motors, true);
+        else{
 
-        //stop motors
-        for(int i = 0; i < 4; i++){
-            motors[i].setPower(0);
+            setDirection((byte)(5), motors );
+            while (angle < degrees*0.925){
+                try {
+                    Thread.sleep(20);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+                angle = orientation.firstAngle;
+                for (DcMotor motor: motors){
+                    motor.setPower(0.2);
+                }
+            }
+
         }
+        for (DcMotor motor: motors){
+            motor.setPower(0);
+        }
+
+
     }
 
     /**
