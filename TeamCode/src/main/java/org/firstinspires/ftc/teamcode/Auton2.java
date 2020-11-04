@@ -59,13 +59,13 @@ public class Auton2 extends LinearOpMode {
         sleep(50);
 
         //launch all rings
-        rotate(0);
+        rotate((3.65222278  - 0.00000000));
         launch();
-        rotate(0);
+        rotate((9.65989307  - 3.65222278));
         launch();
-        rotate(0);
+        rotate((15.46121774 - 9.65989307));
         launch();
-        rotate(0);
+        rotate(-15.46121774);
 
         switch(rings) {
             case 0 :
