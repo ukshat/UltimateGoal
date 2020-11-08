@@ -39,17 +39,17 @@ public class TEST_Universal extends LinearOpMode {
 
         waitForStart();
 
-        move(0,40,0.5,motors);
-        sleep(1000);
+        //move(0,40,0.5,motors);
+        //sleep(1000);
         rotate(-90, motors, imu);
         sleep(1000);
         rotate(-90, motors, imu);
-        sleep(1000);
-        rotate(90, motors, imu);
-        sleep(1000);
-        move(1,40,0.5, motors);
-        sleep(1000);
-        rotate(90, motors, imu);
+        //sleep(1000);
+        //rotate(90, motors, imu);
+        //sleep(1000);
+        //move(1,40,0.5, motors);
+        //sleep(1000);
+        //rotate(90, motors, imu);
     }
 
     static void move(int config, double distance, double speed, DcMotor[] motors){
