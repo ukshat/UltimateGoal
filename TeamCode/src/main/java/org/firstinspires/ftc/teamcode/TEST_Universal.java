@@ -42,14 +42,14 @@ public class TEST_Universal extends LinearOpMode {
 
         move(0,40,0.5,motors);
         sleep(1000);
-        rotate(-90);
-        rotate(-90);
+        rotate(-90, motors);
+        rotate(-90, motors);
         sleep(1000);
-        rotate(90);
+        rotate(90, motors);
         sleep(1000);
-        move(1,40,0.5,motors);
+        move(1,40,0.5, motors);
         sleep(1000);
-        rotate(90);
+        rotate(90, motors);
     }
 
     static void move(int config, double distance, double speed, DcMotor[] motors){
@@ -89,42 +89,34 @@ public class TEST_Universal extends LinearOpMode {
     }
 
 
-    void rotate(double degrees){
+    void rotate(double degrees, DcMotor[] motors){
 
         Orientation orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         double angle = orientation.firstAngle;
         final double startAngle = angle;
         if (degrees < 0){
-            setDirection((4), motors );
-            while (angle > degrees*0.925){
-                try {
-                    Thread.sleep(20);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+            setDirection(4, motors );
+            while (angle > degrees * 0.925 && opModeIsActive()){
                 orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
                 angle = orientation.firstAngle;
-                for (DcMotor motor: motors){
-                    motor.setPower(0.2);
+                for(int i = 0; i < 4; i++) {
+                    telemetry.addData("angle",angle + "\n");
+                    motors[i].setPower(0.2);
                 }
+                sleep(20);
             }
 
         }
 
-        else{
-
-            setDirection((5), motors );
-            while (angle < degrees*0.925){
-                try {
-                    Thread.sleep(20);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+        else {
+            setDirection(5, motors);
+            while (angle < degrees * 0.925){
                 orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
                 angle = orientation.firstAngle;
-                for (DcMotor motor: motors){
-                    motor.setPower(0.2);
+                for (int i = 0; i < 4; i++){
+                    motors[i].setPower(0.2);
                 }
+                sleep(20);
             }
 
         }
