@@ -42,6 +42,7 @@ public class TEST_Universal extends LinearOpMode {
         move(0,40,0.5,motors);
         sleep(1000);
         rotate(-90, motors, imu);
+        sleep(1000);
         rotate(-90, motors, imu);
         sleep(1000);
         rotate(90, motors, imu);
@@ -101,9 +102,7 @@ public class TEST_Universal extends LinearOpMode {
             while (angle > degrees * 0.925 && opModeIsActive()){
                 orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
                 angle = orientation.firstAngle;
-                for(int i = 0; i < 4; i++) {
-                    motors[i].setPower(0.2);
-                }
+                for(int i = 0; i < 4; i++) motors[i].setPower(0.2);
                 sleep(20);
             }
 
