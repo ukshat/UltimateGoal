@@ -58,8 +58,8 @@ public class TEST_SimpleRotate extends LinearOpMode {
             }
             sleep(20);
         }
-        telemetry.addData("Start: ", startAngle + "\n");
-        telemetry.addData("Finish: ", angle);
+        telemetry.addData("Start", startAngle + "\n");
+        telemetry.addData("Finish", angle);
         telemetry.update();
         for (DcMotor motor: motors){
             motor.setPower(0);
