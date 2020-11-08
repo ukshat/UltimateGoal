@@ -24,9 +24,8 @@ public class TEST_Universal extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        //init motors
-        imu = (BNO055IMU) hardwareMap.get("imu");
 
+        imu = (BNO055IMU) hardwareMap.get("imu");
         motors[0] = hardwareMap.dcMotor.get("LeftFront");
         motors[1] = hardwareMap.dcMotor.get("RightFront");
         motors[2] = hardwareMap.dcMotor.get("LeftRear");
@@ -42,14 +41,14 @@ public class TEST_Universal extends LinearOpMode {
 
         move(0,40,0.5,motors);
         sleep(1000);
-        rotate(-90, motors);
-        rotate(-90, motors);
+        rotate(-90, motors, imu);
+        rotate(-90, motors, imu);
         sleep(1000);
-        rotate(90, motors);
+        rotate(90, motors, imu);
         sleep(1000);
         move(1,40,0.5, motors);
         sleep(1000);
-        rotate(90, motors);
+        rotate(90, motors, imu);
     }
 
     static void move(int config, double distance, double speed, DcMotor[] motors){
@@ -89,18 +88,20 @@ public class TEST_Universal extends LinearOpMode {
     }
 
 
-    void rotate(double degrees, DcMotor[] motors){
+    void rotate(double degrees, DcMotor[] motors, BNO055IMU imu){
 
         Orientation orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         double angle = orientation.firstAngle;
         final double startAngle = angle;
+        for(int i = 0; i < 4; i++) {
+            motors[i].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        }
         if (degrees < 0){
             setDirection(4, motors );
             while (angle > degrees * 0.925 && opModeIsActive()){
                 orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
                 angle = orientation.firstAngle;
                 for(int i = 0; i < 4; i++) {
-                    telemetry.addData("angle",angle + "\n");
                     motors[i].setPower(0.2);
                 }
                 sleep(20);
