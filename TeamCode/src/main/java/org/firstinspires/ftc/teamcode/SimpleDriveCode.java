@@ -65,7 +65,7 @@ public class SimpleDriveCode extends LinearOpMode {
      * @param rotation  A value from -1 to 1 that represents the right stick's left/right movement
      * @return          An array of length 4 with motor powers from -1 to 1, ordered fl-fr-bl-br
      */
-    public static double[] calculateMotorPower(double x, double y, double rotation) {
+    public double[] calculateMotorPower(double x, double y, double rotation) {
         // Assign an amount of power to variable of each motor
         double flPower = x + y + rotation;
         double frPower = -x + y - rotation;
@@ -81,7 +81,11 @@ public class SimpleDriveCode extends LinearOpMode {
         double largestPower = findLargest(powers);
 
         // Create a variable to scale each power down
-        double normalizer = 1;
+        double normalizer = 0.5;
+        if(gamepad1.x){
+            normalizer = 0.75;
+
+        }
 
         // If the largest power happens to be out of bounds, assign to scalar a value such
         // that the largest power will be scaled down to exactly one

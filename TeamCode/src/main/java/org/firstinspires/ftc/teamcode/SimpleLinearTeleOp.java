@@ -104,7 +104,7 @@ public class SimpleLinearTeleOp extends LinearOpMode {
         }
     }
 
-    public static double[] calculateMotorPower(double x, double y, double rotation) {
+    public double[] calculateMotorPower(double x, double y, double rotation) {
         // Assign an amount of power to variable of each motor
         double flPower = x + y + rotation;
         double frPower = -x + y - rotation;
@@ -120,7 +120,11 @@ public class SimpleLinearTeleOp extends LinearOpMode {
         double largestPower = findLargest(powers);
 
         // Create a variable to scale each power down
-        double normalizer = 1;
+        double normalizer = 0.5;
+        if(gamepad1.x){
+            normalizer = 0.75;
+
+        }
 
         // If the largest power happens to be out of bounds, assign to scalar a value such
         // that the largest power will be scaled down to exactly one
