@@ -5,7 +5,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
@@ -21,6 +20,9 @@ public class TEST_Universal extends LinearOpMode {
 
     BNO055IMU imu;
     BNO055IMU.Parameters params;
+    double currOrientation;
+
+
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -36,89 +38,22 @@ public class TEST_Universal extends LinearOpMode {
         params = new BNO055IMU.Parameters();
         params.angleUnit = BNO055IMU.AngleUnit.DEGREES;
         imu.initialize(params);
+        Orientation orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        double currOrientation = orientation.firstAngle;
 
         waitForStart();
 
-        //move(0,40,0.5,motors);
-        //sleep(1000);
-        //rotate(-90, motors, imu);
-        //sleep(1000);
-        //rotate(-90, motors, imu);
+        move(0,40,0.5,motors);
+        sleep(1000);
+        rotate(-90, motors, imu);
+        sleep(1000);
+        rotate(-90, motors, imu);
+        sleep(1000);
+        rotate(90, motors, imu);
+        sleep(1000);
+        move(1,40,0.5, motors);
         //sleep(1000);
         //rotate(90, motors, imu);
-        //sleep(1000);
-        //move(1,40,0.5, motors);
-        //sleep(1000);
-        //rotate(90, motors, imu);
-        int degrees = -90;
-
-        Orientation orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        double angle = orientation.firstAngle;
-        double startAngle = angle;
-        for(int i = 0; i < 4; i++) {
-            motors[i].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        }
-        if (degrees < 0){
-            setDirection(4, motors );
-            while (angle > degrees * 0.925 && opModeIsActive()){
-                orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-                angle = orientation.firstAngle;
-                for(int i = 0; i < 4; i++) motors[i].setPower(0.2);
-                sleep(20);
-            }
-
-        }
-
-        else {
-            setDirection(5, motors);
-            while (angle < degrees * 0.925){
-                orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-                angle = orientation.firstAngle;
-                for (int i = 0; i < 4; i++){
-                    motors[i].setPower(0.2);
-                }
-                sleep(20);
-            }
-
-        }
-        for (DcMotor motor: motors){
-            motor.setPower(0);
-        }
-
-
-        degrees = -175;
-        orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        angle = orientation.firstAngle;
-        startAngle = angle;
-        for(int i = 0; i < 4; i++) {
-            motors[i].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        }
-        if (degrees < 0){
-            setDirection(4, motors );
-            while (angle > degrees * 0.925 && opModeIsActive()){
-                orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-                angle = orientation.firstAngle;
-                for(int i = 0; i < 4; i++) motors[i].setPower(0.2);
-                sleep(20);
-            }
-
-        }
-
-        else {
-            setDirection(5, motors);
-            while (angle < degrees * 0.925){
-                orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-                angle = orientation.firstAngle;
-                for (int i = 0; i < 4; i++){
-                    motors[i].setPower(0.2);
-                }
-                sleep(20);
-            }
-
-        }
-        for (DcMotor motor: motors){
-            motor.setPower(0);
-        }
 
 
     }
@@ -164,6 +99,9 @@ public class TEST_Universal extends LinearOpMode {
 
         Orientation orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         double angle = orientation.firstAngle;
+
+        degrees += currOrientation;
+
         final double startAngle = angle;
         for(int i = 0; i < 4; i++) {
             motors[i].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -195,6 +133,7 @@ public class TEST_Universal extends LinearOpMode {
             motor.setPower(0);
         }
 
+        currOrientation = orientation.firstAngle;
 
     }
 
@@ -203,11 +142,12 @@ public class TEST_Universal extends LinearOpMode {
         for(int i = 0; i < 4; i++){
             motors[i].setDirection(DcMotor.Direction.FORWARD);
             if (config == 0 && i % 2 == 0) motors[i].setDirection(DcMotor.Direction.REVERSE);
-            else if (config == 1 && i >= 1) motors[i].setDirection(DcMotor.Direction.REVERSE);
+            else if (config == 1 && i >= 2) motors[i].setDirection(DcMotor.Direction.REVERSE);
             else if (config == 2 && i % 2 == 1) motors[i].setDirection(DcMotor.Direction.REVERSE);
-            else if (config == 3 && i <= 3) motors[i].setDirection(DcMotor.Direction.REVERSE);
+            else if (config == 3 && i <= 1) motors[i].setDirection(DcMotor.Direction.REVERSE);
             else if (config == 4) motors[i].setDirection(DcMotor.Direction.REVERSE);
         }
+
     }
 
 }
