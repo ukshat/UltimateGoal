@@ -45,13 +45,13 @@ public class TEST_Universal extends LinearOpMode {
 
         move(0,40,0.5,motors);
         sleep(1000);
-        rotate(-90, motors, imu);
-        sleep(1000);
-        rotate(-90, motors, imu);
-        sleep(1000);
+        //rotate(-90, motors, imu);
+        //sleep(1000);
+        //rotate(-90, motors, imu);
+        //sleep(1000);
         rotate(90, motors, imu);
         sleep(1000);
-        move(1,40,0.5, motors);
+        move(3,40,0.5, motors);
         //sleep(1000);
         //rotate(90, motors, imu);
 
