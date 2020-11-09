@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
@@ -9,12 +10,15 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
+@Autonomous(name = "Autonomous")
 public class Auton0 extends LinearOpMode {
 
     static final double TILE_LENGTH = 23.5;
 
     static final double TICKS_PER_INCH = 34.2795262044082261656;
     static final double HORIZONTAL_STRAFE = 36.0 / 30.75;
+
+    double currOrientation;
 
     DcMotor[/*Front Left, Front Right, Back Left, Back Right*/] motors = new DcMotor[4];
 
@@ -47,25 +51,25 @@ public class Auton0 extends LinearOpMode {
         //Move to stack
         move(0, TILE_LENGTH * 1.5, 0.5, motors);
 
-        sleep(50);
+        sleep(500);
 
         int rings = readStack();
 
-        sleep(50);
+        sleep(500);
 
         //move to Launch position
         move(0, TILE_LENGTH * 1, 0.5, motors);
 
-        sleep(50);
-
-        //launch all rings
-        rotate(-(21.66115082 - 00.00000000));
-        launch();
-        rotate(-(26.72736173 - 21.66115082));
-        launch();
-        rotate(-(31.38022942 - 26.72736173));
-        launch();
-        rotate(31.38022942);
+        sleep(500);
+//
+//        //launch all rings
+//        rotate(-(21.66115082 - 00.00000000));
+//        launch();
+//        rotate(-(26.72736173 - 21.66115082));
+//        launch();
+//        rotate(-(31.38022942 - 26.72736173));
+//        launch();
+//        rotate(31.38022942);
 
         switch(rings) {
             case 0 :
@@ -103,7 +107,7 @@ public class Auton0 extends LinearOpMode {
     static void launch(){}
 
     static int readStack(){
-        return 0;
+        return 4;
     }
 
     static void move(int config, double distance, double speed, DcMotor[] motors){
@@ -143,42 +147,38 @@ public class Auton0 extends LinearOpMode {
     }
 
 
-    void rotate(double degrees){
+    void rotate(double degrees, DcMotor[] motors, BNO055IMU imu){
 
         Orientation orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         double angle = orientation.firstAngle;
+        double firstDegrees = degrees;
+
+        degrees += currOrientation;
+
         final double startAngle = angle;
-        if (degrees < 0){
-            setDirection((4), motors );
-            while (angle > degrees*0.925){
-                try {
-                    Thread.sleep(20);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+        for(int i = 0; i < 4; i++) {
+            motors[i].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        }
+        if (firstDegrees < 0){
+            setDirection(4, motors );
+            while (angle > degrees * 0.925 && opModeIsActive()){
                 orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
                 angle = orientation.firstAngle;
-                for (DcMotor motor: motors){
-                    motor.setPower(0.2);
-                }
+                for(int i = 0; i < 4; i++) motors[i].setPower(0.2);
+                sleep(20);
             }
 
         }
 
-        else{
-
-            setDirection((5), motors );
-            while (angle < degrees*0.925){
-                try {
-                    Thread.sleep(20);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+        else {
+            setDirection(5, motors);
+            while (angle < degrees * 0.925){
                 orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
                 angle = orientation.firstAngle;
-                for (DcMotor motor: motors){
-                    motor.setPower(0.2);
+                for (int i = 0; i < 4; i++){
+                    motors[i].setPower(0.2);
                 }
+                sleep(20);
             }
 
         }
@@ -186,6 +186,7 @@ public class Auton0 extends LinearOpMode {
             motor.setPower(0);
         }
 
+        currOrientation = degrees;
 
     }
 
@@ -194,10 +195,11 @@ public class Auton0 extends LinearOpMode {
         for(int i = 0; i < 4; i++){
             motors[i].setDirection(DcMotor.Direction.FORWARD);
             if (config == 0 && i % 2 == 0) motors[i].setDirection(DcMotor.Direction.REVERSE);
-            else if (config == 1 && i >= 1) motors[i].setDirection(DcMotor.Direction.REVERSE);
+            else if (config == 1 && i >= 2) motors[i].setDirection(DcMotor.Direction.REVERSE);
             else if (config == 2 && i % 2 == 1) motors[i].setDirection(DcMotor.Direction.REVERSE);
-            else if (config == 3 && i <= 3) motors[i].setDirection(DcMotor.Direction.REVERSE);
+            else if (config == 3 && i <= 1) motors[i].setDirection(DcMotor.Direction.REVERSE);
             else if (config == 4) motors[i].setDirection(DcMotor.Direction.REVERSE);
         }
+
     }
 }
