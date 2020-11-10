@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -26,7 +27,7 @@ public class Auton0 extends LinearOpMode {
     double currOrientation;
 
     DcMotor[/*Front Left, Front Right, Back Left, Back Right*/] motors = new DcMotor[4];
-
+    ColorSensor color;
     // Variables used to initialize gyro
     BNO055IMU imu;
     BNO055IMU.Parameters params;
@@ -41,6 +42,8 @@ public class Auton0 extends LinearOpMode {
         motors[1] = hardwareMap.dcMotor.get("RightFront");
         motors[2] = hardwareMap.dcMotor.get("LeftRear");
         motors[3] = hardwareMap.dcMotor.get("RightRear");
+
+        color = hardwareMap.colorSensor.get("color");
 
         // init zero power behavior
         for (DcMotor motor : motors) motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -61,8 +64,17 @@ public class Auton0 extends LinearOpMode {
 
         sleep(500);
 
-        //move to Launch position
-        move(0, TILE_LENGTH * 1, 0.5);
+        for(int i = 0; i < 4; i++){
+            motors[i].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            motors[i].setPower(0.5);
+        }
+        setDirection(0);
+        while(color.red() < 200){
+            sleep(20);
+        }
+        for(int i = 0; i < 4; i++){
+            motors[i].setPower(0);
+        }
 
         sleep(500);
 
@@ -106,7 +118,7 @@ public class Auton0 extends LinearOpMode {
     }
 
     void move(int config, double distance, double speed){
-        setDirection(config, motors);
+        setDirection(config);
         for(int i = 0; i < 4; i++){
             // reset encoders
             motors[i].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -180,7 +192,7 @@ public class Auton0 extends LinearOpMode {
         // If we are turning clockwise
 
         if (firstDegrees < 0){
-            setDirection(4, motors );
+            setDirection(4);
             // While we are not at the target position
             // Multily by 0.925 to account for jerk
             while (angle > degrees * 0.925 && opModeIsActive()){
@@ -198,7 +210,7 @@ public class Auton0 extends LinearOpMode {
 
         // If we are turning counterclockwise
         else {
-            setDirection(5, motors);
+            setDirection(5);
             while (angle < degrees * 0.925){
                 // Updating the object that keeps track of orientation
                 orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
@@ -229,9 +241,8 @@ public class Auton0 extends LinearOpMode {
      *  4: clockwise
      *  5: counterclockwise
      * @param config
-     * @param motors
      */
-    static void setDirection(int config, DcMotor[] motors){
+    void setDirection(int config){
 
         for(int i = 0; i < 4; i++){
             motors[i].setDirection(DcMotor.Direction.FORWARD);
