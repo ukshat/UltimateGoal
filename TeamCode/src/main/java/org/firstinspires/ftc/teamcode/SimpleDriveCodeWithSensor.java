@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -10,8 +9,6 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 @TeleOp (name = "Simple Drive Code")
 public class SimpleDriveCodeWithSensor extends LinearOpMode {
 
-    //ModernRoboticsI2cColorSensor color_sensor;
-
     // Create the four motors, one for each mecanum wheel
     private DcMotor fl_motor;
     private DcMotor fr_motor;
@@ -20,13 +17,6 @@ public class SimpleDriveCodeWithSensor extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        /*
-        color_sensor = hardwareMap.get(ModernRoboticsI2cColorSensor.class, "color");
-        color_sensor.alpha();
-        if(gamepad1.x){
-            color_sensor.writeCommand(ModernRoboticsI2cColorSensor.Command.CALIBRATE_WHITE);
-        }
-         */
 
         // Find each motor on the hardware map
         fl_motor = hardwareMap.dcMotor.get("LeftFront");
