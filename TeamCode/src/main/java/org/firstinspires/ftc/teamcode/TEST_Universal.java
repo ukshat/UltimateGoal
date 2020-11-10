@@ -99,6 +99,7 @@ public class TEST_Universal extends LinearOpMode {
 
         Orientation orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         double angle = orientation.firstAngle;
+        double firstDegrees = degrees;
 
         degrees += currOrientation;
 
@@ -106,7 +107,7 @@ public class TEST_Universal extends LinearOpMode {
         for(int i = 0; i < 4; i++) {
             motors[i].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
-        if (degrees < 0){
+        if (firstDegrees < 0){
             setDirection(4, motors );
             while (angle > degrees * 0.925 && opModeIsActive()){
                 orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
@@ -133,7 +134,7 @@ public class TEST_Universal extends LinearOpMode {
             motor.setPower(0);
         }
 
-        currOrientation = orientation.firstAngle;
+        currOrientation = degrees;
 
     }
 
