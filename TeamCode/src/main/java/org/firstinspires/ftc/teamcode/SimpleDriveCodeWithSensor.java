@@ -77,8 +77,8 @@ public class SimpleDriveCodeWithSensor extends LinearOpMode {
             while(color1.red() > 200 && color2.red() < 200){
                 fl_motor.setPower(0);
                 fr_motor.setPower(0.1);
-                bl_motor.setPower(0.1);
-                br_motor.setPower(0);
+                bl_motor.setPower(0);
+                br_motor.setPower(0.1);
             }
 
             // if the right color sensor see's white but the left doesn't turn the robot left until
@@ -86,8 +86,8 @@ public class SimpleDriveCodeWithSensor extends LinearOpMode {
             while(color1.red() < 200 && color2.red() > 200){
                 fl_motor.setPower(0.1);
                 fr_motor.setPower(0);
-                bl_motor.setPower(0);
-                br_motor.setPower(0.1);
+                bl_motor.setPower(0.1);
+                br_motor.setPower(0);
             }
 
             // if both of the color sensors see white move the robot back a little bit so that the
@@ -98,6 +98,11 @@ public class SimpleDriveCodeWithSensor extends LinearOpMode {
                 bl_motor.setPower(-0.1);
                 br_motor.setPower(-0.1);
             }
+            
+            fl_motor.setPower(0);
+            fr_motor.setPower(0);
+            bl_motor.setPower(0);
+            br_motor.setPower(0);
 
         }
     }
