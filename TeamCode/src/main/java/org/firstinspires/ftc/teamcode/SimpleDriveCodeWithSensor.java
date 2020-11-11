@@ -64,24 +64,34 @@ public class SimpleDriveCodeWithSensor extends LinearOpMode {
             bl_motor.setPower(powers[2]);
             br_motor.setPower(powers[3]);
 
+            // if none of the color sensors see white keep moving forward
             while(color1.red() < 200 && color2.red() < 200){
                 fl_motor.setPower(0.4);
                 fr_motor.setPower(0.4);
                 bl_motor.setPower(0.4);
                 br_motor.setPower(0.4);
             }
+
+            // if the left color sensor see's white but the right doesn't turn the robot left until
+            // they both see white
             while(color1.red() > 200 && color2.red() < 200){
                 fl_motor.setPower(0);
                 fr_motor.setPower(0.1);
                 bl_motor.setPower(0.1);
                 br_motor.setPower(0);
             }
+
+            // if the right color sensor see's white but the left doesn't turn the robot left until
+            // they both see white
             while(color1.red() < 200 && color2.red() > 200){
                 fl_motor.setPower(0.1);
                 fr_motor.setPower(0);
                 bl_motor.setPower(0);
                 br_motor.setPower(0.1);
             }
+
+            // if both of the color sensors see white move the robot back a little bit so that the
+            // robot is on the launch zone and ready to shoot
             while(color1.red() > 200 && color2.red() > 200){
                 fl_motor.setPower(-0.1);
                 fr_motor.setPower(-0.1);
