@@ -2,12 +2,17 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 // Register this Op Mode on the Android phone
 @TeleOp (name = "Simple Drive Code")
 public class SimpleDriveCodeWithSensor extends LinearOpMode {
+
+    // Create color sensor
+    ColorSensor color1;
+    ColorSensor color2;
 
     // Create the four motors, one for each mecanum wheel
     private DcMotor fl_motor;
@@ -23,6 +28,9 @@ public class SimpleDriveCodeWithSensor extends LinearOpMode {
         fr_motor = hardwareMap.dcMotor.get("RightFront");
         bl_motor = hardwareMap.dcMotor.get("LeftRear");
         br_motor = hardwareMap.dcMotor.get("RightRear");
+
+        color1 = hardwareMap.colorSensor.get("ColorSensor");
+        color2 = hardwareMap.colorSensor.get("ColorSensor");
 
         fl_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         fr_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -55,6 +63,31 @@ public class SimpleDriveCodeWithSensor extends LinearOpMode {
             fr_motor.setPower(powers[1]);
             bl_motor.setPower(powers[2]);
             br_motor.setPower(powers[3]);
+
+            while(color1.red() < 200 && color2.red() < 200){
+                fl_motor.setPower(0.4);
+                fr_motor.setPower(0.4);
+                bl_motor.setPower(0.4);
+                br_motor.setPower(0.4);
+            }
+            while(color1.red() > 200 && color2.red() < 200){
+                fl_motor.setPower(0);
+                fr_motor.setPower(0.1);
+                bl_motor.setPower(0.1);
+                br_motor.setPower(0);
+            }
+            while(color1.red() < 200 && color2.red() > 200){
+                fl_motor.setPower(0.1);
+                fr_motor.setPower(0);
+                bl_motor.setPower(0);
+                br_motor.setPower(0.1);
+            }
+            while(color1.red() > 200 && color2.red() > 200){
+                fl_motor.setPower(-0.1);
+                fr_motor.setPower(-0.1);
+                bl_motor.setPower(-0.1);
+                br_motor.setPower(-0.1);
+            }
 
         }
     }
