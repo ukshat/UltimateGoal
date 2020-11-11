@@ -29,8 +29,8 @@ public class SimpleDriveCodeWithSensor extends LinearOpMode {
         bl_motor = hardwareMap.dcMotor.get("LeftRear");
         br_motor = hardwareMap.dcMotor.get("RightRear");
 
-        color1 = hardwareMap.colorSensor.get("ColorSensor");
-        color2 = hardwareMap.colorSensor.get("ColorSensor");
+        color1 = hardwareMap.colorSensor.get("ColorSensorLeft");
+        color2 = hardwareMap.colorSensor.get("ColorSensorRight");
 
         fl_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         fr_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
