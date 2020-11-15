@@ -69,7 +69,7 @@ public class AutonPID extends LinearOpMode {
         telemetry.addData("Starting PID Coeffs" , "P=" + desiredPid.p +
                 ", I=" + desiredPid.i + ", D=" + desiredPid.d);
 
-        for (int loop = 0  ; loop < 1 ; loop++){
+        for (int loop = 0  ; loop < 2 ; loop++){
             //setting the tolerance to 0, to be as exact as possible
 
 
