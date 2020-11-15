@@ -2,17 +2,9 @@ package org.firstinspires.ftc.teamcode;
 
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.factory.RobotFactory;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.PIDCoefficients;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
-
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-
-import javax.xml.crypto.NoSuchMechanismException;
-
-import sun.rmi.runtime.Log;
 
 /**
  * Class that is provides all basic motion control
@@ -70,7 +62,7 @@ public class AutonPID extends LinearOpMode {
         double minimumError = Double.MAX_VALUE;
         PIDFCoefficients desiredPid = null;
         DcMotorEx motorEx = null;
-        motorEx = (DcMotorEx)frontLeftMotor;
+        motorEx = motors[0];
         motorEx.setTargetPositionTolerance(0);
         desiredPid = motorEx.getPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION);
         telemetry.addLine();
