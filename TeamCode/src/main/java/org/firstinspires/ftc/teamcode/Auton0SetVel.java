@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
@@ -16,6 +17,9 @@ public class Auton0SetVel extends LinearOpMode {
 
     // length of a tile
     static final double TILE_LENGTH = 23.5;
+
+    //pid vals
+    static final double[] pidfVals = {10, 3, 0, 0};
 
     // number of ticks in one inch
     static final double TICKS_PER_INCH = 34.2795262044082261656;
@@ -52,7 +56,16 @@ public class Auton0SetVel extends LinearOpMode {
 
         waitForStart();
 
-        for(int i = 0; i < 4 && opModeIsActive(); i++) println("" + i, motors[i].getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER) + " " + motors[i].getPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION));
+        for (int i = 0; i < 4 && opModeIsActive(); i++){
+            PIDFCoefficients pidfCoef = motors[i].getPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION);
+            pidfCoef.p = pidfVals[0];
+            pidfCoef.i = pidfVals[1];
+            pidfCoef.d = pidfVals[2];
+            pidfCoef.f = pidfVals[3];
+            motors[i].setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoef);
+        }
+        
+        for(int i = 0; i < 4 && opModeIsActive(); i++) println("" + i, motors[i].getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER));
 
         //Move to stack
         move(0, TILE_LENGTH * 1.5, 0.5);
@@ -132,14 +145,14 @@ public class Auton0SetVel extends LinearOpMode {
         final int totalTick = motors[0].getTargetPosition();
 
         // continue the while loop until all motors complete movement
-        while (motors[0].isBusy() || motors[1].isBusy() || motors[2].isBusy() || motors[3].isBusy() && opModeIsActive()){
+        while ((motors[0].isBusy() || motors[1].isBusy() || motors[2].isBusy() || motors[3].isBusy()) && opModeIsActive()){
             // delay
             try {Thread.sleep(75);} catch (InterruptedException e) {} //sleep
             // if we choose to, increment speed gradually to minimize jerking motion
             if(slowDown){
                 int currPos = motors[0].getCurrentPosition();
                 double pow = f(currPos, totalTick);
-                for(DcMotorEx motor : motors) motor.setVelocity(20 * pow * TICKS_PER_INCH);
+                for(DcMotorEx motor : motors) motor.setVelocity(40 * pow * TICKS_PER_INCH);
             }
         }
     }
