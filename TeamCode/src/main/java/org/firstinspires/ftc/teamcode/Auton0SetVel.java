@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
@@ -28,7 +27,6 @@ public class Auton0SetVel extends LinearOpMode {
     double currOrientation;
 
     DcMotorEx[/*Front Left, Front Right, Back Left, Back Right*/] motors = new DcMotorEx[4];
-    ColorSensor color;
     // Variables used to initialize gyro
     BNO055IMU imu;
     BNO055IMU.Parameters params;
@@ -45,7 +43,7 @@ public class Auton0SetVel extends LinearOpMode {
         motors[3] = (DcMotorEx)hardwareMap.dcMotor.get("RightRear");
 
         // init zero power behavior
-        for (int i = 0; i < 4; i++) motors[i].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        for (int i = 0; i < 4 && opModeIsActive(); i++) motors[i].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // init gyro parameters
         params = new BNO055IMU.Parameters();
@@ -54,7 +52,7 @@ public class Auton0SetVel extends LinearOpMode {
 
         waitForStart();
 
-        for(int i = 0; i < 4; i++) println("" + i, motors[i].getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER) + " " + motors[i].getPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION));
+        for(int i = 0; i < 4 && opModeIsActive(); i++) println("" + i, motors[i].getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER) + " " + motors[i].getPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION));
 
         //Move to stack
         move(0, TILE_LENGTH * 1.5, 0.5);
@@ -110,11 +108,11 @@ public class Auton0SetVel extends LinearOpMode {
 
     void move(int config, double distance, double speed){
         setDirection(config);
-        for(int i = 0; i < 4; i++){
+        for(int i = 0; i < 4 && opModeIsActive(); i++){
             // reset encoders
             motors[i].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             // set power to motors
-            motors[i].setPower(speed);
+//            motors[i].setPower(speed);
             // set target position
             // if left/right, multiply by horizontal strafe constant
             motors[i].setTargetPosition((int)(distance * TICKS_PER_INCH * (config % 2 == 1 ? HORIZONTAL_STRAFE : 1)));
@@ -124,24 +122,24 @@ public class Auton0SetVel extends LinearOpMode {
         moving(motors, true);
 
         //stop motors
-        for(int i = 0; i < 4; i++){
+        for(int i = 0; i < 4 && opModeIsActive(); i++){
             motors[i].setPower(0);
         }
     }
 
-    static void moving(DcMotorEx[] motors, boolean slowDown){
+    void moving(DcMotorEx[] motors, boolean slowDown){
         // stores the total distance to move
         final int totalTick = motors[0].getTargetPosition();
 
         // continue the while loop until all motors complete movement
-        while (motors[0].isBusy() || motors[1].isBusy() || motors[2].isBusy() || motors[3].isBusy()){
+        while (motors[0].isBusy() || motors[1].isBusy() || motors[2].isBusy() || motors[3].isBusy() && opModeIsActive()){
             // delay
             try {Thread.sleep(75);} catch (InterruptedException e) {} //sleep
             // if we choose to, increment speed gradually to minimize jerking motion
             if(slowDown){
                 int currPos = motors[0].getCurrentPosition();
                 double pow = f(currPos, totalTick);
-                for(DcMotorEx motor : motors) motor.setVelocity(5 *pow * TICKS_PER_INCH);
+                for(DcMotorEx motor : motors) motor.setVelocity(20 * pow * TICKS_PER_INCH);
             }
         }
     }
@@ -192,7 +190,7 @@ public class Auton0SetVel extends LinearOpMode {
                 // Updates the variable which stores the current direction of the robot
                 angle = orientation.firstAngle;
                 // Sets all motor powers to 0.2
-                for(int i = 0; i < 4; i++) motors[i].setPower();
+                for(int i = 0; i < 4; i++) motors[i].setPower(0.2);
                 // Delay
                 sleep(20);
             }
@@ -235,7 +233,7 @@ public class Auton0SetVel extends LinearOpMode {
      */
     void setDirection(int config){
 
-        for(int i = 0; i < 4; i++){
+        for(int i = 0; i < 4 && opModeIsActive(); i++){
             motors[i].setDirection(DcMotor.Direction.FORWARD);
             if (config == 0 && i % 2 == 0) {
                 motors[i].setDirection(DcMotor.Direction.REVERSE);
