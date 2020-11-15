@@ -43,7 +43,7 @@ public class Auton0SetVel extends LinearOpMode {
         motors[3] = (DcMotorEx)hardwareMap.dcMotor.get("RightRear");
 
         // init zero power behavior
-        for (int i = 0; i < 4; i++) motors[i].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        for (int i = 0; i < 4 && opModeIsActive(); i++) motors[i].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // init gyro parameters
         params = new BNO055IMU.Parameters();
@@ -52,7 +52,7 @@ public class Auton0SetVel extends LinearOpMode {
 
         waitForStart();
 
-        for(int i = 0; i < 4; i++) println("" + i, motors[i].getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER) + " " + motors[i].getPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION));
+        for(int i = 0; i < 4 && opModeIsActive(); i++) println("" + i, motors[i].getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER) + " " + motors[i].getPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION));
 
         //Move to stack
         move(0, TILE_LENGTH * 1.5, 0.5);
@@ -108,7 +108,7 @@ public class Auton0SetVel extends LinearOpMode {
 
     void move(int config, double distance, double speed){
         setDirection(config);
-        for(int i = 0; i < 4; i++){
+        for(int i = 0; i < 4 && opModeIsActive(); i++){
             // reset encoders
             motors[i].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             // set power to motors
@@ -122,24 +122,24 @@ public class Auton0SetVel extends LinearOpMode {
         moving(motors, true);
 
         //stop motors
-        for(int i = 0; i < 4; i++){
+        for(int i = 0; i < 4 && opModeIsActive(); i++){
             motors[i].setPower(0);
         }
     }
 
-    static void moving(DcMotorEx[] motors, boolean slowDown){
+    void moving(DcMotorEx[] motors, boolean slowDown){
         // stores the total distance to move
         final int totalTick = motors[0].getTargetPosition();
 
         // continue the while loop until all motors complete movement
-        while (motors[0].isBusy() || motors[1].isBusy() || motors[2].isBusy() || motors[3].isBusy()){
+        while (motors[0].isBusy() || motors[1].isBusy() || motors[2].isBusy() || motors[3].isBusy() && opModeIsActive()){
             // delay
             try {Thread.sleep(75);} catch (InterruptedException e) {} //sleep
             // if we choose to, increment speed gradually to minimize jerking motion
             if(slowDown){
                 int currPos = motors[0].getCurrentPosition();
                 double pow = f(currPos, totalTick);
-                for(DcMotorEx motor : motors) motor.setVelocity(3 * pow * TICKS_PER_INCH);
+                for(DcMotorEx motor : motors) motor.setVelocity(20 * pow * TICKS_PER_INCH);
             }
         }
     }
@@ -233,7 +233,7 @@ public class Auton0SetVel extends LinearOpMode {
      */
     void setDirection(int config){
 
-        for(int i = 0; i < 4; i++){
+        for(int i = 0; i < 4 && opModeIsActive(); i++){
             motors[i].setDirection(DcMotor.Direction.FORWARD);
             if (config == 0 && i % 2 == 0) {
                 motors[i].setDirection(DcMotor.Direction.REVERSE);
