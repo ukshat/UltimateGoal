@@ -64,7 +64,7 @@ public class Auton0SetVel extends LinearOpMode {
             pidfCoef.f = pidfVals[3];
             motors[i].setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoef);
         }
-        
+
         for(int i = 0; i < 4 && opModeIsActive(); i++) println("" + i, motors[i].getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER));
 
         //Move to stack
