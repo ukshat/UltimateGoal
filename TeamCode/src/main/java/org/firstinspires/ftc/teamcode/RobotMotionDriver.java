@@ -3,9 +3,13 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 
-public abstract class RobotMovesDriver extends LinearOpMode{
+/**
+ * Class that is provides all basic motion control
+ * methods
+ */
+public abstract class RobotMotionDriver extends LinearOpMode{
     public enum DriveDirection{
         Forward,
         Reverse,
@@ -17,12 +21,12 @@ public abstract class RobotMovesDriver extends LinearOpMode{
     DcMotor backLeftMotor;
     DcMotor backRightMotor;
 
-    private final double TICKS_PER_INCH = 107/Math.PI;
+    protected final double TICKS_PER_INCH = 107/Math.PI;
 
     /**
      * Class constructor
      */
-    public RobotMovesDriver(){
+    public RobotMotionDriver(){
         frontLeftMotor = hardwareMap.dcMotor.get("fl_motor");
         frontRightMotor= hardwareMap.dcMotor.get("fr_motor");
         backLeftMotor = hardwareMap.dcMotor.get("bl_motor");

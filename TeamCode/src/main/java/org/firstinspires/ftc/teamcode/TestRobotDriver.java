@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 @Autonomous(name="Various move tests")
-public class TestRobotDriver extends RobotMovesDriver {
+public class TestRobotDriver extends RobotMotionDriver {
     @Override
     public void runOpMode() throws InterruptedException {
 

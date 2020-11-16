@@ -1,11 +1,10 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
@@ -13,7 +12,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 @Autonomous(name = "Autonomous")
-public class Auton0 extends LinearOpMode {
+public class Auton0DcMotorEx extends LinearOpMode {
 
     // length of a tile
     static final double TILE_LENGTH = 23.5;
@@ -27,8 +26,7 @@ public class Auton0 extends LinearOpMode {
     // stores the current direction of the robot
     double currOrientation;
 
-    DcMotor[/*Front Left, Front Right, Back Left, Back Right*/] motors = new DcMotor[4];
-    ColorSensor color;
+    DcMotorEx[/*Front Left, Front Right, Back Left, Back Right*/] motors = new DcMotorEx[4];
     // Variables used to initialize gyro
     BNO055IMU imu;
     BNO055IMU.Parameters params;
@@ -39,15 +37,13 @@ public class Auton0 extends LinearOpMode {
         imu = (BNO055IMU) hardwareMap.get("imu");
 
         // init motors
-        motors[0] = hardwareMap.dcMotor.get("LeftFront");
-        motors[1] = hardwareMap.dcMotor.get("RightFront");
-        motors[2] = hardwareMap.dcMotor.get("LeftRear");
-        motors[3] = hardwareMap.dcMotor.get("RightRear");
-
-        color = hardwareMap.colorSensor.get("color");
+        motors[0] = (DcMotorEx)hardwareMap.dcMotor.get("LeftFront");
+        motors[1] = (DcMotorEx)hardwareMap.dcMotor.get("RightFront");
+        motors[2] = (DcMotorEx)hardwareMap.dcMotor.get("LeftRear");
+        motors[3] = (DcMotorEx)hardwareMap.dcMotor.get("RightRear");
 
         // init zero power behavior
-        for (DcMotor motor : motors) motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        for (int i = 0; i < 4; i++) motors[i].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // init gyro parameters
         params = new BNO055IMU.Parameters();
@@ -65,17 +61,7 @@ public class Auton0 extends LinearOpMode {
 
         sleep(500);
 
-        for(int i = 0; i < 4; i++){
-            motors[i].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            motors[i].setPower(0.5);
-        }
-        setDirection(0);
-        while(color.red() < 200){
-            sleep(20);
-        }
-        for(int i = 0; i < 4; i++){
-            motors[i].setPower(0);
-        }
+        move(0, TILE_LENGTH * 1, 0.5);
 
         sleep(500);
 
