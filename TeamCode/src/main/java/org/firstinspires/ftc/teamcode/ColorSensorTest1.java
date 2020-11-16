@@ -16,11 +16,15 @@ public class ColorSensorTest1 extends LinearOpMode {
 
     //@Override
     public void runOpMode() throws InterruptedException {
-        while(color1.red() < 200 && color2.red() < 200){
-            fl_motor.setPower(0);
-            fr_motor.setPower(0.3);
-            bl_motor.setPower(0);
-            br_motor.setPower(0.3);
+
+        if(gamepad1.x){
+            while(color1.red() < 200 && color2.red() < 200){
+                fl_motor.setPower(0);
+                fr_motor.setPower(0.3);
+                bl_motor.setPower(0);
+                br_motor.setPower(0.3);
+            }
         }
+
     }
 }
