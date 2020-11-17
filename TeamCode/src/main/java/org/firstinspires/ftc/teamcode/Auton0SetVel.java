@@ -160,7 +160,7 @@ public class Auton0SetVel extends LinearOpMode {
     // function to calculate power for motors given distance and current distance to ensure gradual increase and decrease in motor powers
     // an equation for graph of powers assuming that the highest power is 0.5; graph it in Desmos to see
     static double f(int x, int n){
-        return -Math.pow((2.8 * Math.pow(x - n / 2, 2)) / (n * n), 2) + 0.5;
+        return -Math.pow((2.6 * Math.pow(x - n / 2, 2)) / (n * n), 1.75) + 0.5;
     }
 
     /**
