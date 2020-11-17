@@ -74,26 +74,6 @@ public class SimpleLinearTeleOp extends LinearOpMode {
 
             Gamepad activeGamepad = gamepad1;
 
-            double intake = 1;
-            double shooting = gamepad1.right_trigger;
-            double wobble = 1;
-
-            // Create variables to hold the direction that the left stick was moved
-            double x = gamepad1.left_stick_x;
-            double y = gamepad1.left_stick_y;
-
-            // Create a variable to hold the amount of rotation
-            double rotation = gamepad1.right_stick_x;
-
-            // Calculate motor powers and assign to an array
-            double[] powers = calculateMotorPower(x, y, rotation);
-
-            // Set powers for each motor
-            fl_motor.setPower(powers[0]);
-            fr_motor.setPower(powers[1]);
-            bl_motor.setPower(powers[2]);
-            br_motor.setPower(powers[3]);
-
             // if the left stick on gamepad 2 is pressed we change the active gamepad to gamepad2
             if(gamepad2.left_stick_button){
                 activeGamepad = gamepad2;
@@ -103,6 +83,26 @@ public class SimpleLinearTeleOp extends LinearOpMode {
             if(gamepad1.left_stick_button){
                 activeGamepad = gamepad1;
             }
+
+            double intake = 1;
+            double shooting = activeGamepad.right_trigger;
+            double wobble = 1;
+
+            // Create variables to hold the direction that the left stick was moved
+            double x = activeGamepad.left_stick_x;
+            double y = activeGamepad.left_stick_y;
+
+            // Create a variable to hold the amount of rotation
+            double rotation = activeGamepad.right_stick_x;
+
+            // Calculate motor powers and assign to an array
+            double[] powers = calculateMotorPower(x, y, rotation);
+
+            // Set powers for each motor
+            fl_motor.setPower(powers[0]);
+            fr_motor.setPower(powers[1]);
+            bl_motor.setPower(powers[2]);
+            br_motor.setPower(powers[3]);
 
             // if gamepad is equal to a it sets the button for the intake to a
             if(activeGamepad.a){

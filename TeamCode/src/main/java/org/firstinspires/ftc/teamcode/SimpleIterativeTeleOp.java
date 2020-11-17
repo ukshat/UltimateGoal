@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -73,6 +74,8 @@ public class SimpleIterativeTeleOp extends OpMode {
     //code runs after driver hits play but before driver hits stop
     @Override
     public void loop() {
+
+        Gamepad activeGamepad = gamepad1;
         // Create variables to hold the direction that the left stick was moved
         double x = gamepad1.left_stick_x;
         double y = gamepad1.left_stick_y;
