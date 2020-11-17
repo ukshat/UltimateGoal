@@ -1,18 +1,27 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
+        import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+        import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+        import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+        import com.qualcomm.robotcore.hardware.ColorSensor;
+        import com.qualcomm.robotcore.hardware.DcMotor;
+        import com.qualcomm.robotcore.hardware.Gamepad;
+        import com.qualcomm.robotcore.hardware.Servo;
+        import com.qualcomm.robotcore.util.ElapsedTime;
 
 @TeleOp(name="Basic: Linear OpMode", group="Linear Opmode")
 //@Disabled
 
 public class LinearTeleOpTest extends LinearOpMode {
-    //declare opmode members
+
+    //declare OpMode members
     private ElapsedTime runtime = new ElapsedTime();
+
+    // created our color sensors
+    ColorSensor color1;
+    ColorSensor color2;
+
+    // Create the four motors, one for each mecanum wheel
     private DcMotor fl_motor;
     private DcMotor fr_motor;
     private DcMotor bl_motor;
@@ -25,15 +34,15 @@ public class LinearTeleOpTest extends LinearOpMode {
     private DcMotor rightShoot;
 
     @Override
-    public void runOpMode() throws InterruptedException {
-        telemetry.addData("Status","Initialized");
-        telemetry.update();
-
-        //initialize hardware variables
+    public void runOpMode() {
+        // Find each motor on the hardware map
         fl_motor = hardwareMap.dcMotor.get("LeftFront");
         fr_motor = hardwareMap.dcMotor.get("RightFront");
         bl_motor = hardwareMap.dcMotor.get("LeftRear");
         br_motor = hardwareMap.dcMotor.get("RightRear");
+
+        color1 = hardwareMap.colorSensor.get("ColorSensorLeft");
+        color2 = hardwareMap.colorSensor.get("ColorSensorRight");
 
         wobbleGoal = hardwareMap.servo.get("Wobble Goal");
         leftIntake = hardwareMap.dcMotor.get("Left Intake Wheel");
@@ -41,7 +50,6 @@ public class LinearTeleOpTest extends LinearOpMode {
         leftShoot = hardwareMap.dcMotor.get("Left Shooting Wheel");
         rightShoot = hardwareMap.dcMotor.get("Right Shooting Wheel");
 
-        // Run with encoders to ensure that errors don't happen
         fl_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         fr_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         bl_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -62,20 +70,32 @@ public class LinearTeleOpTest extends LinearOpMode {
         waitForStart();
         runtime.reset();
 
-        //run until the end of match (stop button)
-        while(opModeIsActive()){
+        while (opModeIsActive()) {
 
-            //set variables for each drive wheel to save power level for telemetry
-            double intakePower = 1;
-            double shootingPower = gamepad1.right_trigger;
-            double wobblePower = 1;
+            try {Thread.sleep(25);} catch (InterruptedException e) {} //sleep
+
+            Gamepad activeGamepad = gamepad1;
+
+            // if the left stick on gamepad 2 is pressed we change the active gamepad to gamepad2
+            if(gamepad2.left_stick_button){
+                activeGamepad = gamepad2;
+            }
+
+            // if the left stick on gamepad 1 is pressed we change the active gamepad to gamepad1
+            if(gamepad1.left_stick_button){
+                activeGamepad = gamepad1;
+            }
+
+            double intake = 1;
+            double shooting = activeGamepad.right_trigger;
+            double wobble = 1;
 
             // Create variables to hold the direction that the left stick was moved
-            double x = gamepad1.left_stick_x;
-            double y = gamepad1.left_stick_y;
+            double x = activeGamepad.left_stick_x;
+            double y = activeGamepad.left_stick_y;
 
             // Create a variable to hold the amount of rotation
-            double rotation = gamepad1.right_stick_x;
+            double rotation = activeGamepad.right_stick_x;
 
             // Calculate motor powers and assign to an array
             double[] powers = calculateMotorPower(x, y, rotation);
@@ -86,24 +106,72 @@ public class LinearTeleOpTest extends LinearOpMode {
             bl_motor.setPower(powers[2]);
             br_motor.setPower(powers[3]);
 
-            //set powers for mechs and assign them to a button
+            // if gamepad is equal to a it sets the button for the intake to a
+            if(activeGamepad.a){
+                leftIntake.setPower(intake);
+                rightIntake.setPower(intake);
+            }
 
-            // make sure gamepad control is correct and set powers
-            boolean gamepadControl;
-            gamepadControl = true;
-            changeGamepad(gamepadControl, intakePower, shootingPower, wobblePower);
+            // if right trigger is more than 0.4 it sets the button for the shooting
+            if(shooting > 0.4){
+                rightShoot.setPower(activeGamepad.right_trigger);
+                leftShoot.setPower(activeGamepad.right_trigger);
+            }
+
+            // if gamepad is equal to y it sets the button for the wobble power to y
+            if(activeGamepad.y) {
+                wobbleGoal.setPosition(wobble);
+            }
+
+            if(activeGamepad.x) {
+                // if none of the color sensors see white keep moving forward
+                while(color1.red() < 200 && color2.red() < 200){
+                    fl_motor.setPower(0.4);
+                    fr_motor.setPower(0.4);
+                    bl_motor.setPower(0.4);
+                    br_motor.setPower(0.4);
+                }
+
+                // if the left color sensor see's white but the right doesn't turn the robot left until
+                // they both see white
+                while(color1.red() > 200 && color2.red() < 200){
+                    fl_motor.setPower(0);
+                    fr_motor.setPower(0.1);
+                    bl_motor.setPower(0.1);
+                    br_motor.setPower(0);
+                }
+
+                // if the right color sensor see's white but the left doesn't turn the robot left until
+                // they both see white
+                while(color1.red() < 200 && color2.red() > 200){
+                    fl_motor.setPower(0.1);
+                    fr_motor.setPower(0);
+                    bl_motor.setPower(0);
+                    br_motor.setPower(0.1);
+                }
+
+                // if both of the color sensors see white move the robot back a little bit so that the
+                // robot is on the launch zone and ready to shoot
+                while(color1.red() > 200 && color2.red() > 200){
+                    fl_motor.setPower(-0.1);
+                    fr_motor.setPower(-0.1);
+                    bl_motor.setPower(-0.1);
+                    br_motor.setPower(-0.1);
+                }
+            }
 
             //showing elapsed game time and wheel power
             telemetry.addData("Status", "RunTime: " + runtime.toString());
-            telemetry.addData("left front motor", powers[0]);
-            telemetry.addData("right front motor", powers[1]);
-            telemetry.addData("left back motor", powers[2]);
-            telemetry.addData("right back motor", powers[3]);
+            telemetry.addData("left front motor", powers[0] + "\n");
+            telemetry.addData("right front motor", powers[1] + "\n");
+            telemetry.addData("left back motor", powers[2] + "\n");
+            telemetry.addData("right back motor", powers[3] + "\n");
+            telemetry.update();
 
-            telemetry.addData("left intake wheel motor", intakePower);
-            telemetry.addData("right intake wheel motor", intakePower);
-            telemetry.addData("left shooting wheel motor", shootingPower);
-            telemetry.addData("right shooting wheel motor", shootingPower);
+            telemetry.addData("left intake wheel motor", intake + "\n");
+            telemetry.addData("right intake wheel motor", intake + "\n");
+            telemetry.addData("left shooting wheel motor", shooting + "\n");
+            telemetry.addData("right shooting wheel motor", shooting + "\n");
             telemetry.update();
 
         }
@@ -151,63 +219,20 @@ public class LinearTeleOpTest extends LinearOpMode {
 
     }
 
-    public static double findLargest(double[] powers){
+    /**
+     * Returns the largest value out of a double array
+     *
+     * @param powers an array of motor powers
+     * @return the largest power out of the array
+     */
+    public static double findLargest(double[] powers) {
         double largest = Math.abs(powers[0]);
-        for(double d: powers){
-            if(Math.abs(d) > largest){
+        for (double d : powers) {
+            if (Math.abs(d) > largest) {
                 largest = Math.abs(d);
             }
         }
         return largest;
-    }
-
-    private void changeGamepad(boolean gamepad, double intake, double shooting, double wobble){
-        // sets a variable to false if left stick button is pressed on gamepad 2
-        if(gamepad2.left_stick_button){
-            gamepad = false;
-        }
-        // sets a variable to false if left stick button is pressed on gamepad 1
-        if(gamepad1.left_stick_button){
-            gamepad = true;
-        }
-        // if gamepad is equal to true it sets these powers and buttons
-        if(gamepad){
-            // if gamepad is equal to true and a it sets the button for the intake to the a on the gamepad
-            if(gamepad1.a){
-                leftIntake.setPower(intake);
-                rightIntake.setPower(intake);
-            }
-
-            // if gamepad is equal to true and right trigger is more than 0.4 it sets the button
-            // for the shooting to the right trigger on the gamepad
-            if(shooting > 0.4){
-                rightShoot.setPower(gamepad1.right_trigger);
-                leftShoot.setPower(gamepad1.right_trigger);
-            }
-
-            // if gamepad is equal to true and y it sets the button for the shooting to the y
-            // on the gamepad
-            if(gamepad1.y) {
-                wobbleGoal.setPosition(wobble);
-            }
-        }
-        // if gamepad is not set to true it is set to false which is why in any other scenario
-        // we set all the buttons and power to gamepad 2 rather than 1
-        else {
-            if(gamepad2.a){
-                leftIntake.setPower(intake);
-                rightIntake.setPower(intake);
-            }
-
-            if(shooting > 0.4){
-                rightShoot.setPower(gamepad1.right_trigger);
-                leftShoot.setPower(gamepad1.right_trigger);
-            }
-
-            if(gamepad2.y) {
-                wobbleGoal.setPosition(wobble);
-            }
-        }
     }
 
 }
