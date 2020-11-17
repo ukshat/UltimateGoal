@@ -98,7 +98,7 @@ public class SimpleDriveCodeWithSensor extends LinearOpMode {
                 bl_motor.setPower(-0.1);
                 br_motor.setPower(-0.1);
             }
-            
+
             fl_motor.setPower(0);
             fr_motor.setPower(0);
             bl_motor.setPower(0);
