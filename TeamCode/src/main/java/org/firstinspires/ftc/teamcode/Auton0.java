@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -36,7 +37,7 @@ public class Auton0 extends LinearOpMode {
     BNO055IMU imu;
     BNO055IMU.Parameters params;
 
-    ColorSensor col;
+    RevColorSensorV3 color;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -48,6 +49,8 @@ public class Auton0 extends LinearOpMode {
         motors[1] = (DcMotorEx)hardwareMap.dcMotor.get("RightFront");
         motors[2] = (DcMotorEx)hardwareMap.dcMotor.get("LeftRear");
         motors[3] = (DcMotorEx)hardwareMap.dcMotor.get("RightRear");
+
+        color = (RevColorSensorV3)hardwareMap.dcMotor.get("ColorSensor");
 
         // init zero power behavior
         for (int i = 0; i < 4 && opModeIsActive(); i++) motors[i].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -87,7 +90,7 @@ public class Auton0 extends LinearOpMode {
             motors[i].setVelocity(685);
         }
 
-        while(col.red() < 200) sleep(20);
+        while(color.red() < 200) sleep(20);
 
         for(int i = 0; i < 4 && opModeIsActive(); i++) motors[i].setPower(0);
 
