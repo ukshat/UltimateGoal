@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -28,11 +29,11 @@ public class Auton0 extends LinearOpMode {
     double currOrientation;
 
     DcMotor[/*Front Left, Front Right, Back Left, Back Right*/] motors = new DcMotor[4];
-    ColorSensor color;
     // Variables used to initialize gyro
     BNO055IMU imu;
     BNO055IMU.Parameters params;
 
+    RevColorSensorV3 color;
     @Override
     public void runOpMode() throws InterruptedException {
         // init gyro
@@ -44,7 +45,7 @@ public class Auton0 extends LinearOpMode {
         motors[2] = hardwareMap.dcMotor.get("LeftRear");
         motors[3] = hardwareMap.dcMotor.get("RightRear");
 
-        color = hardwareMap.colorSensor.get("color");
+        color = (RevColorSensorV3) hardwareMap.get("color");
 
         // init zero power behavior
         for (DcMotor motor : motors) motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
