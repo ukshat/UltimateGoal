@@ -37,7 +37,7 @@ public class RingDetermination extends LinearOpMode {
         });
     }
 
-    public static Bitmap Mat2BufferedImage(Mat mat) {
+    public static Bitmap Mat2Bitmap(Mat mat) {
         //Encoding the image
         MatOfByte matOfByte = new MatOfByte();
         Imgcodecs.imencode(".jpg", mat, matOfByte);
@@ -54,9 +54,6 @@ public class RingDetermination extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
-            telemetry.addData("Image capture", image);
-            telemetry.update();
-
             sleep(100);
         }
 
