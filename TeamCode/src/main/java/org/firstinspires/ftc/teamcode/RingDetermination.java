@@ -10,16 +10,10 @@ import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
 import org.opencv.imgcodecs.Imgcodecs;
-import org.opencv.videoio.VideoCapture;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.ByteBuffer;
 
 public class RingDetermination extends LinearOpMode {
 
@@ -33,9 +27,14 @@ public class RingDetermination extends LinearOpMode {
     public void initialize() {
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
-        webcam.openCameraDevice();
-        webcam.setPipeline(new UselessGreenBoxDrawingPipeline());
-        webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
+        webcam.setPipeline(new SamplePipeline());
+        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
+        {
+            @Override
+            public void onOpened() {
+                webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
+            }
+        });
     }
 
     public static Bitmap Mat2BufferedImage(Mat mat) {
@@ -67,12 +66,29 @@ public class RingDetermination extends LinearOpMode {
         return image;
     }
 
-    class UselessGreenBoxDrawingPipeline extends OpenCvPipeline {
+    class SamplePipeline extends OpenCvPipeline
+    {
+        boolean viewportPaused;
+
         @Override
         public Mat processFrame(Mat input) {
-            image = Mat2BufferedImage(input);
-
             return input;
+        }
+
+        @Override
+        public void onViewportTapped()
+        {
+
+            viewportPaused = !viewportPaused;
+
+            if(viewportPaused)
+            {
+                webcam.pauseViewport();
+            }
+            else
+            {
+                webcam.resumeViewport();
+            }
         }
     }
 

@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
@@ -16,9 +17,9 @@ import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.videoio.VideoCapture;
 import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
 
-import java.awt.image.BufferedImage;
-
+import java.awt.image.*;
 
 @Autonomous(name = "Autonomous")
 public class TEST_RING_DETERMINATION extends LinearOpMode {
@@ -46,8 +47,6 @@ public class TEST_RING_DETERMINATION extends LinearOpMode {
     OpenCvCamera webcam;
 
     ColorSensor col;
-
-    BufferedImage abc = new BufferedImage(200, 200, 1);
 
     static {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
@@ -95,12 +94,12 @@ public class TEST_RING_DETERMINATION extends LinearOpMode {
 
     static void launch(){}
 
-    static int readStack(){
+    int readStack(){
         initCam();
         return 4;
     }
 
-    public static void initCam() {
+    public void initCam() {
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId); 
 
