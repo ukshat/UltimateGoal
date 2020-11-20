@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 public class ColorSensorTest1 extends LinearOpMode {
 
     ColorSensor color1;
-    ColorSensor color2;
+    //ColorSensor color2;
 
     DcMotor fl_motor;
     DcMotor fr_motor;
