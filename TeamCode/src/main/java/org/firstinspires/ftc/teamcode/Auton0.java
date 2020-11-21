@@ -62,77 +62,76 @@ public class Auton0 extends LinearOpMode {
 
         waitForStart();
 
-        while(opModeIsActive()){
-            sleep(1000);
-            println("cols", ("" + color.red() + ", " + color.blue() + ", " + color.green() + ", " + color.alpha()));
+//        while(color.alpha() < 600 && color.red() < 600 && color.green() < 600 && color.blue() < 600){
+//            sleep(1000);
+//            println("cols", ("" + color.red() + ", " + color.blue() + ", " + color.green() + ", " + color.alpha()));
+//        }
+
+        for (int i = 0; i < 4 && opModeIsActive(); i++){
+            PIDFCoefficients pidfCoef = motors[i].getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
+            pidfCoef.p = pidfVals[0];
+            pidfCoef.i = pidfVals[1];
+            pidfCoef.d = pidfVals[2];
+            pidfCoef.f = pidfVals[3];
+            motors[i].setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoef);
         }
 
-//        for (int i = 0; i < 4 && opModeIsActive(); i++){
-//            PIDFCoefficients pidfCoef = motors[i].getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
-//            pidfCoef.p = pidfVals[0];
-//            pidfCoef.i = pidfVals[1];
-//            pidfCoef.d = pidfVals[2];
-//            pidfCoef.f = pidfVals[3];
-//            motors[i].setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoef);
-//        }
-//
-//        for(int i = 0; i < 4 && opModeIsActive(); i++) println("" + i, motors[i].getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER));
+        for(int i = 0; i < 4 && opModeIsActive(); i++) println("" + i, motors[i].getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER));
 
-//        //Move to stack
-//        move(0, TILE_LENGTH * 1.5, 0.5);
-//
-//        sleep(500);
-//
-//        int rings = readStack();
-//
-//        sleep(500);
+        //Move to stack
+        move(0, TILE_LENGTH * 1.5, 0.5);
+
+        sleep(500);
+
+        int rings = readStack();
+
+        sleep(500);
 
         //move until color sensor detects white
-//        setDirection(0);
-//
-//        for(int i = 0; i < 4 && opModeIsActive(); i++){
-//            motors[i].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//            motors[i].setVelocity(685);
-//        }
-//
-//        while(color.red() < 230) {
-//            sleep(500);
-//
-//        }
-//
-//        for(int i = 0; i < 4 && opModeIsActive(); i++) motors[i].setPower(0);
-//
-//        sleep(500);
+        setDirection(0);
 
-//        switch(rings) {
-//            case 0 :
-//                move(0, TILE_LENGTH * 0.5, 0.5);
-//                break;
-//
-//            case 1:
-//                move(0, TILE_LENGTH * 1.5, 0.5);
-//                break;
-//
-//            case 4:
-//                move(0, TILE_LENGTH * 2.5, 0.5);
-//                break;
-//        }
-//
-//        dropGoal();
-//
-//        switch(rings) {
-//            case 0 :
-//                move(2, TILE_LENGTH * 0, 0.5);
-//                break;
-//
-//            case 1:
-//                move(2, TILE_LENGTH * 1, 0.5);
-//                break;
-//
-//            case 4:
-//                move(2, TILE_LENGTH * 2, 0.5);
-//                break;
-//        }
+        for(int i = 0; i < 4 && opModeIsActive(); i++){
+            motors[i].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            motors[i].setVelocity(685);
+        }
+
+        while(color.alpha() < 600 && color.red() < 600 && color.green() < 600 && color.blue() < 600 && opModeIsActive()) {
+            sleep(20);
+        }
+
+        for(int i = 0; i < 4 && opModeIsActive(); i++) motors[i].setPower(0);
+
+        sleep(500);
+
+        switch(rings) {
+            case 0 :
+                move(0, TILE_LENGTH * 0.5, 0.5);
+                break;
+
+            case 1:
+                move(0, TILE_LENGTH * 1.5, 0.5);
+                break;
+
+            case 4:
+                move(0, TILE_LENGTH * 2.5, 0.5);
+                break;
+        }
+
+        dropGoal();
+
+        switch(rings) {
+            case 0 :
+                move(2, TILE_LENGTH * 0, 0.5);
+                break;
+
+            case 1:
+                move(2, TILE_LENGTH * 1, 0.5);
+                break;
+
+            case 4:
+                move(2, TILE_LENGTH * 2, 0.5);
+                break;
+        }
     }
 
     static void dropGoal(){}
