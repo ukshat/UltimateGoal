@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 public class ColorSensorTest1 extends LinearOpMode {
 
     ColorSensor color1;
-    ColorSensor color2;
+    //ColorSensor color2;
 
     DcMotor fl_motor;
     DcMotor fr_motor;
@@ -28,11 +28,11 @@ public class ColorSensorTest1 extends LinearOpMode {
 
 
         color1 = hardwareMap.colorSensor.get("ColorSensorLeft");
-        color2 = hardwareMap.colorSensor.get("ColorSensorRight");
+        //color2 = hardwareMap.colorSensor.get("ColorSensorRight");
 
         while(opModeIsActive()){
             if(gamepad1.x){
-                while(color1.red() < 200 && color2.red() < 200){
+                while(color1.red() < 200){
                     fl_motor.setPower(0);
                     fr_motor.setPower(0.3);
                     bl_motor.setPower(0);
