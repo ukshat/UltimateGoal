@@ -45,12 +45,12 @@ public class Auton0 extends LinearOpMode {
         imu = (BNO055IMU) hardwareMap.get("imu");
 
         // init motors
-        motors[0] = (DcMotorEx)hardwareMap.dcMotor.get("LeftFront");
-        motors[1] = (DcMotorEx)hardwareMap.dcMotor.get("RightFront");
-        motors[2] = (DcMotorEx)hardwareMap.dcMotor.get("LeftRear");
-        motors[3] = (DcMotorEx)hardwareMap.dcMotor.get("RightRear");
+        motors[0] = (DcMotorEx) hardwareMap.dcMotor.get("LeftFront");
+        motors[1] = (DcMotorEx) hardwareMap.dcMotor.get("RightFront");
+        motors[2] = (DcMotorEx) hardwareMap.dcMotor.get("LeftRear");
+        motors[3] = (DcMotorEx) hardwareMap.dcMotor.get("RightRear");
 
-        color = (RevColorSensorV3)hardwareMap.dcMotor.get("ColorSensorLeft");
+        color = (RevColorSensorV3) hardwareMap.get("ColorSensorLeft");
 
         // init zero power behavior
         for (int i = 0; i < 4 && opModeIsActive(); i++) motors[i].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
