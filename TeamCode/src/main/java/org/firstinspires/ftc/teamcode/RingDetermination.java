@@ -22,7 +22,7 @@ public class RingDetermination extends LinearOpMode {
     }
 
     OpenCvCamera webcam;
-    private Bitmap image;
+    volatile private Bitmap image;
 
     public void initialize() {
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -54,7 +54,14 @@ public class RingDetermination extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
-            sleep(100);
+            if (image == null)
+                sleep(100);
+            else {
+                webcam.stopStreaming();
+                webcam.closeCameraDevice();
+                // move to the location
+                break;
+            }
         }
 
     }
@@ -69,21 +76,16 @@ public class RingDetermination extends LinearOpMode {
 
         @Override
         public Mat processFrame(Mat input) {
+            Mat2Bitmap(input);
             return input;
         }
 
         @Override
-        public void onViewportTapped()
-        {
-
+        public void onViewportTapped() {
             viewportPaused = !viewportPaused;
-
-            if(viewportPaused)
-            {
+            if(viewportPaused) {
                 webcam.pauseViewport();
-            }
-            else
-            {
+            } else {
                 webcam.resumeViewport();
             }
         }
