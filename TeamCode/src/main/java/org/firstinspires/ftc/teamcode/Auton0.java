@@ -95,7 +95,7 @@ public class Auton0 extends LinearOpMode {
             motors[i].setVelocity(685);
         }
 
-        while(color.alpha() < 600 && color.red() < 600 && color.green() < 600 && color.blue() < 600 && opModeIsActive()) {
+        while(/*color.alpha() < 600 && color.red() < 600 && color.green() < 600 && */ color.blue() < 400 && opModeIsActive()) {
             sleep(20);
         }
 
