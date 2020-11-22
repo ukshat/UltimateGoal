@@ -1,5 +1,18 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.opencv.core.Core;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfByte;
+import org.opencv.imgcodecs.Imgcodecs;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.openftc.easyopencv.OpenCvPipeline;
+
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -14,7 +27,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 @Autonomous(name = "Autonomous")
-public class Auton0 extends LinearOpMode {
+public class TEST_RING_DETERMINATION extends LinearOpMode {
 
     // length of a tile
     static final double TILE_LENGTH = 23.5;
@@ -38,6 +51,19 @@ public class Auton0 extends LinearOpMode {
 
     RevColorSensorV3 color;
 
+
+
+
+
+    //RING STUFF
+    static {
+        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+    }
+
+    OpenCvCamera webcam;
+    private Bitmap image;
+    private boolean capture = false;
+
     @Override
     public void runOpMode() throws InterruptedException {
         // init gyro
@@ -58,6 +84,8 @@ public class Auton0 extends LinearOpMode {
         params = new BNO055IMU.Parameters();
         params.angleUnit = BNO055IMU.AngleUnit.DEGREES;
         imu.initialize(params);
+
+        initCam();
 
         waitForStart();
 
@@ -81,47 +109,102 @@ public class Auton0 extends LinearOpMode {
         move(3, TILE_LENGTH * 0.5, 0.5);
 
         //image recognition
+        capture = true;
+
+        do {
+            if (image == null) sleep(100);
+            else {
+                webcam.stopStreaming();
+                webcam.closeCameraDevice();
+                break;
+            }
+        }while (opModeIsActive() && image != null);
+
         int rings = readStack();
 
         sleep(500);
 
-        //move until color sensor detects blue line -- goes forward
-        setDirection(0);
+        println("RINGS", rings);
 
-        for(int i = 0; i < 4 && opModeIsActive(); i++){
-            motors[i].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            motors[i].setVelocity(685);
+    }
+
+    int readStack(){
+        Bitmap bitmap = image;
+
+        
+
+        return 4;
+    }
+
+    public static Bitmap Mat2Bitmap(Mat mat) {
+        //Encoding the image
+        MatOfByte matOfByte = new MatOfByte();
+        Imgcodecs.imencode(".jpg", mat, matOfByte);
+        //Storing the encoded Mat in a byte array
+        byte[] byteArray = matOfByte.toArray();
+        //Preparing the Bitmap Image
+        return BitmapFactory.decodeByteArray(byteArray,0,byteArray.length);
+    }
+
+    public void initCam() {
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+        webcam.setPipeline(new SamplePipeline());
+        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
+        {
+            @Override
+            public void onOpened() {
+                webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
+            }
+        });
+    }
+
+    class SamplePipeline extends OpenCvPipeline
+    {
+        boolean viewportPaused;
+
+        @Override
+        public Mat processFrame(Mat input) {
+            if(capture){
+                image = Mat2Bitmap(input);
+                capture = false;
+            }
+            return input;
         }
 
-        while(color.blue() < 400 && opModeIsActive()) sleep(20);
+        @Override
+        public void onViewportTapped() {}
 
-        for(int i = 0; i < 4 && opModeIsActive(); i++) motors[i].setPower(0);
-
-        sleep(500);
-
-        //re center robot in line with tape
-        move(1, TILE_LENGTH * 0.5, 0.5);
-
-        sleep(500);
-
-        launch();
-
-        //go to wobble drop zone
-        move(0, TILE_LENGTH * (((rings == 4) ? 2 : rings) + 0.5), 0.5);
-
-        dropGoal();
-
-        //go to launch line
-        move(2, TILE_LENGTH * ((rings == 4) ? 2 : rings), 0.5);
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     static void dropGoal(){}
 
     static void launch(){}
-
-    static int readStack(){
-        return 4;
-    }
 
     void move(int config, double distance, double speed){
         setDirection(config);

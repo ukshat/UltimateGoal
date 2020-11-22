@@ -22,7 +22,8 @@ public class RingDetermination extends LinearOpMode {
     }
 
     OpenCvCamera webcam;
-    volatile private Bitmap image;
+    private Bitmap image;
+    private boolean capture = false;
 
     public void initialize() {
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -44,8 +45,7 @@ public class RingDetermination extends LinearOpMode {
         //Storing the encoded Mat in a byte array
         byte[] byteArray = matOfByte.toArray();
         //Preparing the Bitmap Image
-        final Bitmap image = BitmapFactory.decodeByteArray(byteArray,0,byteArray.length);
-        return image;
+        return BitmapFactory.decodeByteArray(byteArray,0,byteArray.length);
     }
 
     @Override
@@ -53,21 +53,20 @@ public class RingDetermination extends LinearOpMode {
         initialize();
         waitForStart();
 
-        while (opModeIsActive()) {
-            if (image == null)
-                sleep(100);
+        //move to rings
+
+        capture = true;
+
+        do {
+            if (image == null) sleep(100);
             else {
                 webcam.stopStreaming();
                 webcam.closeCameraDevice();
-                // move to the location
                 break;
             }
-        }
+        }while (opModeIsActive() && image != null);
 
-    }
-
-    public Bitmap getImage() {
-        return image;
+        //image recog
     }
 
     class SamplePipeline extends OpenCvPipeline
@@ -76,19 +75,15 @@ public class RingDetermination extends LinearOpMode {
 
         @Override
         public Mat processFrame(Mat input) {
-            Mat2Bitmap(input);
+            if(capture){
+                image = Mat2Bitmap(input);
+                capture = false;
+            }
             return input;
         }
 
         @Override
-        public void onViewportTapped() {
-            viewportPaused = !viewportPaused;
-            if(viewportPaused) {
-                webcam.pauseViewport();
-            } else {
-                webcam.resumeViewport();
-            }
-        }
+        public void onViewportTapped() {}
     }
 
 }
