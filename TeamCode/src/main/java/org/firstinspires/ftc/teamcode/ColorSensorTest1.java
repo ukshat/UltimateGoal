@@ -1,8 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 // Register this Op Mode on the Android phone
@@ -10,8 +10,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 public class ColorSensorTest1 extends LinearOpMode {
 
-    ColorSensor color1;
-    //ColorSensor color2;
+    RevColorSensorV3 colorLeft;
+    RevColorSensorV3 colorRight;
 
     DcMotor fl_motor;
     DcMotor fr_motor;
@@ -27,16 +27,16 @@ public class ColorSensorTest1 extends LinearOpMode {
         br_motor = hardwareMap.dcMotor.get("RightRear");
 
 
-        color1 = hardwareMap.colorSensor.get("ColorSensorLeft");
-        //color2 = hardwareMap.colorSensor.get("ColorSensorRight");
+        colorLeft = (RevColorSensorV3) hardwareMap.get("ColorSensorLeft");
+        colorRight = (RevColorSensorV3) hardwareMap.get("ColorSensorRight");
 
         while(opModeIsActive()){
             if(gamepad1.x){
-                while(color1.red() < 200){
+                while(colorLeft.red() < 200 && colorRight.red() < 200){
                     fl_motor.setPower(0);
-                    fr_motor.setPower(0.3);
+                    fr_motor.setPower(-0.3);
                     bl_motor.setPower(0);
-                    br_motor.setPower(0.3);
+                    br_motor.setPower(-0.3);
                 }
             }
         }
