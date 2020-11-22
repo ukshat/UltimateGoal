@@ -45,12 +45,12 @@ public class Auton0 extends LinearOpMode {
         imu = (BNO055IMU) hardwareMap.get("imu");
 
         // init motors
-        motors[0] = (DcMotorEx)hardwareMap.dcMotor.get("LeftFront");
-        motors[1] = (DcMotorEx)hardwareMap.dcMotor.get("RightFront");
-        motors[2] = (DcMotorEx)hardwareMap.dcMotor.get("LeftRear");
-        motors[3] = (DcMotorEx)hardwareMap.dcMotor.get("RightRear");
+        motors[0] = (DcMotorEx) hardwareMap.dcMotor.get("LeftFront");
+        motors[1] = (DcMotorEx) hardwareMap.dcMotor.get("RightFront");
+        motors[2] = (DcMotorEx) hardwareMap.dcMotor.get("LeftRear");
+        motors[3] = (DcMotorEx) hardwareMap.dcMotor.get("RightRear");
 
-        color = (RevColorSensorV3)hardwareMap.dcMotor.get("ColorSensor");
+        color = (RevColorSensorV3) hardwareMap.get("ColorSensorLeft");
 
         // init zero power behavior
         for (int i = 0; i < 4 && opModeIsActive(); i++) motors[i].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -61,6 +61,11 @@ public class Auton0 extends LinearOpMode {
         imu.initialize(params);
 
         waitForStart();
+
+//        while(color.alpha() < 600 && color.red() < 600 && color.green() < 600 && color.blue() < 600){
+//            sleep(1000);
+//            println("cols", ("" + color.red() + ", " + color.blue() + ", " + color.green() + ", " + color.alpha()));
+//        }
 
         for (int i = 0; i < 4 && opModeIsActive(); i++){
             PIDFCoefficients pidfCoef = motors[i].getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -82,7 +87,7 @@ public class Auton0 extends LinearOpMode {
 
         sleep(500);
 
-        //move until color sensor detects white
+        //move until color sensor detects blue
         setDirection(0);
 
         for(int i = 0; i < 4 && opModeIsActive(); i++){
@@ -90,9 +95,13 @@ public class Auton0 extends LinearOpMode {
             motors[i].setVelocity(685);
         }
 
-        while(color.red() < 200) sleep(20);
+        while(/*color.alpha() < 600 && color.red() < 600 && color.green() < 600 && */ color.blue() < 400 && opModeIsActive()) {
+            sleep(20);
+        }
 
         for(int i = 0; i < 4 && opModeIsActive(); i++) motors[i].setPower(0);
+
+        sleep(500);
 
         switch(rings) {
             case 0 :
