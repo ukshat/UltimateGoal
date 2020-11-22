@@ -87,7 +87,7 @@ public class Auton0 extends LinearOpMode {
 
         sleep(500);
 
-        //move until color sensor detects white
+        //move until color sensor detects blue
         setDirection(0);
 
         for(int i = 0; i < 4 && opModeIsActive(); i++){
