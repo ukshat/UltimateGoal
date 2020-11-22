@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -24,6 +25,8 @@ public class RingDetermination extends LinearOpMode {
     OpenCvCamera webcam;
     private Bitmap image;
     private boolean capture = false;
+
+    private static final int width = 1280, height = 853;
 
     public void initialize() {
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -67,6 +70,17 @@ public class RingDetermination extends LinearOpMode {
         }while (opModeIsActive() && image != null);
 
         //image recog
+        getRings();
+    }
+
+    public int getRings(){
+        Color[][] cols = new Color[width][height];
+
+        for(int x = 0; x < width; x++){
+            for(int y = 0; y < width; y++) cols[x][y] = image.getColor(x, y);
+        }
+
+        return 4;
     }
 
     class SamplePipeline extends OpenCvPipeline

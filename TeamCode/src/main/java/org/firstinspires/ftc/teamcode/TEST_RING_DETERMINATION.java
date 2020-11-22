@@ -131,7 +131,7 @@ public class TEST_RING_DETERMINATION extends LinearOpMode {
     int readStack(){
         Bitmap bitmap = image;
 
-        
+
 
         return 4;
     }
