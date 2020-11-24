@@ -61,7 +61,6 @@ public class SimpleIterativeTeleOp extends OpMode {
         fl_motor.setDirection(DcMotor.Direction.REVERSE);
         bl_motor.setDirection(DcMotor.Direction.REVERSE);
 
-        rightIntake.setDirection(DcMotor.Direction.REVERSE);
         leftShoot.setDirection(DcMotor.Direction.REVERSE);
     }
 

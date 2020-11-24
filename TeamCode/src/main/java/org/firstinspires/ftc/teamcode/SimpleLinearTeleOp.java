@@ -63,7 +63,6 @@ public class SimpleLinearTeleOp extends LinearOpMode {
         fl_motor.setDirection(DcMotor.Direction.REVERSE);
         bl_motor.setDirection(DcMotor.Direction.REVERSE);
 
-        rightIntake.setDirection(DcMotor.Direction.REVERSE);
         leftShoot.setDirection(DcMotor.Direction.REVERSE);
 
         //wait for driver to press play
