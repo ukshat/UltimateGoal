@@ -6,12 +6,12 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 // Register this Op Mode on the Android phone
-@TeleOp(name = "Color Sensor Test1")
+@TeleOp(name = "Move backward until white")
 
 public class ColorSensorTest1 extends LinearOpMode {
 
-    private static RevColorSensorV3 colorLeft;
-    private static RevColorSensorV3 colorRight;
+    RevColorSensorV3 colorLeft;
+    RevColorSensorV3 colorRight;
 
     DcMotor fl_motor;
     DcMotor fr_motor;
@@ -26,34 +26,41 @@ public class ColorSensorTest1 extends LinearOpMode {
         bl_motor = hardwareMap.dcMotor.get("LeftRear");
         br_motor = hardwareMap.dcMotor.get("RightRear");
 
+        fl_motor.setDirection(DcMotor.Direction.REVERSE);
+        bl_motor.setDirection(DcMotor.Direction.REVERSE);
+
+        fl_motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        fr_motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        bl_motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        br_motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         colorLeft = (RevColorSensorV3) hardwareMap.get("ColorSensorLeft");
         colorRight = (RevColorSensorV3) hardwareMap.get("ColorSensorRight");
 
+        waitForStart();
+
+        fl_motor.setPower(0.5);
+        fr_motor.setPower(0.5);
+        bl_motor.setPower(0.5);
+        br_motor.setPower(0.5);
+
         while(opModeIsActive()){
-            if(gamepad1.x){
-                while(isWhiteLeft() && isWhiteRight()){
-                    fl_motor.setPower(0);
-                    fr_motor.setPower(-0.3);
-                    bl_motor.setPower(0);
-                    br_motor.setPower(-0.3);
-                }
+            if(isWhiteLeft() && isWhiteRight()){
+                break;
             }
         }
+
+        fl_motor.setPower(0);
+        fr_motor.setPower(0);
+        bl_motor.setPower(0);
+        br_motor.setPower(0);
+
     }
-    public static boolean isWhiteLeft (){
-        boolean isWhite = false;
-        if (colorLeft.red() < 700 && colorLeft.blue() < 700 && colorLeft.green() < 700 && colorLeft.alpha() < 700) {
-            isWhite = true;
-        }
-        return isWhite;
+    boolean isWhiteLeft (){
+        return colorLeft.red() > 700 && colorLeft.blue() > 700 && colorLeft.green() > 700 && colorLeft.alpha() > 700;
     }
-    public static boolean isWhiteRight (){
-        boolean isWhite = false;
-        if (colorRight.red() < 700 && colorRight.blue() < 700 && colorRight.green() < 700 && colorRight.alpha() < 700) {
-            isWhite = true;
-        }
-        return isWhite;
+    boolean isWhiteRight (){
+        return colorRight.red() > 700 && colorRight.blue() > 700 && colorRight.green() > 700 && colorRight.alpha() > 700;
     }
 }
 
