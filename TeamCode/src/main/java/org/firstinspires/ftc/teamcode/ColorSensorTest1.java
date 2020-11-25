@@ -10,8 +10,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 public class ColorSensorTest1 extends LinearOpMode {
 
-    RevColorSensorV3 colorLeft;
-    RevColorSensorV3 colorRight;
+    private static RevColorSensorV3 colorLeft;
+    private static RevColorSensorV3 colorRight;
 
     DcMotor fl_motor;
     DcMotor fr_motor;
@@ -32,7 +32,7 @@ public class ColorSensorTest1 extends LinearOpMode {
 
         while(opModeIsActive()){
             if(gamepad1.x){
-                while(colorLeft.red() < 200 && colorRight.red() < 200){
+                while(isWhiteLeft() && isWhiteRight()){
                     fl_motor.setPower(0);
                     fr_motor.setPower(-0.3);
                     bl_motor.setPower(0);
@@ -41,4 +41,19 @@ public class ColorSensorTest1 extends LinearOpMode {
             }
         }
     }
+    public static boolean isWhiteLeft (){
+        boolean isWhite = false;
+        if (colorLeft.red() < 700 && colorLeft.blue() < 700 && colorLeft.green() < 700 && colorLeft.alpha() < 700) {
+            isWhite = true;
+        }
+        return isWhite;
+    }
+    public static boolean isWhiteRight (){
+        boolean isWhite = false;
+        if (colorRight.red() < 700 && colorRight.blue() < 700 && colorRight.green() < 700 && colorRight.alpha() < 700) {
+            isWhite = true;
+        }
+        return isWhite;
+    }
 }
+
