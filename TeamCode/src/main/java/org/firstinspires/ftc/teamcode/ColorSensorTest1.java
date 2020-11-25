@@ -51,8 +51,14 @@ public class ColorSensorTest1 extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            telemetry.addData("ColorSensorLeft", colorLeft + "\n");
-            telemetry.addData("ColorSensorRight", colorRight +  "\n");
+            telemetry.addData("ColorSensorLeft", colorLeft.red() + "\n");
+            telemetry.addData("ColorSensorRight", colorRight.red() +  "\n");
+            telemetry.addData("ColorSensorLeft", colorLeft.blue() + "\n");
+            telemetry.addData("ColorSensorRight", colorRight.blue() +  "\n");
+            telemetry.addData("ColorSensorLeft", colorLeft.green() + "\n");
+            telemetry.addData("ColorSensorRight", colorRight.green() +  "\n");
+            telemetry.addData("ColorSensorLeft", colorLeft.alpha() + "\n");
+            telemetry.addData("ColorSensorRight", colorRight.alpha() +  "\n");
             telemetry.update();
             
 
