@@ -4,11 +4,14 @@ import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 // Register this Op Mode on the Android phone
 @TeleOp(name = "Move backward until white")
 
 public class ColorSensorTest1 extends LinearOpMode {
+
+    private ElapsedTime runtime = new ElapsedTime();
 
     RevColorSensorV3 colorLeft;
     RevColorSensorV3 colorRight;
@@ -47,9 +50,10 @@ public class ColorSensorTest1 extends LinearOpMode {
          */
 
         while (opModeIsActive()) {
-            
-            System.out.println(colorLeft);
-            System.out.println(colorRight);
+
+            telemetry.addData("ColorSensorLeft", colorLeft);
+            telemetry.addData("ColorSensorRight", colorRight);
+            telemetry.update();
             
 
             /*
@@ -64,7 +68,10 @@ public class ColorSensorTest1 extends LinearOpMode {
         br_motor.setPower(0);
 
              */
+            sleep(500);
         }
+        sleep(20);
+    }
         /*
     boolean isWhiteLeft (){
         return colorLeft.red() > 700 && colorLeft.blue() > 700 && colorLeft.green() > 700 && colorLeft.alpha() > 700;
@@ -74,6 +81,6 @@ public class ColorSensorTest1 extends LinearOpMode {
     }
          */
 
-    }
 }
+
 
