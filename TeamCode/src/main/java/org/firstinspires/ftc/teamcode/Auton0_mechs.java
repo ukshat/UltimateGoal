@@ -6,7 +6,9 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
@@ -14,7 +16,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 @Autonomous(name = "Autonomous")
-public class Auton0 extends LinearOpMode {
+public class Auton0_mechs extends LinearOpMode {
 
     // length of a tile
     static final double TILE_LENGTH = 23.5;
@@ -32,6 +34,12 @@ public class Auton0 extends LinearOpMode {
     double currOrientation;
 
     DcMotorEx[/*Front Left, Front Right, Back Left, Back Right*/] motors = new DcMotorEx[4];
+
+    DcMotorEx wobbleMotor;
+    DcMotorEx leftShooter;
+    DcMotorEx rightShooter;
+    DcMotorEx conveyor;
+    Servo wobbleClaw;
     // Variables used to initialize gyro
     BNO055IMU imu;
     BNO055IMU.Parameters params;
@@ -48,10 +56,30 @@ public class Auton0 extends LinearOpMode {
         motors[1] = (DcMotorEx) hardwareMap.dcMotor.get("RightFront");
         motors[2] = (DcMotorEx) hardwareMap.dcMotor.get("LeftRear");
         motors[3] = (DcMotorEx) hardwareMap.dcMotor.get("RightRear");
+
+        wobbleMotor = (DcMotorEx) hardwareMap.dcMotor.get("WobbleMotor");
+        wobbleClaw = hardwareMap.servo.get("WobbleClaw");
+        rightShooter = (DcMotorEx)hardwareMap.dcMotor.get("RightShooter");
+        leftShooter = (DcMotorEx)hardwareMap.dcMotor.get("LeftShooter");
+        conveyor = (DcMotorEx)hardwareMap.dcMotor.get("Conveyor");
+
+
         color = (RevColorSensorV3) hardwareMap.get("ColorSensorLeft");
 
         // init zero power behavior
         for (int i = 0; i < 4 && opModeIsActive(); i++) motors[i].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        wobbleMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        wobbleClaw.setDirection(Servo.Direction.REVERSE);
+        wobbleClaw.scaleRange(0,1);
+        wobbleMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightShooter.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightShooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        leftShooter.setDirection(DcMotorSimple.Direction.FORWARD);
+        leftShooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        conveyor.setDirection(DcMotorSimple.Direction.REVERSE);
+        conveyor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
 
         // init gyro parameters
         params = new BNO055IMU.Parameters();
@@ -114,7 +142,19 @@ public class Auton0 extends LinearOpMode {
         move(2, TILE_LENGTH * ((rings == 4) ? 2 : rings), 0.5);
     }
 
-     void dropGoal(){}
+     void dropGoal(){
+
+        wobbleMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        wobbleMotor.setTargetPosition((int)(288.0 * 26/10/180 * (162.47-90.0)));
+        wobbleMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        wobbleMotor.setPower(0.5);
+        while(wobbleMotor.isBusy()){
+            sleep(20);
+        }
+
+        wobbleClaw.setPosition(1);
+
+    }
 
      void launch(){}
 
