@@ -51,7 +51,7 @@ public class IterativeTeleOpTest extends OpMode {
         //reverse some motors
         fl_motor.setDirection(DcMotor.Direction.REVERSE);
         bl_motor.setDirection(DcMotor.Direction.REVERSE);
-        
+
         leftShoot.setDirection(DcMotor.Direction.REVERSE);
     }
 
