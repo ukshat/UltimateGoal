@@ -49,18 +49,30 @@ public class ColorSensorTest1 extends LinearOpMode {
         br_motor.setPower(0.5);
          */
 
-        while (opModeIsActive()) {
-
-            telemetry.addData("ColorSensorLeft", colorLeft + "\n");
-            telemetry.addData("ColorSensorRight", colorRight +  "\n");
-            telemetry.update();
-            
-
+        /*while (opModeIsActive()) {
 
             if(isWhiteLeft() && isWhiteRight()){
                 break;
             }
         }
+
+         */
+        while(opModeIsActive()){
+            telemetry.addData("ColorSensorLeft", colorLeft.red() + "\n");
+            telemetry.addData("ColorSensorRight", colorRight.red() +  "\n");
+            telemetry.addData("ColorSensorLeft", colorLeft.blue() + "\n");
+            telemetry.addData("ColorSensorRight", colorRight.blue() +  "\n");
+            telemetry.addData("ColorSensorLeft", colorLeft.green() + "\n");
+            telemetry.addData("ColorSensorRight", colorRight.green() +  "\n");
+            telemetry.addData("ColorSensorLeft", colorLeft.alpha() + "\n");
+            telemetry.addData("ColorSensorRight", colorRight.alpha() +  "\n");
+            telemetry.update();
+
+            sleep(500);
+
+        }
+
+
         /*
         fl_motor.setPower(0);
         fr_motor.setPower(0);
@@ -68,7 +80,7 @@ public class ColorSensorTest1 extends LinearOpMode {
         br_motor.setPower(0);
 
              */
-            sleep(500);
+            //sleep(500);
         }
 
 
