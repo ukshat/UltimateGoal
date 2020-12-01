@@ -4,11 +4,14 @@ import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 // Register this Op Mode on the Android phone
 @TeleOp(name = "Make parallel to white line")
 
 public class ColorSensorTest2 extends LinearOpMode {
+
+    ElapsedTime runtime = new ElapsedTime();
 
     RevColorSensorV3 colorLeft;
     RevColorSensorV3 colorRight;
@@ -76,6 +79,17 @@ public class ColorSensorTest2 extends LinearOpMode {
                 sleep(500);
                 break;
             }
+
+            telemetry.addData("ColorSensorLeft", colorLeft.red() + "\n");
+            telemetry.addData("ColorSensorRight", colorRight.red() +  "\n");
+            telemetry.addData("ColorSensorLeft", colorLeft.blue() + "\n");
+            telemetry.addData("ColorSensorRight", colorRight.blue() +  "\n");
+            telemetry.addData("ColorSensorLeft", colorLeft.green() + "\n");
+            telemetry.addData("ColorSensorRight", colorRight.green() +  "\n");
+            telemetry.addData("ColorSensorLeft", colorLeft.alpha() + "\n");
+            telemetry.addData("ColorSensorRight", colorRight.alpha() +  "\n");
+            telemetry.update();
+
             sleep(20);
         }
         fl_motor.setPower(0);
