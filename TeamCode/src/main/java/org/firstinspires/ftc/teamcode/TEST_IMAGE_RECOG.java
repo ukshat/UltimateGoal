@@ -100,13 +100,14 @@ public class TEST_IMAGE_RECOG extends LinearOpMode {
 
         for(int i = 0; i < 4 && opModeIsActive(); i++) println("" + i, motors[i].getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER));
 
-        //Move to stack
-        move(0, TILE_LENGTH * 1.5, 0.5);
-
-        sleep(500);
 
         //back away from stack -- shift to right
         move(3, TILE_LENGTH * 0.5, 0.5);
+
+        sleep(100);
+
+        //Move to stack
+        move(0, TILE_LENGTH * 1.5, 0.5);
 
         //image recognition
         capture = true;
