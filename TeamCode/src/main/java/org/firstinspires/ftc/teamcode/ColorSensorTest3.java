@@ -42,19 +42,19 @@ public class ColorSensorTest3 extends LinearOpMode {
 
         waitForStart();
 
-        fl_motor.setPower(0.2);
-        fr_motor.setPower(0.2);
-        bl_motor.setPower(0.2);
-        br_motor.setPower(0.2);
+        fl_motor.setPower(0.5);
+        fr_motor.setPower(0.5);
+        bl_motor.setPower(0.5);
+        br_motor.setPower(0.5);
 
-        while (!(isWhiteLeft() && isWhiteRight())) {
+        while (!isWhiteLeft()) {
             sleep(20);
         }
 
-        fl_motor.setPower(-0.2);
-        fr_motor.setPower(-0.2);
-        bl_motor.setPower(-0.2);
-        br_motor.setPower(-0.2);
+        fl_motor.setPower(-0.5);
+        fr_motor.setPower(-0.5);
+        bl_motor.setPower(-0.5);
+        br_motor.setPower(-0.5);
 
         sleep(500);
 
@@ -62,9 +62,6 @@ public class ColorSensorTest3 extends LinearOpMode {
 
     boolean isWhiteLeft (){
         return colorLeft.red() > 700 && colorLeft.blue() > 700 && colorLeft.green() > 700 && colorLeft.alpha() > 700;
-    }
-    boolean isWhiteRight (){
-        return colorRight.red() > 700 && colorRight.blue() > 700 && colorRight.green() > 700 && colorRight.alpha() > 700;
     }
 
 }
