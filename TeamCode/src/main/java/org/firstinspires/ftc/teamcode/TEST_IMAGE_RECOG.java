@@ -2,16 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.opencv.core.Core;
-import org.opencv.core.Mat;
-import org.opencv.core.MatOfByte;
-import org.opencv.imgcodecs.Imgcodecs;
-import org.openftc.easyopencv.OpenCvCamera;
-import org.openftc.easyopencv.OpenCvCameraFactory;
-import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvPipeline;
+import android.graphics.Color;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
@@ -21,13 +12,22 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.opencv.core.Core;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfByte;
+import org.opencv.imgcodecs.Imgcodecs;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.openftc.easyopencv.OpenCvPipeline;
 
 @Autonomous(name = "Autonomous")
-public class TEST_RING_DETERMINATION extends LinearOpMode {
+public class TEST_IMAGE_RECOG extends LinearOpMode {
 
     // length of a tile
     static final double TILE_LENGTH = 23.5;
@@ -131,10 +131,125 @@ public class TEST_RING_DETERMINATION extends LinearOpMode {
     int readStack(){
         Bitmap bitmap = image;
 
+        //bitmap to color
+        int w = bitmap.getWidth();
+        int h = bitmap.getHeight();
+
+        ColorObj[][] img = new ColorObj[w][h];
+
+        for(int x = 0; x < w; x += 4) for(int y = 0; y < h; y += 4) img[x][y] = new ColorObj(bitmap.getPixel(x, y));
+
+        img = filter1(img);
+
+//        img = filter2(img);
+
 
 
         return 4;
     }
+
+//    public static ColorObj[][] filter2(ColorObj[][] cols){
+//        ColorObj[][] returnArr = new ColorObj[cols.length][cols[0].length];
+//
+//        int range = 20;
+//
+//        for(int x = 0; x < returnArr.length; x++) {
+//            for(int y = 0; y < returnArr[0].length; y++) {
+//                if(y >= range * 1.1 && cols[x][y-range].getRed() == 0 && cols[x][y-range/2].getRed() == 0 ||
+//                   y <= returnArr.length - range * 1.1 && cols[x][y+range].getRed() == 0 && cols[x][y+range/2].getRed() == 0 ||
+//                   x <= returnArr.length - range * 1.1 && cols[y+range][x].getRed() == 0 && cols[y+range/2][x].getRed() == 0 ||
+//                   x >= range * 1.1 && cols[y-range][x].getRed() == 0 && cols[y-range/2][x].getRed() == 0)
+//                    returnArr[x][y] = new Color(0, 0, 255);
+//                else returnArr[x][y] = cols[x][y];
+//            }
+//        }
+//
+//        cols = returnArr;
+//
+//        range = 20;
+//        for(int y = range; y < height * scaler - range-1; y++) {
+//            for(int x = range; x < width * scaler - range-1; x++) {
+//                if(cols[x][y-range].getRed() == 255 && cols[x][y+range].getRed() == 255) returnArr[x][y] = new Color(255, 0, 0);
+//                else if(cols[x][y-range].getRed() != 255 && cols[x][y+range].getRed() != 255) returnArr[x][y] = new Color(0, 0, 255);
+//            }
+//        }
+//
+//        range = 1;
+//        for(int i = 0; i < 100; i++) {
+//            cols = returnArr;
+//            for(int y = range; y < height * scaler - range-1; y++) {
+//                for(int x = range; x < width * scaler - range-1; x++) {
+//                    if(cols[x][y-range].getRed() == 255 && cols[y-range][x+range].getRed() == 255) returnArr[x][y] = new Color(255, 0, 0);
+//                }
+//            }
+//        }
+//
+//        range = 1;
+//        for(int i = 0; i < 100; i++) {
+//            cols = returnArr;
+//            for(int y = range; y < height * scaler - range-1; y++) {
+//                for(int x = range; x < width * scaler - range-1; x++) {
+//                    if(cols[y-range][x].getRed() == 255 && cols[y+range][x+range].getRed() == 255) returnArr[x][y] = new Color(255, 0, 0);
+//                }
+//            }
+//        }
+//
+//        return returnArr;
+//    }
+
+    ColorObj[][] filter1(ColorObj[][] cols){
+        //targetColor for ring
+        final ColorObj targetCol = new ColorObj(206, 126, 1);
+
+        ColorObj[][] returnArr = new ColorObj[cols.length][cols[0].length];
+
+        for(int x = 0; x < returnArr.length; x++) {
+            for(int y = 0; y < returnArr[0].length; y++) {
+                int diff = (Math.abs(cols[x][y].getRed() - targetCol.getRed()) + Math.abs(cols[x][y].getBlue() - targetCol.getBlue()) + Math.abs(cols[x][y].getGreen() - targetCol.getGreen()));
+                if(diff < 220 && cols[x][y].getRed() > cols[x][y].getBlue() && cols[x][y].getRed() > cols[x][y].getGreen()) returnArr[x][y] = new ColorObj(255, 0, 0);
+                else if(cols[x][y].getGreen() > cols[x][y].getBlue()) returnArr[x][y] = new ColorObj(0, 255, 0);
+                else returnArr[x][y] = new ColorObj(0, 0, 255);
+            }
+        }
+
+        return returnArr;
+
+    }
+
+    class ColorObj{
+        int r, g, b;
+
+        ColorObj(int r, int g, int b){
+            this.r = r;
+            this.g = g;
+            this.b = b;
+        }
+
+        ColorObj(int i){
+            r = Color.red(i);
+            g = Color.green(i);
+            b = Color.blue(i);
+        }
+
+        int getRed(){return r;}
+        int getBlue(){return b;}
+        int getGreen(){return g;}
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public static Bitmap Mat2Bitmap(Mat mat) {
         //Encoding the image
