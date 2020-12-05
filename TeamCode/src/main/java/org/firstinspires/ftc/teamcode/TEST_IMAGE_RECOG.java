@@ -51,15 +51,6 @@ public class TEST_IMAGE_RECOG extends LinearOpMode {
 
     RevColorSensorV3 color;
 
-
-
-
-
-    //RING STUFF
-    static {
-        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-    }
-
     OpenCvCamera webcam;
     private Bitmap image;
     private boolean capture = false;

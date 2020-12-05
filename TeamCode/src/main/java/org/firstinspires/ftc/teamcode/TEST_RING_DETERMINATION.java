@@ -80,46 +80,6 @@ public class TEST_RING_DETERMINATION extends LinearOpMode {
 
         waitForStart();
 
-//        for (int i = 0; i < 4 && opModeIsActive(); i++){
-//            PIDFCoefficients pidfCoef = motors[i].getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
-//            pidfCoef.p = pidfVals[0];
-//            pidfCoef.i = pidfVals[1];
-//            pidfCoef.d = pidfVals[2];
-//            pidfCoef.f = pidfVals[3];
-//            motors[i].setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoef);
-//        }
-//
-//        for(int i = 0; i < 4 && opModeIsActive(); i++) println("" + i, motors[i].getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER));
-//
-//
-//        //back away from stack -- shift to right
-//        move(3, TILE_LENGTH * 0.5, 0.5);
-//
-//
-//
-//        sleep(100);
-//
-//        //Move to stack
-//        move(0, TILE_LENGTH * 1.5, 0.5);
-//
-//        //image recognition
-//        capture = true;
-//
-//        do {
-//            if (image == null) sleep(100);
-//            else {
-//                webcam.stopStreaming();
-//                webcam.closeCameraDevice();
-//                break;
-//            }
-//        }while (opModeIsActive());
-//
-//        int rings = readStack();
-//
-//        sleep(500);
-//
-//        println("RINGS", rings);
-
     }
 
     int readStack(){
