@@ -51,15 +51,6 @@ public class TEST_RING_DETERMINATION extends LinearOpMode {
 
     RevColorSensorV3 color;
 
-
-
-
-
-    //RING STUFF
-    static {
-        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-    }
-
     OpenCvCamera webcam;
     private Bitmap image;
     private boolean capture = false;
@@ -89,45 +80,45 @@ public class TEST_RING_DETERMINATION extends LinearOpMode {
 
         waitForStart();
 
-        for (int i = 0; i < 4 && opModeIsActive(); i++){
-            PIDFCoefficients pidfCoef = motors[i].getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
-            pidfCoef.p = pidfVals[0];
-            pidfCoef.i = pidfVals[1];
-            pidfCoef.d = pidfVals[2];
-            pidfCoef.f = pidfVals[3];
-            motors[i].setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoef);
-        }
-
-        for(int i = 0; i < 4 && opModeIsActive(); i++) println("" + i, motors[i].getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER));
-
-
-        //back away from stack -- shift to right
-        move(3, TILE_LENGTH * 0.5, 0.5);
-
-
-
-        sleep(100);
-
-        //Move to stack
-        move(0, TILE_LENGTH * 1.5, 0.5);
-
-        //image recognition
-        capture = true;
-
-        do {
-            if (image == null) sleep(100);
-            else {
-                webcam.stopStreaming();
-                webcam.closeCameraDevice();
-                break;
-            }
-        }while (opModeIsActive());
-
-        int rings = readStack();
-
-        sleep(500);
-
-        println("RINGS", rings);
+//        for (int i = 0; i < 4 && opModeIsActive(); i++){
+//            PIDFCoefficients pidfCoef = motors[i].getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
+//            pidfCoef.p = pidfVals[0];
+//            pidfCoef.i = pidfVals[1];
+//            pidfCoef.d = pidfVals[2];
+//            pidfCoef.f = pidfVals[3];
+//            motors[i].setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoef);
+//        }
+//
+//        for(int i = 0; i < 4 && opModeIsActive(); i++) println("" + i, motors[i].getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER));
+//
+//
+//        //back away from stack -- shift to right
+//        move(3, TILE_LENGTH * 0.5, 0.5);
+//
+//
+//
+//        sleep(100);
+//
+//        //Move to stack
+//        move(0, TILE_LENGTH * 1.5, 0.5);
+//
+//        //image recognition
+//        capture = true;
+//
+//        do {
+//            if (image == null) sleep(100);
+//            else {
+//                webcam.stopStreaming();
+//                webcam.closeCameraDevice();
+//                break;
+//            }
+//        }while (opModeIsActive());
+//
+//        int rings = readStack();
+//
+//        sleep(500);
+//
+//        println("RINGS", rings);
 
     }
 
@@ -150,9 +141,16 @@ public class TEST_RING_DETERMINATION extends LinearOpMode {
     }
 
     public void initCam() {
+        telemetry.addLine("Entered initCam()");
+        telemetry.update();
+        sleep(5000);
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+        telemetry.addLine("Successfully initialized camera");
+        telemetry.update();
         webcam.setPipeline(new SamplePipeline());
+        telemetry.addLine("Successfully set pipeline");
+        telemetry.update();
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
         {
             @Override
@@ -160,6 +158,8 @@ public class TEST_RING_DETERMINATION extends LinearOpMode {
                 webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
             }
         });
+        telemetry.addLine("Successfully opened camera");
+        telemetry.update();
     }
 
     class SamplePipeline extends OpenCvPipeline
