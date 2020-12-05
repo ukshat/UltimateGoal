@@ -72,11 +72,6 @@ public class TEST_RING_SAMPLE_COLLECTION extends LinearOpMode {
         for(int i = 0; i < 4 && opModeIsActive(); i++) println("" + i, motors[i].getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER));
 
 
-        //back away from stack -- shift to right
-        move(3, TILE_LENGTH * 0.5, 0.5);
-
-        sleep(100);
-
         //Move to stack
         move(0, TILE_LENGTH * 1.5 + 6, 0.5);
 
@@ -144,7 +139,7 @@ public class TEST_RING_SAMPLE_COLLECTION extends LinearOpMode {
     // function to calculate power for motors given distance and current distance to ensure gradual increase and decrease in motor powers
     // an equation for graph of powers assuming that the highest power is 0.5; graph it in Desmos to see
     static double f(int x, int n){
-        return -Math.pow((2.6 * Math.pow(x - n / 2, 2)) / (n * n), 1.25 /*changed from 1.75 for accuracy*/) + 0.5;
+        return -Math.pow((2.17 * Math.pow(x - n / 2, 2)) / (n * n), 1.25 /*changed from 1.75 for accuracy*/) + 0.5;
     }
 
     /**
