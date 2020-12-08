@@ -58,7 +58,7 @@ public class ColorSensorTest1 extends LinearOpMode {
             telemetry.addData("ColorSensorRight", colorRight.alpha() + "\n");
             telemetry.update();
 
-            if(isWhiteLeft() && isWhiteRight()) {
+            if(isWhiteLeft() || isWhiteRight()) {
                 fl_motor.setPower(0);
                 fr_motor.setPower(0);
                 bl_motor.setPower(0);
