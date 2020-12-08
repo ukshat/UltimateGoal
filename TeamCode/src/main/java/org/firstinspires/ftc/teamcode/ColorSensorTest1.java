@@ -42,39 +42,32 @@ public class ColorSensorTest1 extends LinearOpMode {
 
         waitForStart();
 
-        fl_motor.setPower(0.5);
-        fr_motor.setPower(0.5);
-        bl_motor.setPower(0.5);
-        br_motor.setPower(0.5);
+        fl_motor.setPower(0.2);
+        fr_motor.setPower(0.2);
+        bl_motor.setPower(0.2);
+        br_motor.setPower(0.2);
 
         while (opModeIsActive()) {
-            if(isWhiteLeft() && isWhiteRight()){
-                break;
-            }
-        }
-
-
-        while(opModeIsActive()){
             telemetry.addData("ColorSensorLeft", colorLeft.red() + "\n");
-            telemetry.addData("ColorSensorRight", colorRight.red() +  "\n");
+            telemetry.addData("ColorSensorRight", colorRight.red() + "\n");
             telemetry.addData("ColorSensorLeft", colorLeft.blue() + "\n");
-            telemetry.addData("ColorSensorRight", colorRight.blue() +  "\n");
+            telemetry.addData("ColorSensorRight", colorRight.blue() + "\n");
             telemetry.addData("ColorSensorLeft", colorLeft.green() + "\n");
-            telemetry.addData("ColorSensorRight", colorRight.green() +  "\n");
+            telemetry.addData("ColorSensorRight", colorRight.green() + "\n");
             telemetry.addData("ColorSensorLeft", colorLeft.alpha() + "\n");
-            telemetry.addData("ColorSensorRight", colorRight.alpha() +  "\n");
+            telemetry.addData("ColorSensorRight", colorRight.alpha() + "\n");
             telemetry.update();
 
-            sleep(500);
-
+            if(isWhiteLeft() || isWhiteRight()) {
+                fl_motor.setPower(0);
+                fr_motor.setPower(0);
+                bl_motor.setPower(0);
+                br_motor.setPower(0);
+                break;
+            }
+            sleep(20);
         }
 
-        fl_motor.setPower(0);
-        fr_motor.setPower(0);
-        bl_motor.setPower(0);
-        br_motor.setPower(0);
-
-        sleep(500);
     }
 
 
