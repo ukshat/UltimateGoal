@@ -7,7 +7,11 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
+import org.opencv.core.Point;
+import org.opencv.core.Rect;
+import org.opencv.core.Scalar;
 import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -19,7 +23,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
@@ -52,8 +55,7 @@ public class TEST_RING_DETERMINATION extends LinearOpMode {
     RevColorSensorV3 color;
 
     OpenCvCamera webcam;
-    private Bitmap image;
-    private boolean capture = false;
+    volatile boolean capturing = false;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -80,37 +82,27 @@ public class TEST_RING_DETERMINATION extends LinearOpMode {
 
         waitForStart();
 
-    }
+        move(0,TILE_LENGTH * 1.5 + 6, 0.5);
 
-    int readStack(){
-        Bitmap bitmap = image;
+        sleep(100);
 
+        capturing = true;
 
+        while(capturing && opModeIsActive()){
+            telemetry.addLine("Scanning");
+            telemetry.update();
+            sleep(20);
+        }
+        webcam.stopStreaming();
+        // webcam.closeCameraDevice();
 
-        return 4;
-    }
-
-    public static Bitmap Mat2Bitmap(Mat mat) {
-        //Encoding the image
-        MatOfByte matOfByte = new MatOfByte();
-        Imgcodecs.imencode(".jpg", mat, matOfByte);
-        //Storing the encoded Mat in a byte array
-        byte[] byteArray = matOfByte.toArray();
-        //Preparing the Bitmap Image
-        return BitmapFactory.decodeByteArray(byteArray,0,byteArray.length);
+        // move to next place
     }
 
     public void initCam() {
-        telemetry.addLine("Entered initCam()");
-        telemetry.update();
-        sleep(5000);
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
-        telemetry.addLine("Successfully initialized camera");
-        telemetry.update();
         webcam.setPipeline(new SamplePipeline());
-        telemetry.addLine("Successfully set pipeline");
-        telemetry.update();
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
         {
             @Override
@@ -118,19 +110,43 @@ public class TEST_RING_DETERMINATION extends LinearOpMode {
                 webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
             }
         });
-        telemetry.addLine("Successfully opened camera");
-        telemetry.update();
     }
 
     class SamplePipeline extends OpenCvPipeline
     {
         boolean viewportPaused;
 
+        Rect rect = new Rect(
+                new Point(0, 0),
+                new Point(0, 0)
+        );
+
         @Override
         public Mat processFrame(Mat input) {
-            if(capture){
-                image = Mat2Bitmap(input);
-                capture = false;
+            if(capturing){
+                capturing = false;
+                // ring detection code
+                Mat mat = new Mat();
+                Imgproc.cvtColor(input, mat, Imgproc.COLOR_RGB2HSV_FULL);
+
+                Scalar lowHSV = new Scalar(0, 0, 0);
+                Scalar highHSV = new Scalar(0, 0, 0);
+
+                Core.inRange(mat, lowHSV, highHSV, mat);
+
+                mat = mat.submat(rect);
+
+                double percentOrange = Core.sumElems(mat).val[0] / rect.area() / 255;
+                mat.release();
+
+                if (percentOrange < 0.05){
+                    telemetry.addLine("ZERO");
+                } else if (percentOrange < 0.25){
+                    telemetry.addLine("ONE");
+                } else {
+                    telemetry.addLine("FOUR");
+                }
+
             }
             return input;
         }
