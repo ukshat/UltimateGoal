@@ -125,9 +125,10 @@ public class TEST_RING_DETERMINATION extends LinearOpMode {
         public Mat processFrame(Mat input) {
             // enters this if statement if we have reached the rings and are attempting to capture an image
             if(capturing){
-                // immediately set capturing as false so that it exits the while loop and begins
+                // immediately set capturing as false so that it exits the while loop and begins driving to the next location while we determine number of rings
                 capturing = false;
                 // ring detection code
+
                 Mat mat = new Mat();
                 Imgproc.cvtColor(input, mat, Imgproc.COLOR_RGB2HSV_FULL);
 
