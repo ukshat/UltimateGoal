@@ -48,28 +48,26 @@ public class ColorSensorTest1 extends LinearOpMode {
         br_motor.setPower(0.2);
 
         while (opModeIsActive()) {
-            if(isWhiteLeft() || isWhiteRight()) {
-                telemetry.addData("ColorSensorLeft", colorLeft.red() + "\n");
-                telemetry.addData("ColorSensorRight", colorRight.red() + "\n");
-                telemetry.addData("ColorSensorLeft", colorLeft.blue() + "\n");
-                telemetry.addData("ColorSensorRight", colorRight.blue() + "\n");
-                telemetry.addData("ColorSensorLeft", colorLeft.green() + "\n");
-                telemetry.addData("ColorSensorRight", colorRight.green() + "\n");
-                telemetry.addData("ColorSensorLeft", colorLeft.alpha() + "\n");
-                telemetry.addData("ColorSensorRight", colorRight.alpha() + "\n");
-                telemetry.update();
+            telemetry.addData("ColorSensorLeft", colorLeft.red() + "\n");
+            telemetry.addData("ColorSensorRight", colorRight.red() + "\n");
+            telemetry.addData("ColorSensorLeft", colorLeft.blue() + "\n");
+            telemetry.addData("ColorSensorRight", colorRight.blue() + "\n");
+            telemetry.addData("ColorSensorLeft", colorLeft.green() + "\n");
+            telemetry.addData("ColorSensorRight", colorRight.green() + "\n");
+            telemetry.addData("ColorSensorLeft", colorLeft.alpha() + "\n");
+            telemetry.addData("ColorSensorRight", colorRight.alpha() + "\n");
+            telemetry.update();
 
+            if(isWhiteLeft() || isWhiteRight()) {
+                fl_motor.setPower(0);
+                fr_motor.setPower(0);
+                bl_motor.setPower(0);
+                br_motor.setPower(0);
                 break;
             }
-
-            fl_motor.setPower(0);
-            fr_motor.setPower(0);
-            bl_motor.setPower(0);
-            br_motor.setPower(0);
-
             sleep(20);
-
         }
+
     }
 
 
