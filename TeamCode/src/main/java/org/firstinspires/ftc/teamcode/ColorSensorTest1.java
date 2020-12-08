@@ -42,10 +42,10 @@ public class ColorSensorTest1 extends LinearOpMode {
 
         waitForStart();
 
-        fl_motor.setPower(0.3);
-        fr_motor.setPower(0.3);
-        bl_motor.setPower(0.3);
-        br_motor.setPower(0.3);
+        fl_motor.setPower(0.2);
+        fr_motor.setPower(0.2);
+        bl_motor.setPower(0.2);
+        br_motor.setPower(0.2);
 
         while (opModeIsActive()) {
             if(isWhiteLeft() || isWhiteRight()) {
@@ -62,16 +62,14 @@ public class ColorSensorTest1 extends LinearOpMode {
                 break;
             }
 
+            fl_motor.setPower(0);
+            fr_motor.setPower(0);
+            bl_motor.setPower(0);
+            br_motor.setPower(0);
+
             sleep(20);
 
         }
-
-        fl_motor.setPower(0);
-        fr_motor.setPower(0);
-        bl_motor.setPower(0);
-        br_motor.setPower(0);
-
-        sleep(20);
     }
 
 
