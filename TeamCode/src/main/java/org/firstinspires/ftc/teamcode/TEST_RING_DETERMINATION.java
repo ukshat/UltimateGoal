@@ -1,16 +1,11 @@
 package org.firstinspires.ftc.teamcode;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
-import org.opencv.core.MatOfByte;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
-import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -56,6 +51,7 @@ public class TEST_RING_DETERMINATION extends LinearOpMode {
 
     OpenCvCamera webcam;
     volatile boolean capturing = false;
+    private RingCounterPipeline pipeline = new RingCounterPipeline();
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -102,7 +98,7 @@ public class TEST_RING_DETERMINATION extends LinearOpMode {
     public void initCam() {
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
-        webcam.setPipeline(new SamplePipeline());
+        webcam.setPipeline(pipeline);
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
         {
             @Override
@@ -112,14 +108,20 @@ public class TEST_RING_DETERMINATION extends LinearOpMode {
         });
     }
 
-    class SamplePipeline extends OpenCvPipeline
+    class RingCounterPipeline extends OpenCvPipeline
     {
         boolean viewportPaused;
+
+        private int ringCount = -1;
 
         Rect rect = new Rect(
                 new Point(1280 * 0.25, 852 * 0.05),
                 new Point(1280 * 0.9, 852 * 0.9)
         );
+
+        public int getRingCount() {
+            return ringCount;
+        }
 
         @Override
         public Mat processFrame(Mat input) {
@@ -137,6 +139,7 @@ public class TEST_RING_DETERMINATION extends LinearOpMode {
 
                 Core.inRange(mat, lowHSV, highHSV, mat);
 
+                // crop the image to remove useless background
                 mat = mat.submat(rect);
 
                 double percentOrange = Core.sumElems(mat).val[0] / rect.area() / 255;
@@ -144,10 +147,13 @@ public class TEST_RING_DETERMINATION extends LinearOpMode {
 
                 if (percentOrange < 0.05){
                     telemetry.addLine("ZERO");
+                    ringCount = 0;
                 } else if (percentOrange < 0.25){
                     telemetry.addLine("ONE");
+                    ringCount = 1;
                 } else {
                     telemetry.addLine("FOUR");
+                    ringCount = 4;
                 }
 
             }
