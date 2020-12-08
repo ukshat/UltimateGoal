@@ -29,13 +29,6 @@ public class ColorSensorTest0 extends LinearOpMode {
 
         waitForStart();
 
-        while (opModeIsActive()) {
-            if(isWhiteLeft() && isWhiteRight()){
-                break;
-            }
-        }
-
-
         while(opModeIsActive()){
 
             telemetry.addData("ColorSensorLeft", colorLeft.red() + "\n");
