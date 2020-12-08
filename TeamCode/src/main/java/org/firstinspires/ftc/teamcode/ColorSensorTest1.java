@@ -42,10 +42,10 @@ public class ColorSensorTest1 extends LinearOpMode {
 
         waitForStart();
 
-        fl_motor.setPower(0.2);
-        fr_motor.setPower(0.2);
-        bl_motor.setPower(0.2);
-        br_motor.setPower(0.2);
+        fl_motor.setPower(0.3);
+        fr_motor.setPower(0.3);
+        bl_motor.setPower(0.3);
+        br_motor.setPower(0.3);
 
         while (opModeIsActive()) {
             telemetry.addData("ColorSensorLeft", colorLeft.red() + "\n");
@@ -58,7 +58,7 @@ public class ColorSensorTest1 extends LinearOpMode {
             telemetry.addData("ColorSensorRight", colorRight.alpha() + "\n");
             telemetry.update();
 
-            if(isWhiteLeft() || isWhiteRight()) {
+            if(isWhiteLeft() && isWhiteRight()) {
                 fl_motor.setPower(0);
                 fr_motor.setPower(0);
                 bl_motor.setPower(0);
