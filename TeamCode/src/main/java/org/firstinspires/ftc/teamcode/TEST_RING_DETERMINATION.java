@@ -117,20 +117,22 @@ public class TEST_RING_DETERMINATION extends LinearOpMode {
         boolean viewportPaused;
 
         Rect rect = new Rect(
-                new Point(0, 0),
-                new Point(0, 0)
+                new Point(1280 * 0.25, 852 * 0.05),
+                new Point(1280 * 0.9, 852 * 0.9)
         );
 
         @Override
         public Mat processFrame(Mat input) {
+            // enters this if statement if we have reached the rings and are attempting to capture an image
             if(capturing){
+                // immediately set capturing as false so that it exits the while loop and begins
                 capturing = false;
                 // ring detection code
                 Mat mat = new Mat();
                 Imgproc.cvtColor(input, mat, Imgproc.COLOR_RGB2HSV_FULL);
 
-                Scalar lowHSV = new Scalar(0, 0, 0);
-                Scalar highHSV = new Scalar(0, 0, 0);
+                Scalar lowHSV = new Scalar(27, 206, 158);
+                Scalar highHSV = new Scalar(47, 255, 255);
 
                 Core.inRange(mat, lowHSV, highHSV, mat);
 
