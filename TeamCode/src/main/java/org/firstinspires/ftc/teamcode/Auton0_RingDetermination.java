@@ -179,14 +179,17 @@ public class Auton0_RingDetermination extends LinearOpMode {
                 // crop the image to remove useless background
                 mat = mat.submat(rect);
 
-                double percentOrange = Core.sumElems(mat).val[0] / rect.area() / 255;
+                double percentOrange = Core.sumElems(mat).val[0] / rect.area() / 255 * 5;
                 mat.release();
 
-                if (percentOrange < 0.05) {
+                if (percentOrange < 0.03) {
+                    telemetry.addData("Rings", "ZERO, " + (percentOrange * 100) + " % orange");
                     ringCount = 0;
-                } else if (percentOrange < 0.25) {
+                } else if (percentOrange < 0.1) {
+                    telemetry.addData("Rings", "ONE, " + (percentOrange * 100) + " % orange");
                     ringCount = 1;
                 } else {
+                    telemetry.addData("Rings", "FOUR, " + (percentOrange * 100) + " % orange");
                     ringCount = 4;
                 }
                 webcam.stopStreaming();
