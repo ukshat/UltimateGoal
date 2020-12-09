@@ -7,11 +7,11 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 // Register this Op Mode on the Android phone
-@TeleOp(name = "Make parallel to white line")
+@TeleOp(name = "Make the robot parallel to the white line")
 
 public class ColorSensorTest2 extends LinearOpMode {
 
-    ElapsedTime runtime = new ElapsedTime();
+    private ElapsedTime runtime = new ElapsedTime();
 
     RevColorSensorV3 colorLeft;
     RevColorSensorV3 colorRight;
@@ -42,65 +42,58 @@ public class ColorSensorTest2 extends LinearOpMode {
 
         waitForStart();
 
-        while(opModeIsActive()) {
-            // if none of the color sensors see white keep moving forward
-            if(!isWhiteLeft() && !isWhiteRight()){
-                fl_motor.setPower(0.4);
-                fr_motor.setPower(0.4);
-                bl_motor.setPower(0.4);
-                br_motor.setPower(0.4);
-            }
+        fl_motor.setPower(0.3);
+        fr_motor.setPower(0.3);
+        bl_motor.setPower(0.3);
+        br_motor.setPower(0.3);
 
-            // if the left color sensor see's white but the right doesn't turn the robot left until
-            // they both see white
-            if(isWhiteLeft() && !isWhiteRight()){
-                fl_motor.setPower(0);
-                fr_motor.setPower(0.1);
-                bl_motor.setPower(0);
-                br_motor.setPower(0.1);
-            }
-
-            // if the right color sensor see's white but the left doesn't turn the robot left until
-            // they both see white
-            if(isWhiteRight() && !isWhiteLeft()){
-                fl_motor.setPower(0.1);
-                fr_motor.setPower(0);
-                bl_motor.setPower(0.1);
-                br_motor.setPower(0);
-            }
-
-            // if both of the color sensors see white move the robot back a little bit so that the
-            // robot is on the launch zone and ready to shoot
-            if(isWhiteRight() && isWhiteLeft()){
-                fl_motor.setPower(-0.1);
-                fr_motor.setPower(-0.1);
-                bl_motor.setPower(-0.1);
-                br_motor.setPower(-0.1);
-                sleep(500);
-                break;
-            }
-
+        while (opModeIsActive()) {
             telemetry.addData("ColorSensorLeft", colorLeft.red() + "\n");
-            telemetry.addData("ColorSensorRight", colorRight.red() +  "\n");
+            telemetry.addData("ColorSensorRight", colorRight.red() + "\n");
             telemetry.addData("ColorSensorLeft", colorLeft.blue() + "\n");
-            telemetry.addData("ColorSensorRight", colorRight.blue() +  "\n");
+            telemetry.addData("ColorSensorRight", colorRight.blue() + "\n");
             telemetry.addData("ColorSensorLeft", colorLeft.green() + "\n");
-            telemetry.addData("ColorSensorRight", colorRight.green() +  "\n");
+            telemetry.addData("ColorSensorRight", colorRight.green() + "\n");
             telemetry.addData("ColorSensorLeft", colorLeft.alpha() + "\n");
-            telemetry.addData("ColorSensorRight", colorRight.alpha() +  "\n");
+            telemetry.addData("ColorSensorRight", colorRight.alpha() + "\n");
             telemetry.update();
 
+            if(isWhiteLeft() || isWhiteRight()) {
+                fl_motor.setPower(0);
+                fr_motor.setPower(0);
+                bl_motor.setPower(0);
+                br_motor.setPower(0);
+
+                // if the left color sensor see's white but the right doesn't turn the robot left until
+                // they both see white
+                if(isWhiteLeft() && !isWhiteRight()){
+                    fl_motor.setPower(0);
+                    fr_motor.setPower(0.1);
+                    bl_motor.setPower(0);
+                    br_motor.setPower(0.1);
+                }
+
+                // if the right color sensor see's white but the left doesn't turn the robot left until
+                // they both see white
+                if(!isWhiteLeft() && isWhiteRight()){
+                    fl_motor.setPower(0.1);
+                    fr_motor.setPower(0);
+                    bl_motor.setPower(0.1);
+                    br_motor.setPower(0);
+                }
+
+                break;
+            }
             sleep(20);
         }
-        fl_motor.setPower(0);
-        fr_motor.setPower(0);
-        bl_motor.setPower(0);
-        br_motor.setPower(0);
+
     }
+
     boolean isWhiteLeft (){
         return colorLeft.red() > 700 && colorLeft.blue() > 700 && colorLeft.green() > 700 && colorLeft.alpha() > 700;
     }
     boolean isWhiteRight (){
         return colorRight.red() > 700 && colorRight.blue() > 700 && colorRight.green() > 700 && colorRight.alpha() > 700;
     }
+
 }
