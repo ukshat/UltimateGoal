@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 // Register this Op Mode on the Android phone
-@TeleOp(name = "Move backward until white")
+@TeleOp(name = "Make the robot parallel to the white line")
 
 public class ColorSensorTest2 extends LinearOpMode {
 
