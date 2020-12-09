@@ -114,19 +114,21 @@ public class Auton0_RingDetermination extends LinearOpMode {
 
         sleep(50);
 
-        telemetry.addLine("Launching rings\n");
-        launch();
+//        telemetry.addLine("Launching rings\n");
+//        launch();
+
+        sleep(3000);
 
         int rings = pipeline.getRingCount();
-
-        //go to wobble drop zone
-        move(0, TILE_LENGTH * (((rings == 4) ? 2 : rings) + 0.5), 0.5);
-
-        telemetry.addLine("Dropping wobble\n");
-        dropGoal();
-
-        //go to launch line
-        move(2, TILE_LENGTH * ((rings == 4) ? 2 : rings), 0.5);
+//
+//        //go to wobble drop zone
+//        move(0, TILE_LENGTH * (((rings == 4) ? 2 : rings) + 0.5), 0.5);
+//
+//        telemetry.addLine("Dropping wobble\n");
+//        dropGoal();
+//
+//        //go to launch line
+//        move(2, TILE_LENGTH * ((rings == 4) ? 2 : rings), 0.5);
 
         webcam.closeCameraDevice();
     }
