@@ -151,25 +151,23 @@ public class TEST_OrangePercentage extends LinearOpMode {
 
                 Imgproc.rectangle(input, new Point(320 * 0.25, 240 * 0.05), new Point(320 * 0.9, 240 * 0.9), new Scalar(0, 0, 255), 5);
 
-                telemetry.addData("Value 0", Core.sumElems(mat).val[0] / rect.area() / 255);
-                telemetry.addData("Value 1", Core.sumElems(mat).val[1] / rect.area() / 255);
-                telemetry.addData("Value 2", Core.sumElems(mat).val[2] / rect.area() / 255);
-                telemetry.update();
+                    double percentOrange = Core.sumElems(mat).val[0] / rect.area() / 255;
 
                 mat.release();
 
-//                telemetry.addData("% Orange", percentOrange);
-//
-//                if (percentOrange < 0.05){
-//                    telemetry.addLine("ZERO");
-//                    ringCount = 0;
-//                } else if (percentOrange < 0.25){
-//                    telemetry.addLine("ONE");
-//                    ringCount = 1;
-//                } else {
-//                    telemetry.addLine("FOUR");
-//                    ringCount = 4;
-//                }
+                telemetry.addData("% Orange", percentOrange + "\n");
+
+                if (percentOrange < 0.01){
+                    telemetry.addLine("ZERO");
+                    ringCount = 0;
+                } else if (percentOrange < 0.1){
+                    telemetry.addLine("ONE");
+                    ringCount = 1;
+                } else {
+                    telemetry.addLine("FOUR");
+                    ringCount = 4;
+                }
+                telemetry.update();
 
             }
             return input;

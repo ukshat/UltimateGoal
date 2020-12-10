@@ -194,6 +194,7 @@ public class Auton0_RingDetermination extends LinearOpMode {
                     telemetry.addData("Rings", "FOUR, " + (percentOrange * 100) + " % orange");
                     ringCount = 4;
                 }
+                telemetry.update();
                 webcam.stopStreaming();
             }
             return input;
