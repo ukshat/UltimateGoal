@@ -141,7 +141,7 @@ public class TEST_OrangePercentage extends LinearOpMode {
                 Mat mat = new Mat();
                 Imgproc.cvtColor(input, mat, Imgproc.COLOR_RGB2HSV_FULL);
 
-                Scalar lowHSV = new Scalar(27, 206, 158);
+                Scalar lowHSV = new Scalar(27, 50, 50);
                 Scalar highHSV = new Scalar(47, 255, 255);
 
                 Core.inRange(mat, lowHSV, highHSV, mat);
@@ -151,16 +151,16 @@ public class TEST_OrangePercentage extends LinearOpMode {
 
                 Imgproc.rectangle(input, new Point(320 * 0.25, 240 * 0.05), new Point(320 * 0.9, 240 * 0.9), new Scalar(0, 0, 255), 5);
 
-                    double percentOrange = Core.sumElems(mat).val[0] / rect.area() / 255;
+                double percentOrange = Core.sumElems(mat).val[0] / rect.area() / 255;
 
                 mat.release();
 
                 telemetry.addData("% Orange", percentOrange + "\n");
 
-                if (percentOrange < 0.01){
+                if (percentOrange < 0.0545){
                     telemetry.addLine("ZERO");
                     ringCount = 0;
-                } else if (percentOrange < 0.1){
+                } else if (percentOrange < 0.185){
                     telemetry.addLine("ONE");
                     ringCount = 1;
                 } else {

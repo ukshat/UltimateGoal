@@ -114,21 +114,21 @@ public class Auton0_RingDetermination extends LinearOpMode {
 
         sleep(50);
 
-//        telemetry.addLine("Launching rings\n");
-//        launch();
+        telemetry.addLine("Launching rings\n");
+        launch();
 
         sleep(3000);
 
         int rings = pipeline.getRingCount();
-//
-//        //go to wobble drop zone
-//        move(0, TILE_LENGTH * (((rings == 4) ? 2 : rings) + 0.5), 0.5);
-//
-//        telemetry.addLine("Dropping wobble\n");
-//        dropGoal();
-//
-//        //go to launch line
-//        move(2, TILE_LENGTH * ((rings == 4) ? 2 : rings), 0.5);
+
+        //go to wobble drop zone
+        move(0, TILE_LENGTH * (((rings == 4) ? 2 : rings) + 0.5), 0.5);
+
+        telemetry.addLine("Dropping wobble\n");
+        dropGoal();
+
+        //go to launch line
+        move(2, TILE_LENGTH * ((rings == 4) ? 2 : rings), 0.5);
 
         webcam.closeCameraDevice();
     }
@@ -159,6 +159,9 @@ public class Auton0_RingDetermination extends LinearOpMode {
         );
 
         public int getRingCount() {
+            while (ringCount == -1) {
+                sleep(20);
+            }
             return ringCount;
         }
 
@@ -173,7 +176,7 @@ public class Auton0_RingDetermination extends LinearOpMode {
                 Mat mat = new Mat();
                 Imgproc.cvtColor(input, mat, Imgproc.COLOR_RGB2HSV_FULL);
 
-                Scalar lowHSV = new Scalar(27, 206, 158);
+                Scalar lowHSV = new Scalar(27, 50, 50);
                 Scalar highHSV = new Scalar(47, 255, 255);
 
                 Core.inRange(mat, lowHSV, highHSV, mat);
@@ -184,14 +187,14 @@ public class Auton0_RingDetermination extends LinearOpMode {
                 double percentOrange = Core.sumElems(mat).val[0] / rect.area() / 255 * 5;
                 mat.release();
 
-                if (percentOrange < 0.03) {
-                    telemetry.addData("Rings", "ZERO, " + (percentOrange * 100) + " % orange");
+                if (percentOrange < 0.0545) {
+                    telemetry.addData("Rings", "ZERO, " + (percentOrange * 100) + " % orange\n");
                     ringCount = 0;
-                } else if (percentOrange < 0.1) {
-                    telemetry.addData("Rings", "ONE, " + (percentOrange * 100) + " % orange");
+                } else if (percentOrange < 0.185) {
+                    telemetry.addData("Rings", "ONE, " + (percentOrange * 100) + " % orange\n");
                     ringCount = 1;
                 } else {
-                    telemetry.addData("Rings", "FOUR, " + (percentOrange * 100) + " % orange");
+                    telemetry.addData("Rings", "FOUR, " + (percentOrange * 100) + " % orange\n");
                     ringCount = 4;
                 }
                 telemetry.update();
