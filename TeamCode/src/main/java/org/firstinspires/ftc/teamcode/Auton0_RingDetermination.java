@@ -100,7 +100,7 @@ public class Auton0_RingDetermination extends LinearOpMode {
 
         for(int i = 0; i < 4 && opModeIsActive(); i++){
             motors[i].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            motors[i].setVelocity(685);
+            motors[i].setVelocity(600);
         }
 
         while(color.blue() < 400 && opModeIsActive()) sleep(20);
@@ -116,8 +116,6 @@ public class Auton0_RingDetermination extends LinearOpMode {
 
         telemetry.addLine("Launching rings\n");
         launch();
-
-        sleep(3000);
 
         int rings = pipeline.getRingCount();
 
@@ -211,11 +209,7 @@ public class Auton0_RingDetermination extends LinearOpMode {
 
     void dropGoal(){}
 
-     void launch(){}
-
-     int readStack(){
-        return 4;
-    }
+    void launch(){}
 
     void move(int config, double distance, double speed){
         setDirection(config);
