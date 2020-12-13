@@ -94,7 +94,7 @@ public class Auton0_RingDetermination extends LinearOpMode {
         sleep(300);
 
 
-        move(0, TILE_LENGTH * 1 - 6, 0.5);
+        move(0, TILE_LENGTH * 1 - 2, 0.5);
 
         sleep(100);
 
@@ -113,6 +113,7 @@ public class Auton0_RingDetermination extends LinearOpMode {
         move(0, TILE_LENGTH * (((rings == 4) ? 2 : rings) + 0.5), 0.5);
 
         telemetry.addLine("Dropping wobble\n");
+        telemetry.update();
         dropGoal();
 
         //go to launch line
@@ -170,7 +171,7 @@ public class Auton0_RingDetermination extends LinearOpMode {
                 // crop the image to remove useless background
                 mat = mat.submat(rect);
 
-                double percentOrange = Core.sumElems(mat).val[0] / rect.area() / 255 * 5;
+                double percentOrange = Core.sumElems(mat).val[0] / rect.area() / 255;
                 mat.release();
 
                 if (percentOrange < 0.0545) {
@@ -184,9 +185,14 @@ public class Auton0_RingDetermination extends LinearOpMode {
                     ringCount = 4;
                 }
                 telemetry.update();
-                webcam.stopStreaming();
 
-                webcam.closeCameraDevice();
+                webcam.closeCameraDeviceAsync(new OpenCvCamera.AsyncCameraCloseListener()
+                {
+                    @Override
+                    public void onClose() {
+                        webcam.stopStreaming();
+                    }
+                });
             }
             return input;
         }
@@ -195,6 +201,28 @@ public class Auton0_RingDetermination extends LinearOpMode {
         public void onViewportTapped() {}
 
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     void dropGoal(){}
