@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -47,8 +46,6 @@ public class Auton0_RingDetermination extends LinearOpMode {
     BNO055IMU imu;
     BNO055IMU.Parameters params;
 
-    RevColorSensorV3 color;
-
     OpenCvCamera webcam;
     RingCounterPipeline pipeline = new RingCounterPipeline();
     volatile boolean capturing = false;
@@ -63,7 +60,6 @@ public class Auton0_RingDetermination extends LinearOpMode {
         motors[1] = (DcMotorEx) hardwareMap.dcMotor.get("RightFront");
         motors[2] = (DcMotorEx) hardwareMap.dcMotor.get("LeftRear");
         motors[3] = (DcMotorEx) hardwareMap.dcMotor.get("RightRear");
-        color = (RevColorSensorV3) hardwareMap.get("ColorSensorLeft");
 
         // init zero power behavior
         for (int i = 0; i < 4 && opModeIsActive(); i++) motors[i].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -95,19 +91,12 @@ public class Auton0_RingDetermination extends LinearOpMode {
 
         capturing = true;
 
-        //move until color sensor detects blue line -- goes forward
-        setDirection(0);
+        sleep(300);
 
-        for(int i = 0; i < 4 && opModeIsActive(); i++){
-            motors[i].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            motors[i].setVelocity(600);
-        }
 
-        while(color.blue() < 400 && opModeIsActive()) sleep(20);
+        move(0, TILE_LENGTH * 1 - 6, 0.5);
 
-        for(int i = 0; i < 4 && opModeIsActive(); i++) motors[i].setPower(0);
-
-        sleep(50);
+        sleep(100);
 
         //re center robot in line with tape
         move(1, TILE_LENGTH * 0.5, 0.5);
@@ -115,6 +104,7 @@ public class Auton0_RingDetermination extends LinearOpMode {
         sleep(50);
 
         telemetry.addLine("Launching rings\n");
+
         launch();
 
         int rings = pipeline.getRingCount();
@@ -127,8 +117,6 @@ public class Auton0_RingDetermination extends LinearOpMode {
 
         //go to launch line
         move(2, TILE_LENGTH * ((rings == 4) ? 2 : rings), 0.5);
-
-        webcam.closeCameraDevice();
     }
 
     public void initCam() {
@@ -197,6 +185,8 @@ public class Auton0_RingDetermination extends LinearOpMode {
                 }
                 telemetry.update();
                 webcam.stopStreaming();
+
+                webcam.closeCameraDevice();
             }
             return input;
         }
