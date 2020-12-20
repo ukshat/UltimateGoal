@@ -147,12 +147,12 @@ public class TEST_OrangePercentage extends LinearOpMode {
                 Scalar lowHSV = new Scalar(27, 50, 50);
                 Scalar highHSV = new Scalar(47, 255, 255);
 
-                Core.inRange(mat, lowHSV, highHSV, mat);
-
                 // crop the image to remove useless background
                 mat = mat.submat(rect);
 
-                Imgproc.resize(mat, mat, new Size(100, 100));
+                Imgproc.resize(mat, mat, new Size(320/2, 240/2));
+
+                Core.inRange(mat, lowHSV, highHSV, mat);
 
                 double percentOrange = Core.sumElems(mat).val[0] / rect.area() / 255;
 
