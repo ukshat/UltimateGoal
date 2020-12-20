@@ -19,6 +19,7 @@ import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
+import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -84,6 +85,8 @@ public class TEST_OrangePercentage extends LinearOpMode {
         telemetry.addLine("Scanning");
         telemetry.update();
 
+        webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
+
         sleep(100);
 
         capturing = true;
@@ -91,27 +94,27 @@ public class TEST_OrangePercentage extends LinearOpMode {
         while(capturing && opModeIsActive()){
             sleep(20);
         }
-//        webcam.stopStreaming();
+
+        webcam.stopStreaming();
+        webcam.closeCameraDeviceAsync(new OpenCvCamera.AsyncCameraCloseListener() {
+            @Override
+            public void onClose() {}
+        });
 
         // move to next place
 
         sleep(10000);
-
-        webcam.stopStreaming();
-        webcam.closeCameraDevice();
     }
 
     public void initCam() {
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
-        //webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"));
+//        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+//        webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+        webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"));
         webcam.setPipeline(pipeline);
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
         {
             @Override
-            public void onOpened() {
-                webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
-            }
+            public void onOpened() {}
         });
     }
 
@@ -149,7 +152,7 @@ public class TEST_OrangePercentage extends LinearOpMode {
                 // crop the image to remove useless background
                 mat = mat.submat(rect);
 
-                Imgproc.rectangle(input, new Point(320 * 0.25, 240 * 0.05), new Point(320 * 0.9, 240 * 0.9), new Scalar(0, 0, 255), 5);
+                Imgproc.resize(mat, mat, new Size(100, 100));
 
                 double percentOrange = Core.sumElems(mat).val[0] / rect.area() / 255;
 
