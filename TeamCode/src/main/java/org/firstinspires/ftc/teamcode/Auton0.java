@@ -1,17 +1,27 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.opencv.core.Core;
+import org.opencv.core.Mat;
+import org.opencv.core.Point;
+import org.opencv.core.Rect;
+import org.opencv.core.Scalar;
+import org.opencv.imgproc.Imgproc;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.openftc.easyopencv.OpenCvPipeline;
 
 @Autonomous(name = "Autonomous")
 public class Auton0 extends LinearOpMode {
@@ -36,7 +46,9 @@ public class Auton0 extends LinearOpMode {
     BNO055IMU imu;
     BNO055IMU.Parameters params;
 
-    RevColorSensorV3 color;
+    OpenCvCamera webcam;
+    RingCounterPipeline pipeline = new RingCounterPipeline();
+    volatile boolean capturing = false;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -48,7 +60,6 @@ public class Auton0 extends LinearOpMode {
         motors[1] = (DcMotorEx) hardwareMap.dcMotor.get("RightFront");
         motors[2] = (DcMotorEx) hardwareMap.dcMotor.get("LeftRear");
         motors[3] = (DcMotorEx) hardwareMap.dcMotor.get("RightRear");
-        color = (RevColorSensorV3) hardwareMap.get("ColorSensorLeft");
 
         // init zero power behavior
         for (int i = 0; i < 4 && opModeIsActive(); i++) motors[i].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -57,6 +68,8 @@ public class Auton0 extends LinearOpMode {
         params = new BNO055IMU.Parameters();
         params.angleUnit = BNO055IMU.AngleUnit.DEGREES;
         imu.initialize(params);
+
+        initCam();
 
         waitForStart();
 
@@ -72,55 +85,147 @@ public class Auton0 extends LinearOpMode {
         for(int i = 0; i < 4 && opModeIsActive(); i++) println("" + i, motors[i].getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER));
 
         //Move to stack
-        move(0, TILE_LENGTH * 1.5, 0.5);
+        move(0, TILE_LENGTH * 1.5 + 6, 0.5);
 
-        sleep(500);
+        webcam.startStreaming(160, 120, OpenCvCameraRotation.UPRIGHT);
 
-        //back away from stack -- shift to right
-        move(3, TILE_LENGTH * 0.5, 0.5);
+        sleep(100);
 
-        //image recognition
-        int rings = readStack();
+        capturing = true;
 
-        sleep(500);
+        sleep(300);
 
-        //move until color sensor detects blue line -- goes forward
-        setDirection(0);
 
-        for(int i = 0; i < 4 && opModeIsActive(); i++){
-            motors[i].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            motors[i].setVelocity(685);
-        }
+        move(0, TILE_LENGTH * 1 - 2, 0.5);
 
-        while(color.blue() < 400 && opModeIsActive()) sleep(20);
-
-        for(int i = 0; i < 4 && opModeIsActive(); i++) motors[i].setPower(0);
-
-        sleep(500);
+        sleep(100);
 
         //re center robot in line with tape
         move(1, TILE_LENGTH * 0.5, 0.5);
 
-        sleep(500);
+        sleep(50);
+
+        telemetry.addLine("Launching rings\n");
 
         launch();
+
+        int rings = pipeline.getRingCount();
 
         //go to wobble drop zone
         move(0, TILE_LENGTH * (((rings == 4) ? 2 : rings) + 0.5), 0.5);
 
+        telemetry.addLine("Dropping wobble\n");
+        telemetry.update();
         dropGoal();
 
         //go to launch line
         move(2, TILE_LENGTH * ((rings == 4) ? 2 : rings), 0.5);
     }
 
-     void dropGoal(){}
-
-     void launch(){}
-
-     int readStack(){
-        return 4;
+    public void initCam() {
+        webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"));
+        webcam.setPipeline(pipeline);
+        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
+        {
+            @Override
+            public void onOpened() {}
+        });
     }
+
+
+
+    class RingCounterPipeline extends OpenCvPipeline
+    {
+        boolean viewportPaused;
+
+        private int ringCount = -1;
+
+        Rect rect = new Rect(
+                new Point(160 * 0.25, 120 * 0.05),
+                new Point(160 * 0.9, 120 * 0.9)
+        );
+
+        public int getRingCount() {
+            while (ringCount == -1) {
+                sleep(20);
+            }
+            return ringCount;
+        }
+
+        @Override
+        public Mat processFrame(Mat input) {
+            // enters this if statement if we have reached the rings and are attempting to capture an image
+            if(capturing) {
+                // immediately set capturing as false so that it exits the while loop and begins driving to the next location while we determine number of rings
+                capturing = false;
+                // ring detection code
+
+                Mat mat = new Mat();
+                Imgproc.cvtColor(input, mat, Imgproc.COLOR_RGB2HSV_FULL);
+
+                Scalar lowHSV = new Scalar(27, 50, 50);
+                Scalar highHSV = new Scalar(47, 255, 255);
+
+                Core.inRange(mat, lowHSV, highHSV, mat);
+
+                // crop the image to remove useless background
+                mat = mat.submat(rect);
+
+                double percentOrange = Core.sumElems(mat).val[0] / rect.area() / 255;
+                mat.release();
+
+                if (percentOrange < 0.0545) {
+                    telemetry.addData("Rings", "ZERO, " + (percentOrange * 100) + " % orange\n");
+                    ringCount = 0;
+                } else if (percentOrange < 0.185) {
+                    telemetry.addData("Rings", "ONE, " + (percentOrange * 100) + " % orange\n");
+                    ringCount = 1;
+                } else {
+                    telemetry.addData("Rings", "FOUR, " + (percentOrange * 100) + " % orange\n");
+                    ringCount = 4;
+                }
+                telemetry.update();
+
+                webcam.closeCameraDeviceAsync(new OpenCvCamera.AsyncCameraCloseListener()
+                {
+                    @Override
+                    public void onClose() {}
+                });
+            }
+            return input;
+        }
+
+        @Override
+        public void onViewportTapped() {}
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    void dropGoal(){}
+
+    void launch(){}
 
     void move(int config, double distance, double speed){
         setDirection(config);
