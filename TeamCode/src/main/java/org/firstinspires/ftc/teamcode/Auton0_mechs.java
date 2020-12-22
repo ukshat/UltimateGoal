@@ -36,8 +36,7 @@ public class Auton0_mechs extends LinearOpMode {
     DcMotorEx[/*Front Left, Front Right, Back Left, Back Right*/] motors = new DcMotorEx[4];
 
     DcMotorEx wobbleMotor;
-    DcMotorEx leftShooter;
-    DcMotorEx rightShooter;
+    DcMotorEx shooter;
     DcMotorEx conveyor;
     Servo wobbleClaw;
     // Variables used to initialize gyro
@@ -59,8 +58,7 @@ public class Auton0_mechs extends LinearOpMode {
 
         wobbleMotor = (DcMotorEx) hardwareMap.dcMotor.get("WobbleMotor");
         wobbleClaw = hardwareMap.servo.get("WobbleClaw");
-        rightShooter = (DcMotorEx)hardwareMap.dcMotor.get("RightShooter");
-        leftShooter = (DcMotorEx)hardwareMap.dcMotor.get("LeftShooter");
+        shooter = (DcMotorEx)hardwareMap.dcMotor.get("LeftShooter");
         conveyor = (DcMotorEx)hardwareMap.dcMotor.get("Conveyor");
 
 
@@ -73,10 +71,8 @@ public class Auton0_mechs extends LinearOpMode {
         wobbleClaw.setDirection(Servo.Direction.REVERSE);
         wobbleClaw.scaleRange(0,1);
         wobbleMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightShooter.setDirection(DcMotorSimple.Direction.REVERSE);
-        rightShooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        leftShooter.setDirection(DcMotorSimple.Direction.FORWARD);
-        leftShooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        shooter.setDirection(DcMotorSimple.Direction.FORWARD);
+        shooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         conveyor.setDirection(DcMotorSimple.Direction.REVERSE);
         conveyor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
@@ -156,7 +152,13 @@ public class Auton0_mechs extends LinearOpMode {
 
     }
 
-     void launch(){}
+    void launch(){
+        shooter.setVelocity(100000);
+        conveyor.setVelocity(100);
+        sleep(2000);
+        shooter.setPower(0);
+        conveyor.setPower(0);
+    }
 
      int readStack(){
         return 4;
