@@ -160,7 +160,7 @@ public class Auton0_mechs extends LinearOpMode {
         conveyor.setPower(0);
     }
 
-     int readStack(){
+    int readStack(){
         return 4;
     }
 
