@@ -151,24 +151,6 @@ public class Util {
 
     }
 
-    static void moving(DcMotor[] motors, boolean slowDown, Telemetry telem){
-        final int totalTick = motors[0].getTargetPosition();
-
-        while (motors[0].isBusy() || motors[1].isBusy() || motors[2].isBusy() || motors[3].isBusy()){
-            try {Thread.sleep(75);} catch (InterruptedException e) {} //sleep
-            if(slowDown){
-                int currPos = motors[0].getCurrentPosition();
-
-                double pow = f(currPos, totalTick);
-
-                for(DcMotor motor : motors) motor.setPower(pow);
-
-                telem.addData("Current power: ", pow + "\n");
-                telem.update();
-             }
-        }
-    }
-
     static void moving(DcMotor[] motors, boolean slowDown){
         final int totalTick = motors[0].getTargetPosition();
 

@@ -6,12 +6,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
@@ -24,7 +21,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 
 @Autonomous(name = "Autonomous")
-public class Auton0_RingDetermination extends LinearOpMode {
+public class TEST_OrangePercentageWithoutOptimization extends LinearOpMode {
 
     // length of a tile
     static final double TILE_LENGTH = 23.5;
@@ -46,6 +43,9 @@ public class Auton0_RingDetermination extends LinearOpMode {
     BNO055IMU imu;
     BNO055IMU.Parameters params;
 
+    ElapsedTime runtime;
+    String str = "";
+
     OpenCvCamera webcam;
     RingCounterPipeline pipeline = new RingCounterPipeline();
     volatile boolean capturing = false;
@@ -61,6 +61,8 @@ public class Auton0_RingDetermination extends LinearOpMode {
         motors[2] = (DcMotorEx) hardwareMap.dcMotor.get("LeftRear");
         motors[3] = (DcMotorEx) hardwareMap.dcMotor.get("RightRear");
 
+        runtime = new ElapsedTime();
+
         // init zero power behavior
         for (int i = 0; i < 4 && opModeIsActive(); i++) motors[i].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
@@ -69,7 +71,11 @@ public class Auton0_RingDetermination extends LinearOpMode {
         params.angleUnit = BNO055IMU.AngleUnit.DEGREES;
         imu.initialize(params);
 
+        runtime.reset();
+
         initCam();
+
+        str += runtime.toString() + ", ";
 
         waitForStart();
 
@@ -89,35 +95,16 @@ public class Auton0_RingDetermination extends LinearOpMode {
 
         sleep(100);
 
+        runtime.reset();
+
         capturing = true;
-
-        sleep(300);
-
-
-        move(0, TILE_LENGTH * 1 - 2, 0.5);
-
-        sleep(100);
-
-        //re center robot in line with tape
-        move(1, TILE_LENGTH * 0.5, 0.5);
-
-        sleep(50);
-
-        telemetry.addLine("Launching rings\n");
-
-        launch();
 
         int rings = pipeline.getRingCount();
 
-        //go to wobble drop zone
-        move(0, TILE_LENGTH * (((rings == 4) ? 2 : rings) + 0.5), 0.5);
+        str += runtime.toString();
 
-        telemetry.addLine("Dropping wobble\n");
-        telemetry.update();
-        dropGoal();
+        println("Times", str);
 
-        //go to launch line
-        move(2, TILE_LENGTH * ((rings == 4) ? 2 : rings), 0.5);
     }
 
     public void initCam() {
@@ -186,6 +173,10 @@ public class Auton0_RingDetermination extends LinearOpMode {
                 }
                 telemetry.update();
 
+                str += runtime.toString() + ", ";
+
+                runtime.reset();
+
                 webcam.closeCameraDeviceAsync(new OpenCvCamera.AsyncCameraCloseListener()
                 {
                     @Override
@@ -201,33 +192,6 @@ public class Auton0_RingDetermination extends LinearOpMode {
         public void onViewportTapped() {}
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    void dropGoal(){}
-
-    void launch(){}
 
     void move(int config, double distance, double speed){
         setDirection(config);
@@ -273,77 +237,6 @@ public class Auton0_RingDetermination extends LinearOpMode {
         return -Math.pow((2.6 * Math.pow(x - n / 2, 2)) / (n * n), 1.75) + 0.5;
     }
 
-    /**
-     * rotates the robot a certain amount of degrees at a given speed
-     *
-     * @params degrees amount in degrees to rotate the robot (must be between -180 and 180)
-     * @params power speed at which motors will run -- affects speed of rotation
-     * */
-    void rotate(double degrees){
-
-        // Create the object used to keep track of the current angle of the robot
-        Orientation orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-
-        // The angle at which the robot starts at
-        double angle = orientation.firstAngle;
-
-        // The amount we want to turn
-        double firstDegrees = degrees;
-
-        // This is our target position
-        degrees += currOrientation;
-
-        // The orientation where the robot starts
-        final double startAngle = angle;
-
-        // Reset the motors to run using encoders
-        for(int i = 0; i < 4; i++) {
-            motors[i].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        }
-
-        // If we are turning clockwise
-
-        if (firstDegrees < 0){
-            setDirection(4);
-            // While we are not at the target position
-            // Multily by 0.925 to account for jerk
-            while (angle > degrees * 0.925 && opModeIsActive()){
-                // Updating the object that keeps track of orientation
-                orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-                // Updates the variable which stores the current direction of the robot
-                angle = orientation.firstAngle;
-                // Sets all motor powers to 0.2
-                for(int i = 0; i < 4; i++) motors[i].setPower(0.2);
-                // Delay
-                sleep(20);
-            }
-
-        }
-
-        // If we are turning counterclockwise
-        else {
-            setDirection(5);
-            while (angle < degrees * 0.925){
-                // Updating the object that keeps track of orientation
-                orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-                // Updates the variable which stores the current direction of the robot
-                angle = orientation.firstAngle;
-                // Sets all motor powers to 0.2
-                for(int i = 0; i < 4; i++) motors[i].setPower(0.2);
-                // Delay
-                sleep(20);
-            }
-
-        }
-        // Stop the robot
-        for (DcMotor motor: motors){
-            motor.setPower(0);
-        }
-
-        // Update the direction of the robot
-        currOrientation = degrees;
-
-    }
     /**
      * Configs:
      *  0: forward

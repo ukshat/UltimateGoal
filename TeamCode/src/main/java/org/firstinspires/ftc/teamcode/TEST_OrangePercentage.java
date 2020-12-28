@@ -2,13 +2,12 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
@@ -19,7 +18,6 @@ import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
-import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -50,6 +48,8 @@ public class TEST_OrangePercentage extends LinearOpMode {
     BNO055IMU imu;
     BNO055IMU.Parameters params;
 
+    ElapsedTime runtime;
+
     RevColorSensorV3 color;
 
     OpenCvCamera webcam;
@@ -67,6 +67,8 @@ public class TEST_OrangePercentage extends LinearOpMode {
         motors[2] = (DcMotorEx) hardwareMap.dcMotor.get("LeftRear");
         motors[3] = (DcMotorEx) hardwareMap.dcMotor.get("RightRear");
 
+        runtime = new ElapsedTime();
+
         color = (RevColorSensorV3) hardwareMap.get("ColorSensorLeft");
 
         // init zero power behavior
@@ -77,18 +79,27 @@ public class TEST_OrangePercentage extends LinearOpMode {
         params.angleUnit = BNO055IMU.AngleUnit.DEGREES;
         imu.initialize(params);
 
+        String str = "";
+
+        runtime.reset();
+
         initCam();
+
+        str += runtime.toString() + ", ";
 
         waitForStart();
 
         move(0,TILE_LENGTH * 1.5 + 6, 0.5);
 
-        telemetry.addLine("Scanning");
-        telemetry.update();
+        runtime.reset();
 
-        webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
+        webcam.startStreaming(160, 120, OpenCvCameraRotation.UPRIGHT);
+
+        str += runtime.toString() + ", ";
 
         sleep(100);
+
+        runtime.reset();
 
         capturing = true;
 
@@ -96,15 +107,27 @@ public class TEST_OrangePercentage extends LinearOpMode {
             sleep(20);
         }
 
+        str += runtime.toString() + ", ";
+
+        runtime.reset();
+
         webcam.stopStreaming();
+
+        str += runtime.toString() + ", ";
+
+        runtime.reset();
+
         webcam.closeCameraDeviceAsync(new OpenCvCamera.AsyncCameraCloseListener() {
             @Override
-            public void onClose() {}
+            public void onClose() {
+
+            }
         });
 
-        // move to next place
+        str += runtime.toString();
 
-        sleep(10000);
+        println("Times", str);
+
     }
 
     public void initCam() {
@@ -126,8 +149,8 @@ public class TEST_OrangePercentage extends LinearOpMode {
         private int ringCount = -1;
 
         Rect rect = new Rect(
-                new Point(320 * 0.25, 240 * 0.05),
-                new Point(320 * 0.9, 240 * 0.9)
+                new Point(160 * 0.25, 120 * 0.05),
+                new Point(160 * 0.9, 120 * 0.9)
         );
 
         public int getRingCount() {
@@ -150,8 +173,6 @@ public class TEST_OrangePercentage extends LinearOpMode {
 
                 // crop the image to remove useless background
                 mat = mat.submat(rect);
-
-                Imgproc.resize(mat, mat, new Size(320/2, 240/2));
 
                 Core.inRange(mat, lowHSV, highHSV, mat);
 
