@@ -1,18 +1,14 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.rev.RevColorSensorV3;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
@@ -24,8 +20,8 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 
-@TeleOp(name = "Orange Percentage Test")
-public class TEST_OrangePercentage extends LinearOpMode {
+@Autonomous(name = "Autonomous")
+public class TEST_OrangePercentageWithoutOptimization extends LinearOpMode {
 
     // length of a tile
     static final double TILE_LENGTH = 23.5;
@@ -48,12 +44,11 @@ public class TEST_OrangePercentage extends LinearOpMode {
     BNO055IMU.Parameters params;
 
     ElapsedTime runtime;
-
-    RevColorSensorV3 color;
+    String str = "";
 
     OpenCvCamera webcam;
+    RingCounterPipeline pipeline = new RingCounterPipeline();
     volatile boolean capturing = false;
-    private RingCounterPipeline pipeline = new RingCounterPipeline();
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -68,8 +63,6 @@ public class TEST_OrangePercentage extends LinearOpMode {
 
         runtime = new ElapsedTime();
 
-        color = (RevColorSensorV3) hardwareMap.get("ColorSensorLeft");
-
         // init zero power behavior
         for (int i = 0; i < 4 && opModeIsActive(); i++) motors[i].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
@@ -77,8 +70,6 @@ public class TEST_OrangePercentage extends LinearOpMode {
         params = new BNO055IMU.Parameters();
         params.angleUnit = BNO055IMU.AngleUnit.DEGREES;
         imu.initialize(params);
-
-        String str = "";
 
         runtime.reset();
 
@@ -88,13 +79,19 @@ public class TEST_OrangePercentage extends LinearOpMode {
 
         waitForStart();
 
-        move(0,TILE_LENGTH * 1.5 + 6, 0.5);
+        for (int i = 0; i < 4 && opModeIsActive(); i++){
+            PIDFCoefficients pidfCoef = motors[i].getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
+            pidfCoef.p = pidfVals[0];
+            pidfCoef.i = pidfVals[1];
+            pidfCoef.d = pidfVals[2];
+            pidfCoef.f = pidfVals[3];
+            motors[i].setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoef);
+        }
 
-        runtime.reset();
+        for(int i = 0; i < 4 && opModeIsActive(); i++) println("" + i, motors[i].getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER));
 
-        webcam.startStreaming(160, 120, OpenCvCameraRotation.UPRIGHT);
-
-        str += runtime.toString() + ", ";
+        //Move to stack
+        move(0, TILE_LENGTH * 1.5 + 6, 0.5);
 
         sleep(100);
 
@@ -102,26 +99,7 @@ public class TEST_OrangePercentage extends LinearOpMode {
 
         capturing = true;
 
-        while(capturing && opModeIsActive()){
-            sleep(20);
-        }
-
-        str += runtime.toString() + ", ";
-
-        runtime.reset();
-
-        webcam.stopStreaming();
-
-        str += runtime.toString() + ", ";
-
-        runtime.reset();
-
-        webcam.closeCameraDeviceAsync(new OpenCvCamera.AsyncCameraCloseListener() {
-            @Override
-            public void onClose() {
-
-            }
-        });
+        int rings = pipeline.getRingCount();
 
         str += runtime.toString();
 
@@ -130,16 +108,18 @@ public class TEST_OrangePercentage extends LinearOpMode {
     }
 
     public void initCam() {
-//        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-//        webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"));
         webcam.setPipeline(pipeline);
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
         {
             @Override
-            public void onOpened() {}
+            public void onOpened() {
+                webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
+            }
         });
     }
+
+
 
     class RingCounterPipeline extends OpenCvPipeline
     {
@@ -148,18 +128,21 @@ public class TEST_OrangePercentage extends LinearOpMode {
         private int ringCount = -1;
 
         Rect rect = new Rect(
-                new Point(160 * 0.25, 120 * 0.05),
-                new Point(160 * 0.9, 120 * 0.9)
+                new Point(320 * 0.25, 240 * 0.05),
+                new Point(320 * 0.9, 240 * 0.9)
         );
 
         public int getRingCount() {
+            while (ringCount == -1) {
+                sleep(20);
+            }
             return ringCount;
         }
 
         @Override
         public Mat processFrame(Mat input) {
             // enters this if statement if we have reached the rings and are attempting to capture an image
-            if(capturing){
+            if(capturing) {
                 // immediately set capturing as false so that it exits the while loop and begins driving to the next location while we determine number of rings
                 capturing = false;
                 // ring detection code
@@ -170,29 +153,37 @@ public class TEST_OrangePercentage extends LinearOpMode {
                 Scalar lowHSV = new Scalar(27, 50, 50);
                 Scalar highHSV = new Scalar(47, 255, 255);
 
+                Core.inRange(mat, lowHSV, highHSV, mat);
+
                 // crop the image to remove useless background
                 mat = mat.submat(rect);
 
-                Core.inRange(mat, lowHSV, highHSV, mat);
-
                 double percentOrange = Core.sumElems(mat).val[0] / rect.area() / 255;
-
                 mat.release();
 
-                telemetry.addData("% Orange", percentOrange + "\n");
-
-                if (percentOrange < 0.0545){
-                    telemetry.addLine("ZERO");
+                if (percentOrange < 0.0545) {
+                    telemetry.addData("Rings", "ZERO, " + (percentOrange * 100) + " % orange\n");
                     ringCount = 0;
-                } else if (percentOrange < 0.185){
-                    telemetry.addLine("ONE");
+                } else if (percentOrange < 0.185) {
+                    telemetry.addData("Rings", "ONE, " + (percentOrange * 100) + " % orange\n");
                     ringCount = 1;
                 } else {
-                    telemetry.addLine("FOUR");
+                    telemetry.addData("Rings", "FOUR, " + (percentOrange * 100) + " % orange\n");
                     ringCount = 4;
                 }
                 telemetry.update();
 
+                str += runtime.toString() + ", ";
+
+                runtime.reset();
+
+                webcam.closeCameraDeviceAsync(new OpenCvCamera.AsyncCameraCloseListener()
+                {
+                    @Override
+                    public void onClose() {
+                        webcam.stopStreaming();
+                    }
+                });
             }
             return input;
         }
@@ -201,35 +192,6 @@ public class TEST_OrangePercentage extends LinearOpMode {
         public void onViewportTapped() {}
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    static void dropGoal(){}
-
-    static void launch(){}
 
     void move(int config, double distance, double speed){
         setDirection(config);
@@ -275,77 +237,6 @@ public class TEST_OrangePercentage extends LinearOpMode {
         return -Math.pow((2.6 * Math.pow(x - n / 2, 2)) / (n * n), 1.75) + 0.5;
     }
 
-    /**
-     * rotates the robot a certain amount of degrees at a given speed
-     *
-     * @params degrees amount in degrees to rotate the robot (must be between -180 and 180)
-     * @params power speed at which motors will run -- affects speed of rotation
-     * */
-    void rotate(double degrees){
-
-        // Create the object used to keep track of the current angle of the robot
-        Orientation orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-
-        // The angle at which the robot starts at
-        double angle = orientation.firstAngle;
-
-        // The amount we want to turn
-        double firstDegrees = degrees;
-
-        // This is our target position
-        degrees += currOrientation;
-
-        // The orientation where the robot starts
-        final double startAngle = angle;
-
-        // Reset the motors to run using encoders
-        for(int i = 0; i < 4; i++) {
-            motors[i].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        }
-
-        // If we are turning clockwise
-
-        if (firstDegrees < 0){
-            setDirection(4);
-            // While we are not at the target position
-            // Multily by 0.925 to account for jerk
-            while (angle > degrees * 0.925 && opModeIsActive()){
-                // Updating the object that keeps track of orientation
-                orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-                // Updates the variable which stores the current direction of the robot
-                angle = orientation.firstAngle;
-                // Sets all motor powers to 0.2
-                for(int i = 0; i < 4; i++) motors[i].setPower(0.2);
-                // Delay
-                sleep(20);
-            }
-
-        }
-
-        // If we are turning counterclockwise
-        else {
-            setDirection(5);
-            while (angle < degrees * 0.925){
-                // Updating the object that keeps track of orientation
-                orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-                // Updates the variable which stores the current direction of the robot
-                angle = orientation.firstAngle;
-                // Sets all motor powers to 0.2
-                for(int i = 0; i < 4; i++) motors[i].setPower(0.2);
-                // Delay
-                sleep(20);
-            }
-
-        }
-        // Stop the robot
-        for (DcMotor motor: motors){
-            motor.setPower(0);
-        }
-
-        // Update the direction of the robot
-        currOrientation = degrees;
-
-    }
     /**
      * Configs:
      *  0: forward
