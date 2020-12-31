@@ -64,6 +64,11 @@ public class ColorSensorTest2 extends LinearOpMode {
                 bl_motor.setPower(0);
                 br_motor.setPower(0);
 
+                fl_motor.setPower(-0.2);
+                fr_motor.setPower(-0.2);
+                bl_motor.setPower(-0.2);
+                br_motor.setPower(-0.2);
+
                 // if the left color sensor see's white but the right doesn't turn the robot left until
                 // they both see white
                 if(isWhiteLeft() && !isWhiteRight()){
