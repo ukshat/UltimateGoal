@@ -209,7 +209,6 @@ public class LinearTeleOpTest extends LinearOpMode {
             normalizer /= Math.abs(largestPower);
         }
 
-
         // If the largest power is not out of bounds, there is no need to adjust values
 
         // Normalize the four powers and return a new array with them
@@ -224,13 +223,9 @@ public class LinearTeleOpTest extends LinearOpMode {
      * @param powers an array of motor powers
      * @return the largest power out of the array
      */
-    public static double findLargest(double[] powers) {
+    public static double findLargest(double[] powers){
         double largest = Math.abs(powers[0]);
-        for (double d : powers) {
-            if (Math.abs(d) > largest) {
-                largest = Math.abs(d);
-            }
-        }
+        for(double d: powers) if(Math.abs(d) > largest) largest = Math.abs(d);
         return largest;
     }
 
