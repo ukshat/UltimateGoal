@@ -127,6 +127,8 @@ public class TEST_OrangePercentage extends LinearOpMode {
 
         println("Times", str);
 
+        sleep(10000);
+
     }
 
     public void initCam() {
