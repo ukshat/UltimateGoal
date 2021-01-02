@@ -78,13 +78,7 @@ public class TEST_OrangePercentage extends LinearOpMode {
         params.angleUnit = BNO055IMU.AngleUnit.DEGREES;
         imu.initialize(params);
 
-        String str = "";
-
-        runtime.reset();
-
         initCam();
-
-        str += runtime.toString() + ", ";
 
         waitForStart();
 
@@ -94,11 +88,7 @@ public class TEST_OrangePercentage extends LinearOpMode {
 
         webcam.startStreaming(160, 120, OpenCvCameraRotation.UPRIGHT);
 
-        str += runtime.toString() + ", ";
-
         sleep(100);
-
-        runtime.reset();
 
         capturing = true;
 
@@ -106,15 +96,7 @@ public class TEST_OrangePercentage extends LinearOpMode {
             sleep(20);
         }
 
-        str += runtime.toString() + ", ";
-
-        runtime.reset();
-
         webcam.stopStreaming();
-
-        str += runtime.toString() + ", ";
-
-        runtime.reset();
 
         webcam.closeCameraDeviceAsync(new OpenCvCamera.AsyncCameraCloseListener() {
             @Override
@@ -123,9 +105,7 @@ public class TEST_OrangePercentage extends LinearOpMode {
             }
         });
 
-        str += runtime.toString();
-
-        println("Times", str);
+        println("Times", runtime.toString());
 
         sleep(10000);
 
