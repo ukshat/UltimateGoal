@@ -44,7 +44,7 @@ public class TEST_OrangePercentageWithoutOptimization extends LinearOpMode {
     BNO055IMU.Parameters params;
 
     ElapsedTime runtime;
-    String str = "";
+    volatile String str = "";
 
     OpenCvCamera webcam;
     RingCounterPipeline pipeline = new RingCounterPipeline();
@@ -88,8 +88,6 @@ public class TEST_OrangePercentageWithoutOptimization extends LinearOpMode {
             motors[i].setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoef);
         }
 
-        for(int i = 0; i < 4 && opModeIsActive(); i++) println("" + i, motors[i].getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER));
-
         //Move to stack
         move(0, TILE_LENGTH * 1.5 + 6, 0.5);
 
@@ -104,6 +102,8 @@ public class TEST_OrangePercentageWithoutOptimization extends LinearOpMode {
         str += runtime.toString();
 
         println("Times", str);
+
+        sleep(30000);
 
     }
 
@@ -181,7 +181,7 @@ public class TEST_OrangePercentageWithoutOptimization extends LinearOpMode {
                 {
                     @Override
                     public void onClose() {
-                        webcam.stopStreaming();
+
                     }
                 });
             }
