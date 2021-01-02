@@ -1,9 +1,11 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
+@Autonomous (name = "wobble test")
 public class WobbleTest extends LinearOpMode {
 
     DcMotor wobble;
@@ -22,7 +24,7 @@ public class WobbleTest extends LinearOpMode {
 
         wobble.setTargetPosition((int)(288.0 * 26/10/180 * (162.47-90.0)));
         wobble.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        wobble.setPower(0.5);
+        wobble.setPower(0.1);
         while (wobble.isBusy() && opModeIsActive()){
             sleep(20);
         }
