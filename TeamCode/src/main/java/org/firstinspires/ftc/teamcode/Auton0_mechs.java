@@ -127,7 +127,9 @@ public class Auton0_mechs extends LinearOpMode {
 
         sleep(500);
 
-        launch();
+        //launch();
+        telemetry.addLine("Launching rings");
+        telemetry.update();
 
         //go to wobble drop zone
         move(0, TILE_LENGTH * (((rings == 4) ? 2 : rings) + 0.5), 0.5);
@@ -138,7 +140,7 @@ public class Auton0_mechs extends LinearOpMode {
         move(2, TILE_LENGTH * ((rings == 4) ? 2 : rings), 0.5);
     }
 
-     void dropGoal(){
+    void dropGoal(){
 
         wobbleMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         wobbleMotor.setTargetPosition((int)(288.0 * 26/10/180 * (162.47-90.0)));

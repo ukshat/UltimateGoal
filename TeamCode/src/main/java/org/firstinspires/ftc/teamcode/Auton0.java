@@ -134,9 +134,7 @@ public class Auton0 extends LinearOpMode {
 
 
 
-    class RingCounterPipeline extends OpenCvPipeline
-    {
-        boolean viewportPaused;
+    class RingCounterPipeline extends OpenCvPipeline {
 
         private int ringCount = -1;
 
@@ -156,16 +154,13 @@ public class Auton0 extends LinearOpMode {
         public Mat processFrame(Mat input) {
             // enters this if statement if we have reached the rings and are attempting to capture an image
             if(capturing) {
-                // immediately set capturing as false so that it exits the while loop and begins driving to the next location while we determine number of rings
+                // immediately set as false to ensure only one frame is processed
                 capturing = false;
-                // ring detection code
-
                 Mat mat = new Mat();
                 Imgproc.cvtColor(input, mat, Imgproc.COLOR_RGB2HSV_FULL);
 
                 Scalar lowHSV = new Scalar(27, 50, 50);
                 Scalar highHSV = new Scalar(47, 255, 255);
-
                 Core.inRange(mat, lowHSV, highHSV, mat);
 
                 // crop the image to remove useless background
@@ -173,7 +168,6 @@ public class Auton0 extends LinearOpMode {
 
                 double percentOrange = Core.sumElems(mat).val[0] / rect.area() / 255;
                 mat.release();
-
                 if (percentOrange < 0.0545) {
                     telemetry.addData("Rings", "ZERO, " + (percentOrange * 100) + " % orange\n");
                     ringCount = 0;
@@ -186,17 +180,13 @@ public class Auton0 extends LinearOpMode {
                 }
                 telemetry.update();
 
-                webcam.closeCameraDeviceAsync(new OpenCvCamera.AsyncCameraCloseListener()
-                {
+                webcam.closeCameraDeviceAsync(new OpenCvCamera.AsyncCameraCloseListener() {
                     @Override
                     public void onClose() {}
                 });
             }
             return input;
         }
-
-        @Override
-        public void onViewportTapped() {}
 
     }
 
