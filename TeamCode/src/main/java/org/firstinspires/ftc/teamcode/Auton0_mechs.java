@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -39,6 +40,7 @@ public class Auton0_mechs extends LinearOpMode {
     DcMotorEx shooter;
     DcMotorEx conveyor;
     Servo wobbleClaw;
+    DigitalChannel wobbleSwitch;
     // Variables used to initialize gyro
     BNO055IMU imu;
     BNO055IMU.Parameters params;
@@ -56,8 +58,9 @@ public class Auton0_mechs extends LinearOpMode {
         motors[2] = (DcMotorEx) hardwareMap.dcMotor.get("LeftRear");
         motors[3] = (DcMotorEx) hardwareMap.dcMotor.get("RightRear");
 
-        wobbleMotor = (DcMotorEx) hardwareMap.dcMotor.get("WobbleMotor");
-        wobbleClaw = hardwareMap.servo.get("WobbleClaw");
+        wobbleMotor = (DcMotorEx) hardwareMap.dcMotor.get("wobblemotor");
+        wobbleClaw = hardwareMap.servo.get("wobbleservo");
+        wobbleSwitch = hardwareMap.digitalChannel.get("wobbleswitch");
         shooter = (DcMotorEx)hardwareMap.dcMotor.get("LeftShooter");
         conveyor = (DcMotorEx)hardwareMap.dcMotor.get("Conveyor");
 
@@ -67,6 +70,7 @@ public class Auton0_mechs extends LinearOpMode {
         // init zero power behavior
         for (int i = 0; i < 4 && opModeIsActive(); i++) motors[i].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        wobbleSwitch.setMode(DigitalChannel.Mode.INPUT);
         wobbleMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         wobbleClaw.setDirection(Servo.Direction.REVERSE);
         wobbleClaw.scaleRange(0,1);
@@ -143,13 +147,16 @@ public class Auton0_mechs extends LinearOpMode {
     void dropGoal(){
 
         wobbleMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        wobbleMotor.setTargetPosition((int)(288.0 * 26/10/180 * (162.47-90.0)));
+        wobbleMotor.setPower(0.05);
+        while (wobbleSwitch.getState()){
+            sleep(10);
+        }
+        wobbleMotor.setTargetPosition((int)(28 * 40 / 2.6 * 0.25));
         wobbleMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        wobbleMotor.setPower(0.5);
+        wobbleMotor.setPower(0.1);
         while(wobbleMotor.isBusy()){
             sleep(20);
         }
-
         wobbleClaw.setPosition(1);
 
     }
