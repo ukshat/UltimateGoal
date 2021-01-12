@@ -4,6 +4,7 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
@@ -93,15 +94,17 @@ public class Auton0 extends LinearOpMode {
 
         capturing = true;
 
-        sleep(300);
 
-
-        move(0, TILE_LENGTH * 1 - 2, 0.5);
-
-        sleep(100);
-
-        //re center robot in line with tape
-        move(1, TILE_LENGTH * 0.5, 0.5);
+//
+//        sleep(300);
+//
+//
+//        move(0, TILE_LENGTH * 1 - 2, 0.5);
+//
+//        sleep(100);
+//
+//        //re center robot in line with tape
+//        move(1, TILE_LENGTH * 0.5, 0.5);
 
         sleep(50);
 
@@ -216,6 +219,81 @@ public class Auton0 extends LinearOpMode {
     void dropGoal(){}
 
     void launch(){}
+
+    double map(double from){
+        return from / HORIZONTAL_STRAFE;
+    }
+
+    double findLargest(double[] powers){
+        double largest = Math.abs(powers[0]);
+        for(double d: powers) if(Math.abs(d) > largest) largest = Math.abs(d);
+        return largest;
+    }
+
+    void move(double deg, double distance, double speed){
+        //inch to ticks
+        distance *= TICKS_PER_INCH;
+
+        //deg to rad
+        deg = Math.toRadians(deg);
+
+        //x and y of mapped point on ellipse
+        double x = Math.cos(deg) * distance, y = map(Math.sin(deg)) * distance;
+
+        //rotate axis about origin by 45 deg ccw
+        deg = Math.asin(y/distance) + Math.PI/4;
+
+        //rewrite x and y to be mapped to new axis
+        x = Math.cos(deg) * distance;
+        y = map(Math.sin(deg)) * distance;
+
+        /*Front Left, Front Right, Back Left, Back Right*/
+        for(int i = 0; i < 4 && opModeIsActive(); i++) motors[i].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //FL
+        motors[0].setTargetPosition((int) y);
+        //FR
+        motors[1].setTargetPosition((int) x);
+        //BL
+        motors[2].setTargetPosition((int) x);
+        //BR
+        motors[3].setTargetPosition((int) y);
+
+        for(int i = 0; i < 4 && opModeIsActive(); i++) motors[i].setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        //set x and y to be between -0.5 and 0.5
+        double max = Math.abs(Math.max(x, y));
+        x = x / max * 0.5;
+        y = y / max * 0.5;
+
+        while ((motors[0].isBusy() || motors[1].isBusy() || motors[2].isBusy() || motors[3].isBusy()) && opModeIsActive()){
+            // delay
+            sleep(75);
+
+            //current position of motor travel
+            int currPos = motors[0].getCurrentPosition();
+
+            //calculate ticks per second
+            double xPow = fWithMaxPow(currPos, (int)distance, x);
+            double yPow = fWithMaxPow(currPos, (int)distance, y);
+
+            //FL
+            motors[0].setTargetPosition((int) yPow);
+            //FR
+            motors[1].setTargetPosition((int) xPow);
+            //BL
+            motors[2].setTargetPosition((int) xPow);
+            //BR
+            motors[3].setTargetPosition((int) yPow);
+        }
+
+        for(DcMotorEx m : motors) m.setVelocity(0);
+    }
+
+    // function to calculate power for motors given distance and current distance to ensure gradual increase and decrease in motor powers
+    // an equation for graph of powers assuming that the highest power is 0.5; graph it in Desmos to see
+    static double fWithMaxPow(int x, int n, double maxPow){
+        return maxPow * (-Math.pow((3.85 * Math.pow(x - n / 2, 2) / (n * n)), 1.75) + 1);
+    }
 
     /**
      * Configs:
