@@ -94,6 +94,12 @@ public class Auton0 extends LinearOpMode {
 
         capturing = true;
 
+        // Create the object used to keep track of the current angle of the robot
+        Orientation orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+
+        // The angle at which the robot starts at
+        double angle = -1;
+
 
 //
 //        sleep(300);
@@ -107,6 +113,23 @@ public class Auton0 extends LinearOpMode {
 //        move(1, TILE_LENGTH * 0.5, 0.5);
 
         move(-39.0, 6 + TILE_LENGTH / Math.sin(Math.toRadians(39)), 0.5);
+
+
+        for(int i = 0; i < 4; i++) motors[i].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        for(int i = 0; i < 4; i++) motors[i].setPower(0.2);
+
+        setDirection(4);
+
+        while (angle < 0){
+            // Updating the object that keeps track of orientation
+            orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            // Updates the variable which stores the current direction of the robot
+            angle = orientation.firstAngle;
+            // Delay
+            sleep(20);
+        }
+
+        for (DcMotor motor: motors) motor.setPower(0);
 
 //        telemetry.addLine("Launching rings\n");
 //
