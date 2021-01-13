@@ -69,8 +69,6 @@ public class Auton0_diagonal_test extends LinearOpMode {
         params.angleUnit = BNO055IMU.AngleUnit.DEGREES;
         imu.initialize(params);
 
-        initCam();
-
         waitForStart();
 
         move(26.56505118, 1.11803399 * TILE_LENGTH, 0.5);
