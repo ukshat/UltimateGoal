@@ -106,9 +106,7 @@ public class Auton0 extends LinearOpMode {
 //        //re center robot in line with tape
 //        move(1, TILE_LENGTH * 0.5, 0.5);
 
-        sleep(300);
-
-        move(-39.0, TILE_LENGTH / Math.sin(Math.toRadians(39)), 0.5);
+        move(-39.0, 6 + TILE_LENGTH / Math.sin(Math.toRadians(39)), 0.5);
 
 //        telemetry.addLine("Launching rings\n");
 //
@@ -290,7 +288,7 @@ public class Auton0 extends LinearOpMode {
             motors[3].setVelocity((int) yPow);
         }
 
-        for(DcMotorEx m : motors) m.setVelocity(0);
+        for(DcMotorEx m: motors) m.setVelocity(0);
     }
 
     // function to calculate power for motors given distance and current distance to ensure gradual increase and decrease in motor powers
