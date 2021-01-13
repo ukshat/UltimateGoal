@@ -71,7 +71,7 @@ public class Auton0_diagonal_test extends LinearOpMode {
 
         waitForStart();
 
-        move(26.56505118, 1.11803399 * TILE_LENGTH, 0.5);
+        move(26.56505118, 2 * TILE_LENGTH, 0.5);
 
     }
 
@@ -225,8 +225,8 @@ public class Auton0_diagonal_test extends LinearOpMode {
             int currPosY = motors[0].getCurrentPosition();
 
             //calculate ticks per second
-            double xPow = fWithMaxPow(currPosX, (int)distance, x);
-            double yPow = fWithMaxPow(currPosY, (int)distance, y);
+            double xPow = fWithMaxPow(currPosX, (int)distance, x) * 40 * TICKS_PER_INCH;
+            double yPow = fWithMaxPow(currPosY, (int)distance, y) * 40 * TICKS_PER_INCH;
 
             //FL
             motors[0].setVelocity((int) yPow);
