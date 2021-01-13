@@ -4,7 +4,6 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
@@ -25,7 +24,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 
 @Autonomous(name = "Autonomous")
-public class Auton0 extends LinearOpMode {
+public class Auton0_diagonal_test extends LinearOpMode {
 
     // length of a tile
     static final double TILE_LENGTH = 23.5;
@@ -74,55 +73,8 @@ public class Auton0 extends LinearOpMode {
 
         waitForStart();
 
-        for (int i = 0; i < 4 && opModeIsActive(); i++){
-            PIDFCoefficients pidfCoef = motors[i].getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
-            pidfCoef.p = pidfVals[0];
-            pidfCoef.i = pidfVals[1];
-            pidfCoef.d = pidfVals[2];
-            pidfCoef.f = pidfVals[3];
-            motors[i].setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoef);
-        }
+        move(26.56505118, 1.11803399 * TILE_LENGTH, 0.5);
 
-        for(int i = 0; i < 4 && opModeIsActive(); i++) println("" + i, motors[i].getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER));
-
-        //Move to stack
-        move(0, TILE_LENGTH * 1.5 + 6, 0.5);
-
-        webcam.startStreaming(160, 120, OpenCvCameraRotation.UPRIGHT);
-
-        sleep(100);
-
-        capturing = true;
-
-
-//
-//        sleep(300);
-//
-//
-//        move(0, TILE_LENGTH * 1 - 2, 0.5);
-//
-//        sleep(100);
-//
-//        //re center robot in line with tape
-//        move(1, TILE_LENGTH * 0.5, 0.5);
-
-        sleep(50);
-
-        telemetry.addLine("Launching rings\n");
-
-        launch();
-
-        int rings = pipeline.getRingCount();
-
-        //go to wobble drop zone
-        move(0, TILE_LENGTH * (((rings == 4) ? 2 : rings) + 0.5), 0.5);
-
-        telemetry.addLine("Dropping wobble\n");
-        telemetry.update();
-        dropGoal();
-
-        //go to launch line
-        move(2, TILE_LENGTH * ((rings == 4) ? 2 : rings), 0.5);
     }
 
     public void initCam() {
@@ -231,6 +183,7 @@ public class Auton0 extends LinearOpMode {
     }
 
     void move(double deg, double distance, double speed){
+        setDirection(0);
         //inch to ticks
         distance *= TICKS_PER_INCH;
 
@@ -262,28 +215,29 @@ public class Auton0 extends LinearOpMode {
 
         //set x and y to be between -0.5 and 0.5
         double max = Math.max(Math.abs(x), Math.abs(y));
-        x = x / max * 0.5;
-        y = y / max * 0.5;
+        x = x / max * speed;
+        y = y / max * speed;
 
         while ((motors[0].isBusy() || motors[1].isBusy() || motors[2].isBusy() || motors[3].isBusy()) && opModeIsActive()){
             // delay
             sleep(75);
 
             //current position of motor travel
-            int currPos = motors[0].getCurrentPosition();
+            int currPosX = motors[1].getCurrentPosition();
+            int currPosY = motors[0].getCurrentPosition();
 
             //calculate ticks per second
-            double xPow = fWithMaxPow(currPos, (int)distance, x);
-            double yPow = fWithMaxPow(currPos, (int)distance, y);
+            double xPow = fWithMaxPow(currPosX, (int)distance, x);
+            double yPow = fWithMaxPow(currPosY, (int)distance, y);
 
             //FL
-            motors[0].setTargetPosition((int) yPow);
+            motors[0].setVelocity((int) yPow);
             //FR
-            motors[1].setTargetPosition((int) xPow);
+            motors[1].setVelocity((int) xPow);
             //BL
-            motors[2].setTargetPosition((int) xPow);
+            motors[2].setVelocity((int) xPow);
             //BR
-            motors[3].setTargetPosition((int) yPow);
+            motors[3].setVelocity((int) yPow);
         }
 
         for(DcMotorEx m : motors) m.setVelocity(0);
@@ -292,7 +246,7 @@ public class Auton0 extends LinearOpMode {
     // function to calculate power for motors given distance and current distance to ensure gradual increase and decrease in motor powers
     // an equation for graph of powers assuming that the highest power is 0.5; graph it in Desmos to see
     static double fWithMaxPow(int x, int n, double maxPow){
-        return maxPow * (-Math.pow((3.85 * Math.pow(x - n / 2, 2) / (n * n)), 1.75) + 1);
+        return maxPow * (1 - Math.pow(3.85 * Math.pow(x - n / 2, 2) / (n * n), 1.75));
     }
 
     /**
