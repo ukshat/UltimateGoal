@@ -108,7 +108,7 @@ public class Auton0 extends LinearOpMode {
 
         sleep(300);
 
-        move(-45, TILE_LENGTH / Math.sin(Math.toRadians(-39)), 0.5);
+        move(-39.0, TILE_LENGTH / Math.sin(Math.toRadians(-39)), 0.5);
 
 //        telemetry.addLine("Launching rings\n");
 //
