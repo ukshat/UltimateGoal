@@ -81,6 +81,9 @@ public class Auton0 extends LinearOpMode {
 
         initCam();
 
+        Orientation orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        double startAngle = orientation.firstAngle;
+
         waitForStart();
 
         for (int i = 0; i < 4 && opModeIsActive(); i++){
@@ -103,12 +106,6 @@ public class Auton0 extends LinearOpMode {
 
         capturing = true;
 
-        // Create the object used to keep track of the current angle of the robot
-        Orientation orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-
-        // The angle at which the robot starts at
-        double angle = -1;
-
 
 //
 //        sleep(300);
@@ -129,7 +126,9 @@ public class Auton0 extends LinearOpMode {
 
         setDirection(4);
 
-        while (angle < 0){
+        double angle = orientation.firstAngle;
+
+        while (angle < startAngle){
             // Updating the object that keeps track of orientation
             orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             // Updates the variable which stores the current direction of the robot
