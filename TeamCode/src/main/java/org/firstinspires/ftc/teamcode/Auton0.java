@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -42,6 +43,10 @@ public class Auton0 extends LinearOpMode {
     // stores the current direction of the robot
     double currOrientation;
 
+    DcMotorEx shooter, conveyor, wobble;
+
+    Servo claw;
+
     DcMotorEx[/*Front Left, Front Right, Back Left, Back Right*/] motors = new DcMotorEx[4];
     // Variables used to initialize gyro
     BNO055IMU imu;
@@ -69,6 +74,10 @@ public class Auton0 extends LinearOpMode {
         params = new BNO055IMU.Parameters();
         params.angleUnit = BNO055IMU.AngleUnit.DEGREES;
         imu.initialize(params);
+
+        wobble = (DcMotorEx)hardwareMap.dcMotor.get("wobblemotor");
+        claw = hardwareMap.servo.get("wobbleservo");
+        claw.scaleRange(1.0/6.0, 5.0/6.0);
 
         initCam();
 
@@ -160,7 +169,7 @@ public class Auton0 extends LinearOpMode {
 
 
 
-    class RingCounterPipeline extends OpenCvPipeline {
+    class RingCounterPipeline extends OpenCvPipeline{
 
         private int ringCount = -1;
 
@@ -208,7 +217,8 @@ public class Auton0 extends LinearOpMode {
 
                 webcam.closeCameraDeviceAsync(new OpenCvCamera.AsyncCameraCloseListener() {
                     @Override
-                    public void onClose() {}
+                    public void onClose() {
+                    }
                 });
             }
             return input;
@@ -239,9 +249,25 @@ public class Auton0 extends LinearOpMode {
 
 
 
-    void dropGoal(){}
+    void dropGoal(){
+        wobble.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        wobble.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        wobble.setTargetPosition((int)(288.0 * 26/10/360 * (162.47-90.0)));
+        wobble.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        wobble.setPower(0.1);
+        while (wobble.isBusy() && opModeIsActive()){
+            sleep(20);
+        }
+        wobble.setPower(0);
+    }
 
-    void launch(){}
+    void launch(){
+        shooter.setVelocity(1000);
+        conveyor.setVelocity(100);
+        sleep(2000);
+        shooter.setVelocity(0);
+        conveyor.setVelocity(0);
+    }
 
     double map(double from){
         return from / HORIZONTAL_STRAFE;
