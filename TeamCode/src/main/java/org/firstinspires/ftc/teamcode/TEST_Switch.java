@@ -5,20 +5,20 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 
-@Autonomous (name = "wobble test")
+@Autonomous (name = "switch test")
 public class TEST_Switch extends LinearOpMode {
 
     DcMotor wobble;
     Servo claw;
-    DigitalChannel limitSwitch;
+    TouchSensor limitSwitch;
 
     @Override
     public void runOpMode() throws InterruptedException {
-        limitSwitch = hardwareMap.digitalChannel.get("wobbleswitch");
-        limitSwitch.setMode(DigitalChannel.Mode.INPUT);
+        limitSwitch = hardwareMap.touchSensor.get("wobbleswitch");
         wobble = hardwareMap.dcMotor.get("wobblemotor");
-//        claw = hardwareMap.servo.get("wobbleservo");
+        claw = hardwareMap.servo.get("wobbleservo");
         wobble.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 //        claw.scaleRange(0, 1);
 
@@ -27,7 +27,10 @@ public class TEST_Switch extends LinearOpMode {
         wobble.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         wobble.setPower(-0.1);
-        while(opModeIsActive() && !limitSwitch.getState()) sleep(20);
+        while(opModeIsActive() && !limitSwitch.isPressed()) sleep(20);
+
+        telemetry.addLine("Switch detected.");
+        telemetry.update();
 
 //        wobble.setTargetPosition((int)(288.0 * 26/10/180 * (162.47-90.0)));
 //        wobble.setMode(DcMotor.RunMode.RUN_TO_POSITION);
