@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -44,6 +45,8 @@ public class Auton0 extends LinearOpMode {
     double currOrientation;
 
     DcMotorEx shooter, conveyor, wobble;
+
+    ElapsedTime runTime;
 
     Servo claw;
 
@@ -84,7 +87,11 @@ public class Auton0 extends LinearOpMode {
         Orientation orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         double startAngle = orientation.firstAngle;
 
+        runTime = new ElapsedTime();
+
         waitForStart();
+
+        runTime.reset();
 
         for (int i = 0; i < 4 && opModeIsActive(); i++){
             PIDFCoefficients pidfCoef = motors[i].getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -154,6 +161,8 @@ public class Auton0 extends LinearOpMode {
 //
 //        //go to launch line
 //        move(2, TILE_LENGTH * ((rings == 4) ? 2 : rings), 0.5);
+        println("Time", runTime.toString());
+        sleep(30000);
     }
 
     public void initCam() {

@@ -18,7 +18,7 @@ public class TEST_Switch extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         limitSwitch = hardwareMap.touchSensor.get("wobbleswitch");
         wobble = hardwareMap.dcMotor.get("wobblemotor");
-        claw = hardwareMap.servo.get("wobbleservo");
+//        claw = hardwareMap.servo.get("wobbleservo");
         wobble.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 //        claw.scaleRange(0, 1);
 
@@ -39,10 +39,25 @@ public class TEST_Switch extends LinearOpMode {
 //            sleep(20);
 //        }
         wobble.setPower(0);
+        wobble.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        wobble.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        println("Angle", wobble.getCurrentPosition());
 //        claw.setPosition(1);
 //        while (claw.getPosition() < 0.9){
 //            sleep(20);
 //        }
 
+
+        sleep(7000);
+
+        println("Angle", wobble.getCurrentPosition());
+
+        sleep(30000);
+    }
+
+    void println(String cap, Object val){
+        telemetry.addLine(cap + ": " + val);
+        telemetry.update();
     }
 }

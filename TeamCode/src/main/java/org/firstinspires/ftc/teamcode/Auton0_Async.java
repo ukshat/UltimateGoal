@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -54,6 +55,8 @@ public class Auton0_Async extends LinearOpMode {
     BNO055IMU imu;
     BNO055IMU.Parameters params;
 
+    ElapsedTime runTime;
+
     OpenCvCamera webcam;
     RingCounterPipeline pipeline = new RingCounterPipeline();
     volatile boolean capturing = false;
@@ -86,7 +89,11 @@ public class Auton0_Async extends LinearOpMode {
         Orientation orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         double startAngle = orientation.firstAngle;
 
+        runTime = new ElapsedTime();
+
         waitForStart();
+
+        runTime.reset();
 
         for (int i = 0; i < 4 && opModeIsActive(); i++){
             PIDFCoefficients pidfCoef = motors[i].getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -126,15 +133,15 @@ public class Auton0_Async extends LinearOpMode {
         for(int i = 0; i < 4; i++) motors[i].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         for(int i = 0; i < 4; i++) motors[i].setPower(0.2);
 
-        setDirection(4);
+        setDirection(5);
 
-        double angle = orientation.firstAngle;
+        double currAngle = orientation.firstAngle;
 
-        while (angle < startAngle){
+        while (currAngle < startAngle){
             // Updating the object that keeps track of orientation
             orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             // Updates the variable which stores the current direction of the robot
-            angle = orientation.firstAngle;
+            currAngle = orientation.firstAngle;
             // Delay
             sleep(20);
         }
@@ -156,6 +163,9 @@ public class Auton0_Async extends LinearOpMode {
 //
 //        //go to launch line
 //        move(2, TILE_LENGTH * ((rings == 4) ? 2 : rings), 0.5);
+
+        println("Time", runTime.toString());
+        sleep(30000);
     }
 
     public void initCam() {
