@@ -81,8 +81,8 @@ public class Auton0_Async extends LinearOpMode {
         imu.initialize(params);
 
         wobble = (DcMotorEx)hardwareMap.dcMotor.get("wobblemotor");
-        claw = hardwareMap.servo.get("wobbleservo");
-        claw.scaleRange(1.0/6.0, 5.0/6.0);
+//        claw = hardwareMap.servo.get("wobbleservo");
+//        claw.scaleRange(1.0/6.0, 5.0/6.0);
 
         initCam();
 
@@ -133,7 +133,7 @@ public class Auton0_Async extends LinearOpMode {
         for(int i = 0; i < 4; i++) motors[i].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         for(int i = 0; i < 4; i++) motors[i].setPower(0.2);
 
-        setDirection(5);
+        setDirection(4);
 
         double currAngle = orientation.firstAngle;
 
@@ -358,7 +358,7 @@ public class Auton0_Async extends LinearOpMode {
     // function to calculate power for motors given distance and current distance to ensure gradual increase and decrease in motor powers
     // an equation for graph of powers assuming that the highest power is 0.5; graph it in Desmos to see
     static double fWithMaxPow(int x, int n, double maxPow){
-        return maxPow * (1 - Math.pow(3.85 * Math.pow(x - n / 2, 2) / (n * n), 1.75));
+        return maxPow * (1 - Math.pow(3.85 * Math.pow(x - n / 2, 2) / (n * n), 1.75)) + 0.1;
     }
 
     /**
@@ -412,7 +412,7 @@ public class Auton0_Async extends LinearOpMode {
     // function to calculate power for motors given distance and current distance to ensure gradual increase and decrease in motor powers
     // an equation for graph of powers assuming that the highest power is 0.5; graph it in Desmos to see
     static double f(int x, int n){
-        return -Math.pow((2.6 * Math.pow(x - n / 2, 2)) / (n * n), 1.75) + 0.5;
+        return -Math.pow((2.6 * Math.pow(x - n / 2, 2)) / (n * n), 1.75) + 0.6;
     }
 
     /**

@@ -79,8 +79,8 @@ public class Auton0 extends LinearOpMode {
         imu.initialize(params);
 
         wobble = (DcMotorEx)hardwareMap.dcMotor.get("wobblemotor");
-        claw = hardwareMap.servo.get("wobbleservo");
-        claw.scaleRange(1.0/6.0, 5.0/6.0);
+//        claw = hardwareMap.servo.get("wobbleservo");
+//        claw.scaleRange(1.0/6.0, 5.0/6.0);
 
         initCam();
 
