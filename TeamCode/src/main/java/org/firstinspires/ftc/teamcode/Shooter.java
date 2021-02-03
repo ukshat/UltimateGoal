@@ -19,7 +19,7 @@ public class Shooter extends LinearOpMode {
     //@Override
     public void runOpMode() {
         // Find each motor on the hardware map
-        shooter = hardwareMap.dcMotor.get("intake");
+        shooter = hardwareMap.dcMotor.get("shooter");
 
         //wait for driver to press play
         waitForStart();
