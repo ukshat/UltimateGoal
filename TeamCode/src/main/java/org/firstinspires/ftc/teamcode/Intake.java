@@ -10,14 +10,12 @@ public class Intake extends LinearOpMode {
     //declare OpMode members
     private ElapsedTime runtime = new ElapsedTime();
 
-    private DcMotor leftIntake;
-    private DcMotor rightIntake;
+    private DcMotor intake;
 
     @Override
     public void runOpMode() {
         // Find each motor on the hardware map
-        leftIntake = hardwareMap.dcMotor.get("Left Intake Wheel");
-        rightIntake = hardwareMap.dcMotor.get("Right Intake Wheel");
+        intake = hardwareMap.dcMotor.get("intake");
 
         //wait for driver to press play
         waitForStart();
@@ -39,9 +37,7 @@ public class Intake extends LinearOpMode {
                 activeGamepad = gamepad1;
             }
 
-            double intake = 1;
-            double shooting = activeGamepad.right_trigger;
-            double wobble = 1;
+            double intakePower = 1;
 
             // Create variables to hold the direction that the left stick was moved
             double x = activeGamepad.left_stick_x;
@@ -49,12 +45,10 @@ public class Intake extends LinearOpMode {
 
             // if gamepad is equal to a it sets the button for the intake to a
             if(activeGamepad.a){
-                leftIntake.setPower(intake);
-                rightIntake.setPower(intake);
+                intake.setPower(intakePower);
             }
 
-            telemetry.addData("left intake wheel motor", intake + "\n");
-            telemetry.addData("right intake wheel motor", intake + "\n");
+            telemetry.addData("intake wheel motor", intakePower + "\n");
         }
 
     }
