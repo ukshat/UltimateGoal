@@ -53,6 +53,7 @@ public class Intake extends LinearOpMode {
             }
 
             telemetry.addData("intake wheel motor", intakePower + "\n");
+            telemetry.update();
         }
 
     }
