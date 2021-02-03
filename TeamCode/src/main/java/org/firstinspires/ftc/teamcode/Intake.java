@@ -48,9 +48,9 @@ public class Intake extends LinearOpMode {
             double y = activeGamepad.left_stick_y;
 
             // if gamepad is equal to a it sets the button for the intake to a
-            if(activeGamepad.a){
-                intake.setPower(intakePower);
-            }
+            //if(activeGamepad.a){
+            intake.setPower(intakePower);
+            //}
 
             telemetry.addData("intake wheel motor", intakePower + "\n");
             telemetry.update();
