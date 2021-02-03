@@ -29,10 +29,10 @@ public class Shooter extends LinearOpMode {
 
             try {Thread.sleep(25);} catch (InterruptedException e) {} //sleep
 
-            double shootingPower = -gamepad1.right_trigger;
+            double shootingPower = gamepad1.right_trigger;
 
             // if gamepad is equal to a it sets the button for the intake to a
-            if(shootingPower < -0.4){
+            if(shootingPower > 0.4){
                 shooter.setPower(shootingPower);
             }
 
