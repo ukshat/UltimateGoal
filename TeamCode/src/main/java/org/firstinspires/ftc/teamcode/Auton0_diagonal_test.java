@@ -1,12 +1,11 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.rev.RevColorSensorV3;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -23,10 +22,9 @@ import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
-import java.awt.*;
 
-@TeleOp(name = "Orange Percentage Test")
-public class TEST_OrangePercentage extends LinearOpMode {
+@Autonomous(name = "Autonomous")
+public class Auton0_diagonal_test extends LinearOpMode {
 
     // length of a tile
     static final double TILE_LENGTH = 23.5;
@@ -48,13 +46,9 @@ public class TEST_OrangePercentage extends LinearOpMode {
     BNO055IMU imu;
     BNO055IMU.Parameters params;
 
-    ElapsedTime runtime;
-
-    RevColorSensorV3 color;
-
     OpenCvCamera webcam;
+    RingCounterPipeline pipeline = new RingCounterPipeline();
     volatile boolean capturing = false;
-    private RingCounterPipeline pipeline = new RingCounterPipeline();
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -67,10 +61,6 @@ public class TEST_OrangePercentage extends LinearOpMode {
         motors[2] = (DcMotorEx) hardwareMap.dcMotor.get("LeftRear");
         motors[3] = (DcMotorEx) hardwareMap.dcMotor.get("RightRear");
 
-        runtime = new ElapsedTime();
-
-        color = (RevColorSensorV3) hardwareMap.get("ColorSensorLeft");
-
         // init zero power behavior
         for (int i = 0; i < 4 && opModeIsActive(); i++) motors[i].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
@@ -79,42 +69,13 @@ public class TEST_OrangePercentage extends LinearOpMode {
         params.angleUnit = BNO055IMU.AngleUnit.DEGREES;
         imu.initialize(params);
 
-        initCam();
-
         waitForStart();
 
-        move(0,TILE_LENGTH * 1.5 + 6, 0.5);
-
-        runtime.reset();
-
-        webcam.startStreaming(160, 120, OpenCvCameraRotation.UPRIGHT);
-
-        sleep(100);
-
-        capturing = true;
-
-        while(capturing && opModeIsActive()){
-            sleep(20);
-        }
-
-        webcam.stopStreaming();
-
-        webcam.closeCameraDeviceAsync(new OpenCvCamera.AsyncCameraCloseListener() {
-            @Override
-            public void onClose() {
-
-            }
-        });
-
-        println("Times", runtime.toString());
-
-        sleep(10000);
+        move(26.56505118, 2 * TILE_LENGTH, 0.5);
 
     }
 
     public void initCam() {
-//        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-//        webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"));
         webcam.setPipeline(pipeline);
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
@@ -124,9 +85,9 @@ public class TEST_OrangePercentage extends LinearOpMode {
         });
     }
 
-    class RingCounterPipeline extends OpenCvPipeline
-    {
-        boolean viewportPaused;
+
+
+    class RingCounterPipeline extends OpenCvPipeline {
 
         private int ringCount = -1;
 
@@ -136,52 +97,49 @@ public class TEST_OrangePercentage extends LinearOpMode {
         );
 
         public int getRingCount() {
+            while (ringCount == -1) {
+                sleep(20);
+            }
             return ringCount;
         }
 
         @Override
         public Mat processFrame(Mat input) {
             // enters this if statement if we have reached the rings and are attempting to capture an image
-            if(capturing){
-                // immediately set capturing as false so that it exits the while loop and begins driving to the next location while we determine number of rings
+            if(capturing) {
+                // immediately set as false to ensure only one frame is processed
                 capturing = false;
-                // ring detection code
-
                 Mat mat = new Mat();
                 Imgproc.cvtColor(input, mat, Imgproc.COLOR_RGB2HSV_FULL);
 
                 Scalar lowHSV = new Scalar(27, 50, 50);
                 Scalar highHSV = new Scalar(47, 255, 255);
+                Core.inRange(mat, lowHSV, highHSV, mat);
 
                 // crop the image to remove useless background
                 mat = mat.submat(rect);
 
-                Core.inRange(mat, lowHSV, highHSV, mat);
-
                 double percentOrange = Core.sumElems(mat).val[0] / rect.area() / 255;
-
                 mat.release();
-
-                telemetry.addData("% Orange", percentOrange + "\n");
-
-                if (percentOrange < 0.0545){
-                    telemetry.addLine("ZERO");
+                if (percentOrange < 0.0545) {
+                    telemetry.addData("Rings", "ZERO, " + (percentOrange * 100) + " % orange\n");
                     ringCount = 0;
-                } else if (percentOrange < 0.185){
-                    telemetry.addLine("ONE");
+                } else if (percentOrange < 0.185) {
+                    telemetry.addData("Rings", "ONE, " + (percentOrange * 100) + " % orange\n");
                     ringCount = 1;
                 } else {
-                    telemetry.addLine("FOUR");
+                    telemetry.addData("Rings", "FOUR, " + (percentOrange * 100) + " % orange\n");
                     ringCount = 4;
                 }
                 telemetry.update();
 
+                webcam.closeCameraDeviceAsync(new OpenCvCamera.AsyncCameraCloseListener() {
+                    @Override
+                    public void onClose() {}
+                });
             }
             return input;
         }
-
-        @Override
-        public void onViewportTapped() {}
 
     }
 
@@ -208,20 +166,102 @@ public class TEST_OrangePercentage extends LinearOpMode {
 
 
 
+    void dropGoal(){}
 
+    void launch(){}
 
-    static void dropGoal(){}
+    double map(double from){
+        return from / HORIZONTAL_STRAFE;
+    }
 
-    static void launch(){}
+    double findLargest(double[] powers){
+        double largest = Math.abs(powers[0]);
+        for(double d: powers) if(Math.abs(d) > largest) largest = Math.abs(d);
+        return largest;
+    }
 
+    void move(double deg, double distance, double speed){
+        setDirection(0);
+        //inch to ticks
+        distance *= TICKS_PER_INCH;
+
+        //deg to rad
+        deg = Math.toRadians(deg);
+
+        //x and y of mapped point on ellipse
+        double x = Math.cos(deg) * distance, y = map(Math.sin(deg)) * distance;
+
+        //rotate axis about origin by 45 deg ccw
+        deg = Math.asin(y/distance) + Math.PI/4;
+
+        //rewrite x and y to be mapped to new axis
+        x = Math.cos(deg) * distance;
+        y = map(Math.sin(deg)) * distance;
+
+        /*Front Left, Front Right, Back Left, Back Right*/
+        for(int i = 0; i < 4 && opModeIsActive(); i++) motors[i].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //FL
+        motors[0].setTargetPosition((int) y);
+        //FR
+        motors[1].setTargetPosition((int) x);
+        //BL
+        motors[2].setTargetPosition((int) x);
+        //BR
+        motors[3].setTargetPosition((int) y);
+
+        for(int i = 0; i < 4 && opModeIsActive(); i++) motors[i].setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        //set x and y to be between -0.5 and 0.5
+        double max = Math.max(Math.abs(x), Math.abs(y));
+        x = x / max * speed;
+        y = y / max * speed;
+
+        while ((motors[0].isBusy() || motors[1].isBusy() || motors[2].isBusy() || motors[3].isBusy()) && opModeIsActive()){
+            // delay
+            sleep(75);
+
+            //current position of motor travel
+            int currPosX = motors[1].getCurrentPosition();
+            int currPosY = motors[0].getCurrentPosition();
+
+            //calculate ticks per second
+            double xPow = fWithMaxPow(currPosX, (int)distance, x) * 40 * TICKS_PER_INCH;
+            double yPow = fWithMaxPow(currPosY, (int)distance, y) * 40 * TICKS_PER_INCH;
+
+            //FL
+            motors[0].setVelocity((int) yPow);
+            //FR
+            motors[1].setVelocity((int) xPow);
+            //BL
+            motors[2].setVelocity((int) xPow);
+            //BR
+            motors[3].setVelocity((int) yPow);
+        }
+
+        for(DcMotorEx m : motors) m.setVelocity(0);
+    }
+
+    // function to calculate power for motors given distance and current distance to ensure gradual increase and decrease in motor powers
+    // an equation for graph of powers assuming that the highest power is 0.5; graph it in Desmos to see
+    static double fWithMaxPow(int x, int n, double maxPow){
+        return maxPow * (1 - Math.pow(3.85 * Math.pow(x - n / 2, 2) / (n * n), 1.75));
+    }
+
+    /**
+     * Configs:
+     *  0: forward
+     *  1: right
+     *  2: backward
+     *  3: left
+     * @params degrees linear direction to move the robot (0 degrees is forward
+     * @params distance distance at which to move robot
+     * @params power speed at which motors will run -- affects speed of movement
+     * */
     void move(int config, double distance, double speed){
         setDirection(config);
         for(int i = 0; i < 4 && opModeIsActive(); i++){
             // reset encoders
             motors[i].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            // set power to motors
-//            motors[i].setPower(speed);
-            // set target position
             // if left/right, multiply by horizontal strafe constant
             motors[i].setTargetPosition((int)(distance * TICKS_PER_INCH * (config % 2 == 1 ? HORIZONTAL_STRAFE : 1)));
             motors[i].setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -242,12 +282,15 @@ public class TEST_OrangePercentage extends LinearOpMode {
         // continue the while loop until all motors complete movement
         while ((motors[0].isBusy() || motors[1].isBusy() || motors[2].isBusy() || motors[3].isBusy()) && opModeIsActive()){
             // delay
-            try {Thread.sleep(75);} catch (InterruptedException e) {} //sleep
+            sleep(75); //sleep
             // if we choose to, increment speed gradually to minimize jerking motion
             if(slowDown){
                 int currPos = motors[0].getCurrentPosition();
                 double pow = f(currPos, totalTick);
                 for(DcMotorEx motor : motors) motor.setVelocity(40 * pow * TICKS_PER_INCH);
+            }
+            else {
+                for(DcMotorEx motor : motors) motor.setVelocity(680);
             }
         }
     }
