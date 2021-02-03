@@ -29,28 +29,12 @@ public class Intake extends LinearOpMode {
 
             try {Thread.sleep(25);} catch (InterruptedException e) {} //sleep
 
-            Gamepad activeGamepad = gamepad1;
-
-            // if the left stick on gamepad 2 is pressed we change the active gamepad to gamepad2
-            if(gamepad2.left_stick_button){
-                activeGamepad = gamepad2;
-            }
-
-            // if the left stick on gamepad 1 is pressed we change the active gamepad to gamepad1
-            if(gamepad1.left_stick_button){
-                activeGamepad = gamepad1;
-            }
-
-            double intakePower = 1;
-
-            // Create variables to hold the direction that the left stick was moved
-            double x = activeGamepad.left_stick_x;
-            double y = activeGamepad.left_stick_y;
+            double intakePower = -1;
 
             // if gamepad is equal to a it sets the button for the intake to a
-            //if(activeGamepad.a){
-            intake.setPower(intakePower);
-            //}
+            if(gamepad1.a){
+                intake.setPower(intakePower);
+            }
 
             telemetry.addData("intake wheel motor", intakePower + "\n");
             telemetry.update();
