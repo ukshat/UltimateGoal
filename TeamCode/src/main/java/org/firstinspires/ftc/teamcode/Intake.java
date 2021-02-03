@@ -1,9 +1,13 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+@TeleOp(name="Basic: Intake", group="Linear Opmode")
+//@Disabled
 
 public class Intake extends LinearOpMode {
 
@@ -12,7 +16,7 @@ public class Intake extends LinearOpMode {
 
     private DcMotor intake;
 
-    @Override
+    //@Override
     public void runOpMode() {
         // Find each motor on the hardware map
         intake = hardwareMap.dcMotor.get("intake");
