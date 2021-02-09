@@ -42,18 +42,22 @@ public class Auton0 extends LinearOpMode {
     static final double HORIZONTAL_STRAFE = 36.0 / 30.75;
 
     // stores the current direction of the robot
-    double currOrientation;
+    double currOrientation, startAngle;
 
-    DcMotorEx shooter, conveyor, wobble;
-
-    ElapsedTime runTime;
+    DcMotorEx shooter, wobble;
 
     Servo claw;
+
+    Orientation orientation;
+
+    volatile Mat img;
 
     DcMotorEx[/*Front Left, Front Right, Back Left, Back Right*/] motors = new DcMotorEx[4];
     // Variables used to initialize gyro
     BNO055IMU imu;
     BNO055IMU.Parameters params;
+
+    ElapsedTime runTime;
 
     OpenCvCamera webcam;
     RingCounterPipeline pipeline = new RingCounterPipeline();
@@ -69,6 +73,7 @@ public class Auton0 extends LinearOpMode {
         motors[1] = (DcMotorEx) hardwareMap.dcMotor.get("RightFront");
         motors[2] = (DcMotorEx) hardwareMap.dcMotor.get("LeftRear");
         motors[3] = (DcMotorEx) hardwareMap.dcMotor.get("RightRear");
+        shooter   = (DcMotorEx) hardwareMap.dcMotor.get("shooter");
 
         // init zero power behavior
         for (int i = 0; i < 4 && opModeIsActive(); i++) motors[i].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -83,9 +88,6 @@ public class Auton0 extends LinearOpMode {
 //        claw.scaleRange(1.0/6.0, 5.0/6.0);
 
         initCam();
-
-        Orientation orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        double startAngle = orientation.firstAngle;
 
         runTime = new ElapsedTime();
 
@@ -113,56 +115,40 @@ public class Auton0 extends LinearOpMode {
 
         capturing = true;
 
-
-//
-//        sleep(300);
-//
-//
-//        move(0, TILE_LENGTH * 1 - 2, 0.5);
-//
-//        sleep(100);
-//
-//        //re center robot in line with tape
-//        move(1, TILE_LENGTH * 0.5, 0.5);
-
         move(-39.0, 6 + TILE_LENGTH / Math.sin(Math.toRadians(39)), 0.5);
 
+        telemetry.addLine("Launching rings\n");
 
-        for(int i = 0; i < 4; i++) motors[i].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        for(int i = 0; i < 4; i++) motors[i].setPower(0.2);
+        launch();
 
-        setDirection(4);
+        int rings = pipeline.getRingCount();
 
-        double angle = orientation.firstAngle;
+        //go to wobble drop zone
+        switch(rings){
+            case 0:
+                move(-45, Math.sqrt(2 * Math.pow(TILE_LENGTH / 2, 2)), 0.5);
+                break;
 
-        while (angle < startAngle){
-            // Updating the object that keeps track of orientation
-            orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-            // Updates the variable which stores the current direction of the robot
-            angle = orientation.firstAngle;
-            // Delay
-            sleep(20);
+            case 1:
+                move(90 - Math.atan(3), Math.sqrt(Math.pow(TILE_LENGTH / 2, 2) + Math.pow(TILE_LENGTH * 1.5, 2)), 0.5);
+                break;
+
+            case 4:
+                move(90 - Math.atan(10), Math.sqrt(Math.pow(TILE_LENGTH / 2, 2) + Math.pow(TILE_LENGTH * 3.5, 2)), 0.5);
+
         }
 
-        for (DcMotor motor: motors) motor.setPower(0);
+        dropGoal();
 
-//        telemetry.addLine("Launching rings\n");
-//
-//        launch();
-//
-//        int rings = pipeline.getRingCount();
-//
-//        //go to wobble drop zone
-//        move(0, TILE_LENGTH * (((rings == 4) ? 2 : rings) + 0.5), 0.5);
-//
-//        telemetry.addLine("Dropping wobble\n");
-//        telemetry.update();
-//        dropGoal();
-//
-//        //go to launch line
-//        move(2, TILE_LENGTH * ((rings == 4) ? 2 : rings), 0.5);
-        println("Time", runTime.toString());
-        sleep(30000);
+        switch(rings){
+            case 1:
+                move(2, TILE_LENGTH, 0.5);
+                break;
+
+            case 4:
+                move(2, TILE_LENGTH * 2, 0.5);
+
+        }
     }
 
     public void initCam() {
@@ -178,7 +164,6 @@ public class Auton0 extends LinearOpMode {
 
 
     class RingCounterPipeline extends OpenCvPipeline{
-
         private int ringCount = -1;
 
         Rect rect = new Rect(
@@ -192,42 +177,47 @@ public class Auton0 extends LinearOpMode {
             }
             return ringCount;
         }
-
         @Override
         public Mat processFrame(Mat input) {
+            img = input;
             // enters this if statement if we have reached the rings and are attempting to capture an image
-            if(capturing) {
+            if(capturing){
                 // immediately set as false to ensure only one frame is processed
                 capturing = false;
-                Mat mat = new Mat();
-                Imgproc.cvtColor(input, mat, Imgproc.COLOR_RGB2HSV_FULL);
-
-                Scalar lowHSV = new Scalar(27, 50, 50);
-                Scalar highHSV = new Scalar(47, 255, 255);
-                Core.inRange(mat, lowHSV, highHSV, mat);
-
-                // crop the image to remove useless background
-                mat = mat.submat(rect);
-
-                double percentOrange = Core.sumElems(mat).val[0] / rect.area() / 255;
-                mat.release();
-                if (percentOrange < 0.0545) {
-                    telemetry.addData("Rings", "ZERO, " + (percentOrange * 100) + " % orange\n");
-                    ringCount = 0;
-                } else if (percentOrange < 0.185) {
-                    telemetry.addData("Rings", "ONE, " + (percentOrange * 100) + " % orange\n");
-                    ringCount = 1;
-                } else {
-                    telemetry.addData("Rings", "FOUR, " + (percentOrange * 100) + " % orange\n");
-                    ringCount = 4;
-                }
-                telemetry.update();
-
-                webcam.closeCameraDeviceAsync(new OpenCvCamera.AsyncCameraCloseListener() {
+                new Thread(new Runnable() {
                     @Override
-                    public void onClose() {
+                    public void run() {
+                        Mat mat = new Mat();
+                        Imgproc.cvtColor(img, mat, Imgproc.COLOR_RGB2HSV_FULL);
+
+                        Scalar lowHSV = new Scalar(27, 50, 50);
+                        Scalar highHSV = new Scalar(47, 255, 255);
+                        Core.inRange(mat, lowHSV, highHSV, mat);
+
+                        // crop the image to remove useless background
+                        mat = mat.submat(rect);
+
+                        double percentOrange = Core.sumElems(mat).val[0] / rect.area() / 255;
+                        mat.release();
+                        if (percentOrange < 0.0545) {
+                            telemetry.addData("Rings", "ZERO, " + (percentOrange * 100) + " % orange\n");
+                            ringCount = 0;
+                        } else if (percentOrange < 0.185) {
+                            telemetry.addData("Rings", "ONE, " + (percentOrange * 100) + " % orange\n");
+                            ringCount = 1;
+                        } else {
+                            telemetry.addData("Rings", "FOUR, " + (percentOrange * 100) + " % orange\n");
+                            ringCount = 4;
+                        }
+                        telemetry.update();
+
+                        webcam.closeCameraDeviceAsync(new OpenCvCamera.AsyncCameraCloseListener() {
+                            @Override
+                            public void onClose() {
+                            }
+                        });
                     }
-                });
+                }).run();
             }
             return input;
         }
@@ -258,23 +248,12 @@ public class Auton0 extends LinearOpMode {
 
 
     void dropGoal(){
-        wobble.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        wobble.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        wobble.setTargetPosition((int)(288.0 * 26/10/360 * (162.47-90.0)));
-        wobble.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        wobble.setPower(0.1);
-        while (wobble.isBusy() && opModeIsActive()){
-            sleep(20);
-        }
-        wobble.setPower(0);
     }
 
     void launch(){
         shooter.setVelocity(1000);
-        conveyor.setVelocity(100);
         sleep(2000);
         shooter.setVelocity(0);
-        conveyor.setVelocity(0);
     }
 
     double map(double from){
@@ -346,12 +325,33 @@ public class Auton0 extends LinearOpMode {
         }
 
         for(DcMotorEx m: motors) m.setVelocity(0);
+
+        orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        startAngle = orientation.firstAngle;
+
+        for(int i = 0; i < 4; i++) motors[i].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        for(int i = 0; i < 4; i++) motors[i].setPower(0.2);
+
+        setDirection(4);
+
+        double currAngle = orientation.firstAngle;
+
+        while (currAngle < startAngle){
+            // Updating the object that keeps track of orientation
+            orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            // Updates the variable which stores the current direction of the robot
+            currAngle = orientation.firstAngle;
+            // Delay
+            sleep(20);
+        }
+
+        for (DcMotor motor: motors) motor.setPower(0);
     }
 
     // function to calculate power for motors given distance and current distance to ensure gradual increase and decrease in motor powers
     // an equation for graph of powers assuming that the highest power is 0.5; graph it in Desmos to see
     static double fWithMaxPow(int x, int n, double maxPow){
-        return maxPow * (1 - Math.pow(3.85 * Math.pow(x - n / 2, 2) / (n * n), 1.75));
+        return maxPow * (1 - Math.pow(3.85 * Math.pow(x - n / 2, 2) / (n * n), 1.75)) + 0.1;
     }
 
     /**
@@ -405,7 +405,7 @@ public class Auton0 extends LinearOpMode {
     // function to calculate power for motors given distance and current distance to ensure gradual increase and decrease in motor powers
     // an equation for graph of powers assuming that the highest power is 0.5; graph it in Desmos to see
     static double f(int x, int n){
-        return -Math.pow((2.6 * Math.pow(x - n / 2, 2)) / (n * n), 1.75) + 0.5;
+        return -Math.pow((2.6 * Math.pow(x - n / 2, 2)) / (n * n), 1.75) + 0.6;
     }
 
     /**

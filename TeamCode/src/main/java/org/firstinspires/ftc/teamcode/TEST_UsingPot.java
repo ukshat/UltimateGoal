@@ -19,38 +19,45 @@ public class TEST_UsingPot extends LinearOpMode {
     }
 
     class Pot{
+
         DcMotorEx motor;
         AnalogInput inp;
         volatile double target;
-        volatile boolean moving;
+        volatile boolean shouldMove = true;
         double lowerBound = 0, upperBound = 3.3;
+
         public Pot() {
             motor = (DcMotorEx) hardwareMap.get("wobblemotor");
             inp = hardwareMap.analogInput.get("");
         }
+
         public double getPosition() {
             return (inp.getVoltage() - lowerBound) * 100 / (upperBound - lowerBound);
-
         }
+
         public void setPosition(double newTarget){
-            this.target = newTarget;
-            if (newTarget >= 0 && newTarget <= 100 && newTarget != target && ! moving)new Thread(new Runnable(){
+            if (shouldMove) {
+                this.target = newTarget;
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        shouldMove = false;
+                        if (target > getPosition()) {
+                            motor.setVelocity(400);
+                            while (!shouldMove && target > getPosition() && opModeIsActive() && getPosition() < upperBound) sleep(20);
+                        } else {
+                            motor.setVelocity(-400);
+                            while (!shouldMove && target < getPosition() && opModeIsActive() && getPosition() > lowerBound) sleep(20);
+                        }
 
-                @Override
-                public void run() {
-                    moving = true;
-                    if (target > getPosition()){
-                        motor.setVelocity(400);
-                        while (target > getPosition() && opModeIsActive() &&  getPosition() < upperBound ) sleep(20);
-                    } else{
-                        motor.setVelocity(-400);
-                        while (target < getPosition() && opModeIsActive() &&  getPosition() > lowerBound ) sleep(20);
+                        shouldMove = true;
                     }
-
-                    moving = false;
-                }
-            }).run();
-
+                }).run();
+            }
+            else{
+                shouldMove = true;
+                setPosition(newTarget);
+            }
         }
     }
 }
