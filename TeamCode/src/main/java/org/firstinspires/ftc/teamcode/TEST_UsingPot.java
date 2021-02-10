@@ -1,12 +1,13 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.AnalogInputController;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-
+@Autonomous(name = "Pot Test")
 public class TEST_UsingPot extends LinearOpMode {
     DcMotorEx wobble;
     Pot pot;
@@ -15,7 +16,7 @@ public class TEST_UsingPot extends LinearOpMode {
         wobble = (DcMotorEx) hardwareMap.get("wobblemotor");
         pot = new Pot ();
         waitForStart();
-        pot.setPosition(5);
+        pot.setPosition(95);
     }
 
     class Pot{
@@ -24,11 +25,11 @@ public class TEST_UsingPot extends LinearOpMode {
         AnalogInput inp;
         volatile double target;
         volatile boolean shouldMove = true;
-        double lowerBound = 0, upperBound = 3.3;
+        double lowerBound = 0.3, upperBound = 1.35;
 
         public Pot() {
             motor = (DcMotorEx) hardwareMap.get("wobblemotor");
-            inp = hardwareMap.analogInput.get("");
+            inp = hardwareMap.analogInput.get("wobblepot");
         }
 
         public double getPosition() {
@@ -43,11 +44,11 @@ public class TEST_UsingPot extends LinearOpMode {
                     public void run() {
                         shouldMove = false;
                         if (target > getPosition()) {
-                            motor.setVelocity(400);
-                            while (!shouldMove && target > getPosition() && opModeIsActive() && getPosition() < upperBound) sleep(20);
+                            motor.setVelocity(100);
+                            while (!shouldMove && target > getPosition() && opModeIsActive() && inp.getVoltage() < upperBound) sleep(20);
                         } else {
-                            motor.setVelocity(-400);
-                            while (!shouldMove && target < getPosition() && opModeIsActive() && getPosition() > lowerBound) sleep(20);
+                            motor.setVelocity(-100);
+                            while (!shouldMove && target < getPosition() && opModeIsActive() && inp.getVoltage() > lowerBound) sleep(20);
                         }
 
                         shouldMove = true;
