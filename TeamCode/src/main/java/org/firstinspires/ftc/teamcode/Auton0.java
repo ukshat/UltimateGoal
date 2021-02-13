@@ -264,6 +264,10 @@ public class Auton0 extends LinearOpMode {
     }
 
     void move(double deg, double distance, double speed){
+
+        orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        startAngle = orientation.firstAngle;
+
         setDirection(0);
         //inch to ticks
         distance *= TICKS_PER_INCH;
@@ -323,9 +327,6 @@ public class Auton0 extends LinearOpMode {
 
         for(DcMotorEx m: motors) m.setVelocity(0);
 
-        orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        startAngle = orientation.firstAngle;
-
         for(int i = 0; i < 4; i++) motors[i].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         for(int i = 0; i < 4; i++) motors[i].setPower(0.2);
 
@@ -333,8 +334,8 @@ public class Auton0 extends LinearOpMode {
 
         double currAngle = orientation.firstAngle;
 
-        println("current angle", currAngle);
-        println("start angle", startAngle);
+        telemetry.addData("angles", currAngle + ", " + startAngle);
+        telemetry.update();
 
         while (currAngle < startAngle){
             // Updating the object that keeps track of orientation
