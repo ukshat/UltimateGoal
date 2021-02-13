@@ -104,8 +104,6 @@ public class Auton0 extends LinearOpMode {
             motors[i].setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoef);
         }
 
-        for(int i = 0; i < 4 && opModeIsActive(); i++) println("" + i, motors[i].getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER));
-
         //Move to stack
         move(0, TILE_LENGTH * 1.5 + 6, 0.5);
 
@@ -117,7 +115,7 @@ public class Auton0 extends LinearOpMode {
 
         move(-39.0, 6 + TILE_LENGTH / Math.sin(Math.toRadians(39)), 0.5);
 
-        telemetry.addLine("Launching rings\n");
+//        telemetry.addLine("Launching rings\n");
 
         launch();
 
@@ -149,6 +147,8 @@ public class Auton0 extends LinearOpMode {
                 move(2, TILE_LENGTH * 2, 0.5);
 
         }
+
+        sleep(30000);
     }
 
     public void initCam() {
@@ -200,13 +200,10 @@ public class Auton0 extends LinearOpMode {
                         double percentOrange = Core.sumElems(mat).val[0] / rect.area() / 255;
                         mat.release();
                         if (percentOrange < 0.0545) {
-                            telemetry.addData("Rings", "ZERO, " + (percentOrange * 100) + " % orange\n");
                             ringCount = 0;
                         } else if (percentOrange < 0.185) {
-                            telemetry.addData("Rings", "ONE, " + (percentOrange * 100) + " % orange\n");
                             ringCount = 1;
                         } else {
-                            telemetry.addData("Rings", "FOUR, " + (percentOrange * 100) + " % orange\n");
                             ringCount = 4;
                         }
                         telemetry.update();
@@ -335,6 +332,9 @@ public class Auton0 extends LinearOpMode {
         setDirection(4);
 
         double currAngle = orientation.firstAngle;
+
+        println("current angle", currAngle);
+        println("start angle", startAngle);
 
         while (currAngle < startAngle){
             // Updating the object that keeps track of orientation
