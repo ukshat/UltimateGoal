@@ -339,7 +339,7 @@ public class Auton0 extends LinearOpMode {
         telemetry.addData("angles", currAngle + ", " + startAngle);
         telemetry.update();
 
-        while (currAngle < startAngle){
+        while (currAngle > startAngle){
             // Updating the object that keeps track of orientation
             orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             // Updates the variable which stores the current direction of the robot
