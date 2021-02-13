@@ -332,6 +332,8 @@ public class Auton0 extends LinearOpMode {
 
         setDirection(4);
 
+        orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+
         double currAngle = orientation.firstAngle;
 
         telemetry.addData("angles", currAngle + ", " + startAngle);
