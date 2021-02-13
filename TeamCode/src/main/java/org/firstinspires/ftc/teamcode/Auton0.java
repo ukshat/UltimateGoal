@@ -126,7 +126,7 @@ public class Auton0 extends LinearOpMode {
         //go to wobble drop zone
         switch(rings){
             case 0:
-                move(-45, Math.sqrt(2 * Math.pow(TILE_LENGTH / 2, 2)), 0.5);
+                move(45.0, Math.sqrt(2 * Math.pow(TILE_LENGTH / 2, 2)), 0.5);
                 break;
 
             case 1:
