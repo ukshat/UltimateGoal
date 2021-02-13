@@ -107,7 +107,7 @@ public class Auton0 extends LinearOpMode {
         //Move to stack
         move(0, TILE_LENGTH * 1.5 + 6, 0.5);
 
-        webcam.startStreaming(160, 120, OpenCvCameraRotation.UPRIGHT);
+        webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
 
         sleep(100);
 
