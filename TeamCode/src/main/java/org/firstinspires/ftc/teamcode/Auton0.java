@@ -130,11 +130,11 @@ public class Auton0 extends LinearOpMode {
                 break;
 
             case 1:
-                move(90 - Math.atan(3), Math.sqrt(Math.pow(TILE_LENGTH / 2, 2) + Math.pow(TILE_LENGTH * 1.5, 2)), 0.5);
+                move(Math.toDegrees(Math.atan(1.0/3)), Math.sqrt(Math.pow(TILE_LENGTH / 2, 2) + Math.pow(TILE_LENGTH * 1.5, 2)), 0.5);
                 break;
 
             case 4:
-                move(90 - Math.atan(10), Math.sqrt(Math.pow(TILE_LENGTH / 2, 2) + Math.pow(TILE_LENGTH * 3.5, 2)), 0.5);
+                move(Math.toDegrees(Math.atan(1.0/10)), Math.sqrt(Math.pow(TILE_LENGTH / 2, 2) + Math.pow(TILE_LENGTH * 3.5, 2)), 0.5);
 
         }
 
