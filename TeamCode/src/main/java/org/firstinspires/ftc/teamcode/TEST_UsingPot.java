@@ -14,9 +14,11 @@ public class TEST_UsingPot extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         wobble = (DcMotorEx) hardwareMap.get("wobblemotor");
-        pot = new Pot ();
+        pot = new Pot();
         waitForStart();
-        pot.setPosition(95);
+        pot.setPosition(75);
+
+        sleep(20000);
     }
 
     class Pot{
@@ -37,6 +39,11 @@ public class TEST_UsingPot extends LinearOpMode {
         }
 
         public void setPosition(double newTarget){
+            telemetry.addData("Target", newTarget);
+            telemetry.update();
+
+            sleep(3000);
+
             if (shouldMove) {
                 this.target = newTarget;
                 new Thread(new Runnable() {
@@ -44,14 +51,26 @@ public class TEST_UsingPot extends LinearOpMode {
                     public void run() {
                         shouldMove = false;
                         if (target > getPosition()) {
-                            motor.setVelocity(100);
-                            while (!shouldMove && target > getPosition() && opModeIsActive() && inp.getVoltage() < upperBound) sleep(20);
-                        } else {
                             motor.setVelocity(-100);
-                            while (!shouldMove && target < getPosition() && opModeIsActive() && inp.getVoltage() > lowerBound) sleep(20);
+                            while (!shouldMove && target > getPosition() && opModeIsActive() && inp.getVoltage() < upperBound){
+                                sleep(20);
+
+                                telemetry.addData("Position", getPosition());
+                                telemetry.update();
+                            }
+                        } else {
+                            motor.setVelocity(100);
+                            while (!shouldMove && target < getPosition() && opModeIsActive() && inp.getVoltage() > lowerBound){
+                                sleep(20);
+
+                                telemetry.addData("Position", getPosition());
+                                telemetry.update();
+                            }
                         }
 
                         shouldMove = true;
+
+                        motor.setVelocity(0);
                     }
                 }).run();
             }
