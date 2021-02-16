@@ -53,6 +53,8 @@ public class TEST_OrangePercentage extends LinearOpMode {
     RevColorSensorV3 color;
 
     OpenCvCamera webcam;
+
+    volatile Mat img;
     volatile boolean capturing = false;
     private RingCounterPipeline pipeline = new RingCounterPipeline();
 
@@ -130,52 +132,46 @@ public class TEST_OrangePercentage extends LinearOpMode {
 
         private int ringCount = -1;
 
-        Rect rect = new Rect(
-                new Point(160 * 0.25, 120 * 0.05),
-                new Point(160 * 0.9, 120 * 0.9)
-        );
-
         public int getRingCount() {
             return ringCount;
         }
 
         @Override
         public Mat processFrame(Mat input) {
+            img = input;
             // enters this if statement if we have reached the rings and are attempting to capture an image
             if(capturing){
-                // immediately set capturing as false so that it exits the while loop and begins driving to the next location while we determine number of rings
+                // immediately set as false to ensure only one frame is processed
                 capturing = false;
-                // ring detection code
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Mat mat = new Mat();
+                        Imgproc.cvtColor(img, mat, Imgproc.COLOR_RGB2HSV_FULL);
 
-                Mat mat = new Mat();
-                Imgproc.cvtColor(input, mat, Imgproc.COLOR_RGB2HSV_FULL);
+                        Scalar lowHSV = new Scalar(27, 50, 50);
+                        Scalar highHSV = new Scalar(47, 255, 255);
+                        Core.inRange(mat, lowHSV, highHSV, mat);
 
-                Scalar lowHSV = new Scalar(27, 50, 50);
-                Scalar highHSV = new Scalar(47, 255, 255);
+                        double percentOrange = Core.sumElems(mat).val[0] / (img.width() * img.height()) / 255;
+                        mat.release();
+                        if (percentOrange < 0.0545) {
+                            ringCount = 0;
+                        } else if (percentOrange < 0.185) {
+                            ringCount = 1;
+                        } else {
+                            ringCount = 4;
+                        }
+                        println("orange %", percentOrange);
+                        telemetry.update();
 
-                // crop the image to remove useless background
-                mat = mat.submat(rect);
-
-                Core.inRange(mat, lowHSV, highHSV, mat);
-
-                double percentOrange = Core.sumElems(mat).val[0] / rect.area() / 255;
-
-                mat.release();
-
-                telemetry.addData("% Orange", percentOrange + "\n");
-
-                if (percentOrange < 0.0545){
-                    telemetry.addLine("ZERO");
-                    ringCount = 0;
-                } else if (percentOrange < 0.185){
-                    telemetry.addLine("ONE");
-                    ringCount = 1;
-                } else {
-                    telemetry.addLine("FOUR");
-                    ringCount = 4;
-                }
-                telemetry.update();
-
+                        webcam.closeCameraDeviceAsync(new OpenCvCamera.AsyncCameraCloseListener() {
+                            @Override
+                            public void onClose() {
+                            }
+                        });
+                    }
+                }).run();
             }
             return input;
         }

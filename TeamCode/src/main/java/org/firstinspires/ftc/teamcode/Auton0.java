@@ -4,7 +4,6 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -33,7 +32,7 @@ public class Auton0 extends LinearOpMode {
     static final double TILE_LENGTH = 23.5;
 
     //pid vals
-    static final double[] pidfVals = {10, 3, 0, 0};
+    static final double[] DC_PIDF_VALS = {1.17, 0.117, 0, 11.7};
 
     // number of ticks in one inch
     static final double TICKS_PER_INCH = 34.2795262044082261656;
@@ -97,15 +96,15 @@ public class Auton0 extends LinearOpMode {
 
         for (int i = 0; i < 4 && opModeIsActive(); i++){
             PIDFCoefficients pidfCoef = motors[i].getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
-            pidfCoef.p = pidfVals[0];
-            pidfCoef.i = pidfVals[1];
-            pidfCoef.d = pidfVals[2];
-            pidfCoef.f = pidfVals[3];
+            pidfCoef.p = DC_PIDF_VALS[0];
+            pidfCoef.i = DC_PIDF_VALS[1];
+            pidfCoef.d = DC_PIDF_VALS[2];
+            pidfCoef.f = DC_PIDF_VALS[3];
             motors[i].setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoef);
         }
 
         //Move to stack
-        move(0, TILE_LENGTH * 1.5 + 6, 0.5);
+        move(0,     TILE_LENGTH * 1.5 + 6, 0.5);
 
         webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
 
@@ -124,7 +123,8 @@ public class Auton0 extends LinearOpMode {
         //go to wobble drop zone
         switch(rings){
             case 0:
-                move(45.0, Math.sqrt(2 * Math.pow(TILE_LENGTH / 2, 2)), 0.5);
+                move(3, TILE_LENGTH * 0.5 + 17 * 0.5 + 2, 0.5);
+                rotate(135);
                 break;
 
             case 1:
@@ -132,7 +132,8 @@ public class Auton0 extends LinearOpMode {
                 break;
 
             case 4:
-                move(Math.toDegrees(Math.atan(1.0/10)), Math.sqrt(Math.pow(TILE_LENGTH / 2, 2) + Math.pow(TILE_LENGTH * 3.5, 2)), 0.5);
+                move(Math.toDegrees(Math.atan(0.5)), Math.sqrt(Math.pow(TILE_LENGTH, 2) + Math.pow(TILE_LENGTH * 2, 2)), 0.5);
+                rotate(90);
 
         }
 
@@ -144,7 +145,7 @@ public class Auton0 extends LinearOpMode {
                 break;
 
             case 4:
-                move(2, TILE_LENGTH * 2, 0.5);
+                move(2, TILE_LENGTH * 1.5, 0.5);
 
         }
 
@@ -172,10 +173,16 @@ public class Auton0 extends LinearOpMode {
         );
 
         public int getRingCount() {
-            while (ringCount == -1) {
-                sleep(20);
+//            while (ringCount == -1) {
+//                sleep(20);
+//            }
+//            return ringCount;
+            int a = (int)(Math.random() * 3);
+            if (a < 2){
+                return a;
+            } else {
+                return 4;
             }
-            return ringCount;
         }
         @Override
         public Mat processFrame(Mat input) {
@@ -206,6 +213,7 @@ public class Auton0 extends LinearOpMode {
                         } else {
                             ringCount = 4;
                         }
+                        println("orange %", percentOrange);
                         telemetry.update();
 
                         webcam.closeCameraDeviceAsync(new OpenCvCamera.AsyncCameraCloseListener() {
@@ -327,28 +335,29 @@ public class Auton0 extends LinearOpMode {
 
         for(DcMotorEx m: motors) m.setVelocity(0);
 
-        for(int i = 0; i < 4; i++) motors[i].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        for(int i = 0; i < 4; i++) motors[i].setPower(0.2);
-
-        setDirection(4);
-
-        orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-
-        double currAngle = orientation.firstAngle;
-
-        telemetry.addData("angles", currAngle + ", " + startAngle);
-        telemetry.update();
-
-        while (currAngle > startAngle){
-            // Updating the object that keeps track of orientation
-            orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-            // Updates the variable which stores the current direction of the robot
-            currAngle = orientation.firstAngle;
-            // Delay
-            sleep(20);
-        }
-
-        for (DcMotor motor: motors) motor.setPower(0);
+//        setDirection(4);
+//
+//        orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+//
+//        double currAngle = orientation.firstAngle;
+//
+//        rotate(currAngle - startAngle);
+//
+////        telemetry.addData("angles", currAngle + ", " + startAngle);
+////        telemetry.update();
+////        for(int i = 0; i < 4; i++) motors[i].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+////        for(int i = 0; i < 4; i++) motors[i].setPower(0.2);
+////
+////        while (currAngle < startAngle){
+////            // Updating the object that keeps track of orientation
+////            orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+////            // Updates the variable which stores the current direction of the robot
+////            currAngle = orientation.firstAngle;
+////            // Delay
+////            sleep(20);
+////        }
+////
+////        for (DcMotor motor: motors) motor.setPower(0);
     }
 
     // function to calculate power for motors given distance and current distance to ensure gradual increase and decrease in motor powers

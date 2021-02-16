@@ -5,7 +5,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -24,7 +23,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 
 @Autonomous(name = "Autonomous")
-public class Auton0_diagonal_test extends LinearOpMode {
+public class Auton0_basic extends LinearOpMode {
 
     // length of a tile
     static final double TILE_LENGTH = 23.5;
@@ -79,8 +78,11 @@ public class Auton0_diagonal_test extends LinearOpMode {
 
         capturing = true;
 
-        move(-39.0, 6 + TILE_LENGTH / Math.sin(Math.toRadians(39)), 0.5);
+        move(0, TILE_LENGTH * 1, 0.5);
 
+        sleep(100);
+
+        move(1, TILE_LENGTH * 0.5 + 17 * 0.5, 0.5);
     }
 
     public void initCam() {
