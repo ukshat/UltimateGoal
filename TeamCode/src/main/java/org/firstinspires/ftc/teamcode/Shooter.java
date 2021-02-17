@@ -32,8 +32,11 @@ public class Shooter extends LinearOpMode {
             double shootingPower = gamepad1.right_trigger;
 
             // if gamepad is equal to a it sets the button for the intake to a
-            if(shootingPower > 0.4){
-                shooter.setPower(shootingPower);
+            if(shootingPower > 0.){
+                shooter.setPower(1.0);
+            }
+            else{
+                shooter.setPower(0);
             }
 
             telemetry.addData("shooting wheel motor", shootingPower + "\n");
