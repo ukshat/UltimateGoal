@@ -49,6 +49,8 @@ public class Auton0_rotate_shoot_test extends LinearOpMode {
     RingCounterPipeline pipeline = new RingCounterPipeline();
     volatile boolean capturing = false;
 
+    volatile Mat img;
+
     @Override
     public void runOpMode() throws InterruptedException {
         // init gyro
@@ -68,6 +70,8 @@ public class Auton0_rotate_shoot_test extends LinearOpMode {
         params.angleUnit = BNO055IMU.AngleUnit.DEGREES;
         imu.initialize(params);
 
+        initCam();
+
         waitForStart();
 
         move(0, TILE_LENGTH * 1.5 + 6, 0.5);
@@ -78,11 +82,11 @@ public class Auton0_rotate_shoot_test extends LinearOpMode {
 
         capturing = true;
 
-        move(0, TILE_LENGTH - 6, 0.5);
+        move(0, TILE_LENGTH - 2, 0.5);
 
         sleep(100);
 
-        rotate(-Math.atan(0.5/3));
+        rotate(Math.toDegrees(-Math.atan(0.5/3)));
     }
 
     public void initCam() {
@@ -97,59 +101,58 @@ public class Auton0_rotate_shoot_test extends LinearOpMode {
 
 
 
-    class RingCounterPipeline extends OpenCvPipeline {
+    class RingCounterPipeline extends OpenCvPipeline
+    {
+        boolean viewportPaused;
 
         private int ringCount = -1;
 
-        Rect rect = new Rect(
-                new Point(160 * 0.25, 120 * 0.05),
-                new Point(160 * 0.9, 120 * 0.9)
-        );
-
         public int getRingCount() {
-            while (ringCount == -1) {
-                sleep(20);
-            }
             return ringCount;
         }
 
         @Override
         public Mat processFrame(Mat input) {
+            img = input;
             // enters this if statement if we have reached the rings and are attempting to capture an image
-            if(capturing) {
+            if(capturing){
                 // immediately set as false to ensure only one frame is processed
                 capturing = false;
-                Mat mat = new Mat();
-                Imgproc.cvtColor(input, mat, Imgproc.COLOR_RGB2HSV_FULL);
-
-                Scalar lowHSV = new Scalar(27, 50, 50);
-                Scalar highHSV = new Scalar(47, 255, 255);
-                Core.inRange(mat, lowHSV, highHSV, mat);
-
-                // crop the image to remove useless background
-                mat = mat.submat(rect);
-
-                double percentOrange = Core.sumElems(mat).val[0] / rect.area() / 255;
-                mat.release();
-                if (percentOrange < 0.0545) {
-                    telemetry.addData("Rings", "ZERO, " + (percentOrange * 100) + " % orange\n");
-                    ringCount = 0;
-                } else if (percentOrange < 0.185) {
-                    telemetry.addData("Rings", "ONE, " + (percentOrange * 100) + " % orange\n");
-                    ringCount = 1;
-                } else {
-                    telemetry.addData("Rings", "FOUR, " + (percentOrange * 100) + " % orange\n");
-                    ringCount = 4;
-                }
-                telemetry.update();
-
-                webcam.closeCameraDeviceAsync(new OpenCvCamera.AsyncCameraCloseListener() {
+                new Thread(new Runnable() {
                     @Override
-                    public void onClose() {}
-                });
+                    public void run() {
+                        Mat mat = new Mat();
+                        Imgproc.cvtColor(img, mat, Imgproc.COLOR_RGB2HSV_FULL);
+
+                        Scalar lowHSV = new Scalar(27, 50, 50);
+                        Scalar highHSV = new Scalar(47, 255, 255);
+                        Core.inRange(mat, lowHSV, highHSV, mat);
+
+                        double percentOrange = Core.sumElems(mat).val[0] / (img.width() * img.height()) / 255;
+                        mat.release();
+                        if (percentOrange < 0.0545) {
+                            ringCount = 0;
+                        } else if (percentOrange < 0.185) {
+                            ringCount = 1;
+                        } else {
+                            ringCount = 4;
+                        }
+                        println("orange %", percentOrange);
+                        telemetry.update();
+
+                        webcam.closeCameraDeviceAsync(new OpenCvCamera.AsyncCameraCloseListener() {
+                            @Override
+                            public void onClose() {
+                            }
+                        });
+                    }
+                }).run();
             }
             return input;
         }
+
+        @Override
+        public void onViewportTapped() {}
 
     }
 
