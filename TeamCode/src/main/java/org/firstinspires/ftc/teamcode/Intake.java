@@ -35,6 +35,9 @@ public class Intake extends LinearOpMode {
             if(gamepad1.a){
                 intake.setPower(intakePower);
             }
+            else {
+                intake.setPower(0);
+            }
 
             telemetry.addData("intake wheel motor", intakePower + "\n");
             telemetry.update();
