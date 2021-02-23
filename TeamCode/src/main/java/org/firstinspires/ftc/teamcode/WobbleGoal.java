@@ -24,6 +24,23 @@ public class WobbleGoal extends LinearOpMode {
             pot.setPosition(75);
         }
 
+        boolean y = true;
+        if(gamepad1.x){
+            if(y) {
+                y = false;
+            }
+            else {
+                y = true;
+            }
+            if(y){
+                pot.setPosition(25);
+            }
+            else {
+                pot.setPosition(100);
+            }
+        }
+
+
         sleep(20000);
     }
 
