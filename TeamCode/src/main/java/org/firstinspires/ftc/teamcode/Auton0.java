@@ -112,9 +112,11 @@ public class Auton0 extends LinearOpMode {
 
         capturing = true;
 
-        move(-39.0, 6 + TILE_LENGTH / Math.sin(Math.toRadians(39)), 0.5);
+        move(0, TILE_LENGTH - 2, 0.5);
 
-//        telemetry.addLine("Launching rings\n");
+        sleep(100);
+
+        rotate(-Math.atan(0.5/3));
 
         launch();
 
@@ -123,17 +125,19 @@ public class Auton0 extends LinearOpMode {
         //go to wobble drop zone
         switch(rings){
             case 0:
-                move(3, TILE_LENGTH * 0.5 + 17 * 0.5 + 2, 0.5);
-                rotate(135);
+                rotate(-180+ Math.toDegrees(Math.atan(0.5/3)));
+                move(2, TILE_LENGTH * 0.5, 0.5);
                 break;
 
             case 1:
-                move(Math.toDegrees(Math.atan(1.0/3)), Math.sqrt(Math.pow(TILE_LENGTH / 2, 2) + Math.pow(TILE_LENGTH * 1.5, 2)), 0.5);
+                rotate(Math.toDegrees(Math.atan(0.5/3)));
+                move(0, TILE_LENGTH * 1.5 , 0.5);
                 break;
 
             case 4:
-                move(Math.toDegrees(Math.atan(0.5)), Math.sqrt(Math.pow(TILE_LENGTH, 2) + Math.pow(TILE_LENGTH * 2, 2)), 0.5);
-                rotate(90);
+                rotate(-180+ Math.toDegrees(Math.atan(0.5/3)));
+                move(2, TILE_LENGTH * 2.5, 0.5);
+                break;
 
         }
 
@@ -141,15 +145,13 @@ public class Auton0 extends LinearOpMode {
 
         switch(rings){
             case 1:
-                move(2, TILE_LENGTH, 0.5);
+                move(0, TILE_LENGTH, 0.5);
                 break;
 
             case 4:
-                move(2, TILE_LENGTH * 1.5, 0.5);
+                move(0, TILE_LENGTH * 2, 0.5);
 
         }
-
-        sleep(30000);
     }
 
     public void initCam() {
@@ -163,27 +165,16 @@ public class Auton0 extends LinearOpMode {
     }
 
 
+    class RingCounterPipeline extends OpenCvPipeline
+    {
+        boolean viewportPaused;
 
-    class RingCounterPipeline extends OpenCvPipeline{
         private int ringCount = -1;
 
-        Rect rect = new Rect(
-                new Point(160 * 0.25, 120 * 0.05),
-                new Point(160 * 0.9, 120 * 0.9)
-        );
-
         public int getRingCount() {
-//            while (ringCount == -1) {
-//                sleep(20);
-//            }
-//            return ringCount;
-            int a = (int)(Math.random() * 3);
-            if (a < 2){
-                return a;
-            } else {
-                return 4;
-            }
+            return ringCount;
         }
+
         @Override
         public Mat processFrame(Mat input) {
             img = input;
@@ -201,10 +192,7 @@ public class Auton0 extends LinearOpMode {
                         Scalar highHSV = new Scalar(47, 255, 255);
                         Core.inRange(mat, lowHSV, highHSV, mat);
 
-                        // crop the image to remove useless background
-                        mat = mat.submat(rect);
-
-                        double percentOrange = Core.sumElems(mat).val[0] / rect.area() / 255;
+                        double percentOrange = Core.sumElems(mat).val[0] / (img.width() * img.height()) / 255;
                         mat.release();
                         if (percentOrange < 0.0545) {
                             ringCount = 0;
@@ -227,11 +215,10 @@ public class Auton0 extends LinearOpMode {
             return input;
         }
 
+        @Override
+        public void onViewportTapped() {}
+
     }
-
-
-
-
 
 
 
