@@ -19,7 +19,7 @@ public class IntakeAssist extends LinearOpMode {
     //@Override
     public void runOpMode() {
         // Find each motor on the hardware map
-        intakeAssist = hardwareMap.servo.get("intake assist");
+        intakeAssist = hardwareMap.servo.get("IntakeServo");
 
         //wait for driver to press play
         waitForStart();
