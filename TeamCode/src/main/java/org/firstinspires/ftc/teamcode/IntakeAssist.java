@@ -32,12 +32,17 @@ public class IntakeAssist extends LinearOpMode {
             double intakePower = 1;
 
             // if gamepad is equal to a it sets the button for the intake to a
+
+            /*
             if(gamepad1.b){
                 intakeAssist.setPosition(intakePower);
             }
             else {
                 intakeAssist.setPosition(0);
             }
+
+            */
+             
 
             telemetry.addData("intake assist servo", intakePower + "\n");
             telemetry.update();
