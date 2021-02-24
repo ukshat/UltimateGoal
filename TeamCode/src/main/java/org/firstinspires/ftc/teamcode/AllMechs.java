@@ -49,16 +49,10 @@ public class AllMechs extends LinearOpMode {
             // if gamepad is equal to a it sets the button for the intake to right trigger
             if(shootingPower > 0.5){
                 shooter.setPower(1.0);
-            }
-            else {
-                shooter.setPower(0);
-            }
-
-            // if gamepad is equal to a it sets the button for the intake to a
-            if(gamepad1.b){
                 intakeAssist.setPosition(intakeAssistPower);
             }
             else {
+                shooter.setPower(0);
                 intakeAssist.setPosition(0);
             }
 
