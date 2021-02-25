@@ -31,10 +31,6 @@ public class TeleOpDiagonalDrive extends LinearOpMode {
 
     double map(double from) { return from / HORIZONTAL_STRAFE; }
 
-    double map(double from){
-        return from / HORIZONTAL_STRAFE;
-    }
-
     void move(double deg, double distance, double speed) {
         setDirection(0);
         //inch to ticks
