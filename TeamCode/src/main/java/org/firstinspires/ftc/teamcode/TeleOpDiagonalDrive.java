@@ -29,11 +29,18 @@ public class TeleOpDiagonalDrive extends LinearOpMode {
 
         int w = 34;
         int h = 80;
-        double degrees = Math.atan2(h, w);
         double distance = Math.hypot(w, h);
         double speed = 0.5;
 
-        move(degrees, distance, speed);
+        if(gamepad1.b) {
+            double degrees = Math.atan2(h, w);
+            move(degrees, distance, speed);
+        }
+
+        if(gamepad1.x) {
+            double degrees = 180 - Math.atan2(h, w);
+            move(degrees, distance, speed);
+        }
 
     }
 
@@ -77,7 +84,7 @@ public class TeleOpDiagonalDrive extends LinearOpMode {
         x = x / max * speed;
         y = y / max * speed;
 
-        while ((motors[0].isBusy() || motors[1].isBusy() || motors[2].isBusy() || motors[3].isBusy()) && opModeIsActive()) {
+        while ((motors[0].isBusy() || motors[1].isBusy() || motors[2].isBusy() || motors[3].isBusy()) && opModeIsActive() && !gamepad1.y) {
             // delay
             sleep(75);
 
