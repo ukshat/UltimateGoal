@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -192,5 +193,79 @@ public class Util {
             else if (config == 4) motors[i].setDirection(DcMotor.Direction.REVERSE);
         }
     }
+
+    double map(double from){
+        return from / HORIZONTAL_STRAFE;
+    }
+
+    void move(double degrees, double distance, double speed, DcMotorEx[] motors){
+        setDirection(0, motors);
+        //inch to ticks
+        distance *= TICKS_PER_INCH;
+
+        //deg to rad
+        degrees = Math.toRadians(degrees);
+
+        //x and y of mapped point on ellipse
+        double x = Math.cos(degrees) * distance, y = map(Math.sin(degrees)) * distance;
+
+        //rotate axis about origin by 45 deg ccw
+        degrees = Math.asin(y/distance) + Math.PI/4;
+
+        //rewrite x and y to be mapped to new axis
+        x = Math.cos(degrees) * distance;
+        y = map(Math.sin(degrees)) * distance;
+
+        /*Front Left, Front Right, Back Left, Back Right*/
+        for(int i = 0; i < 4; i++) motors[i].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //FL
+        motors[0].setTargetPosition((int) y);
+        //FR
+        motors[1].setTargetPosition((int) x);
+        //BL
+        motors[2].setTargetPosition((int) x);
+        //BR
+        motors[3].setTargetPosition((int) y);
+
+        for(int i = 0; i < 4; i++) motors[i].setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        //set x and y to be between -0.5 and 0.5
+        double max = Math.max(Math.abs(x), Math.abs(y));
+        x = x / max * speed;
+        y = y / max * speed;
+
+        while ((motors[0].isBusy() || motors[1].isBusy() || motors[2].isBusy() || motors[3].isBusy())){
+            // delay
+            try{
+                Thread.sleep(75);
+            } catch (InterruptedException ignored){}
+
+            // current position of motor travel
+            int currPosX = motors[1].getCurrentPosition();
+            int currPosY = motors[0].getCurrentPosition();
+
+            // calculate ticks per second
+            double xPow = fWithMaxPow(currPosX, (int)distance, x) * 40 * TICKS_PER_INCH;
+            double yPow = fWithMaxPow(currPosY, (int)distance, y) * 40 * TICKS_PER_INCH;
+
+            //FL
+            motors[0].setVelocity((int) yPow);
+            //FR
+            motors[1].setVelocity((int) xPow);
+            //BL
+            motors[2].setVelocity((int) xPow);
+            //BR
+            motors[3].setVelocity((int) yPow);
+        }
+
+        for(DcMotorEx m : motors) m.setVelocity(0);
+    }
+
+    // function to calculate power for motors given distance and current distance to ensure gradual increase and decrease in motor powers
+    // an equation for graph of powers assuming that the highest power is 0.5; graph it in Desmos to see
+    static double fWithMaxPow(int x, int n, double maxPow){
+        return maxPow * (1 - Math.pow(3.85 * Math.pow(x - n / 2, 2) / (n * n), 1.75));
+    }
+
 
 }
