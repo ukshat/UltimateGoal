@@ -120,7 +120,7 @@ public class Auton0 extends LinearOpMode {
 
         sleep(100);
 
-        rotate(-Math.atan(0.5/3));
+        rotate(Math.toDegrees(-Math.atan(0.5/3)));
 
         launch();
 
