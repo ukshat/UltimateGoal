@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
@@ -89,6 +90,8 @@ public class Auton0 extends LinearOpMode {
 
         initCam();
 
+        WobbleMech wobble = new WobbleMech();
+
         runTime = new ElapsedTime();
 
         waitForStart();
@@ -143,7 +146,9 @@ public class Auton0 extends LinearOpMode {
 
         }
 
-        dropGoal();
+        wobble.open();
+
+        sleep(500);
 
         switch(rings){
             case 1:
@@ -241,6 +246,92 @@ public class Auton0 extends LinearOpMode {
 
 
 
+
+
+    class WobbleMech {
+
+        private Servo servo;
+
+        private DcMotorEx motor;
+        private AnalogInput inp;
+        private volatile double target;
+        private volatile boolean shouldMove = true;
+        private boolean isClosed;
+        final double lowerBound = 0.3, upperBound = 1.35;
+
+        public WobbleMech() {
+
+            servo = hardwareMap.servo.get("wobbleservo");
+            servo.setDirection(Servo.Direction.FORWARD);
+            motor = (DcMotorEx) hardwareMap.get("wobblemotor");
+            inp = hardwareMap.analogInput.get("wobblepot");
+            close();
+        }
+
+        public boolean isClosed (){
+
+            return isClosed;
+
+        }
+
+        public void close (){
+
+            servo.setPosition(0);
+            isClosed = true;
+        }
+
+        public void open (){
+
+            servo.setPosition(1);
+            isClosed = false;
+        }
+
+        public double getPosition() {
+            return (inp.getVoltage() - lowerBound) * 100 / (upperBound - lowerBound);
+        }
+
+        public void setPosition(double newTarget){
+            telemetry.addData("Target", newTarget);
+            telemetry.update();
+
+            sleep(3000);
+
+            if (shouldMove) {
+                this.target = newTarget;
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        shouldMove = false;
+                        if (target > getPosition()) {
+                            motor.setVelocity(-100);
+                            while (!shouldMove && target > getPosition() && opModeIsActive() && inp.getVoltage() < upperBound){
+                                sleep(20);
+
+                                telemetry.addData("Position", getPosition());
+                                telemetry.update();
+                            }
+                        } else {
+                            motor.setVelocity(100);
+                            while (!shouldMove && target < getPosition() && opModeIsActive() && inp.getVoltage() > lowerBound){
+                                sleep(20);
+
+                                telemetry.addData("Position", getPosition());
+                                telemetry.update();
+                            }
+                        }
+
+                        shouldMove = true;
+
+                        motor.setVelocity(0);
+                    }
+                }).run();
+            }
+            else{
+                shouldMove = true;
+                setPosition(newTarget);
+            }
+        }
+    }
 
     void dropGoal(){
     }
