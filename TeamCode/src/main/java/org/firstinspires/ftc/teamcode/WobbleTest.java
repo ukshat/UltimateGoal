@@ -31,9 +31,8 @@ public class WobbleTest extends LinearOpMode {
 //        }
 //        wobble.setPower(0);
         claw.setPosition(1);
-        while (claw.getPosition() < 0.9){
-            sleep(20);
-        }
+        sleep(500);
+        claw.setPosition(0);
 
     }
 }
