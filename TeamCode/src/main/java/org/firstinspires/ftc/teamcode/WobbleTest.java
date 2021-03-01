@@ -17,7 +17,6 @@ public class WobbleTest extends LinearOpMode {
         wobble = hardwareMap.dcMotor.get("wobblemotor");
         claw = hardwareMap.servo.get("wobbleservo");
         wobble.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        claw.scaleRange(0, 1);
 
         waitForStart();
 
@@ -31,8 +30,10 @@ public class WobbleTest extends LinearOpMode {
 //        }
 //        wobble.setPower(0);
         claw.setPosition(1);
-        sleep(500);
+        sleep(1000);
         claw.setPosition(0);
-
+        sleep(1000);
+        claw.setPosition(1);
+        sleep(5000);
     }
 }
