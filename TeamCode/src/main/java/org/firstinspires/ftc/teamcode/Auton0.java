@@ -148,7 +148,7 @@ public class Auton0 extends LinearOpMode {
         switch(rings){
             case 1:
                 // This needs to be changed
-                move(0, TILE_LENGTH, 0.5);
+                move(2, TILE_LENGTH * 1.1, 0.5);
                 break;
 
             case 4:
