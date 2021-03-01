@@ -116,11 +116,11 @@ public class Auton0 extends LinearOpMode {
 
         capturing = true;
 
-        move(0, TILE_LENGTH - 2, 0.5);
+        move(0, TILE_LENGTH - 3, 0.5);
 
         sleep(100);
 
-        rotate(Math.toDegrees(-Math.atan(0.5/3)));
+        rotate(Math.toDegrees(-Math.atan(0.5/3)) * 2.0/3);
 
         launch();
 
@@ -136,6 +136,7 @@ public class Auton0 extends LinearOpMode {
             case 1:
 //                rotate(Math.toDegrees(Math.atan(0.5/3)));
 //                move(0, TILE_LENGTH * 1.5 , 0.5);
+                rotate(3);
                 move(0, TILE_LENGTH * Math.sqrt(2.5), 0.5);
                 break;
 
@@ -153,7 +154,7 @@ public class Auton0 extends LinearOpMode {
         switch(rings){
             case 1:
                 // This needs to be changed
-                move(2, TILE_LENGTH * (Math.sqrt(2.5) + 0.5), 0.5);
+                move(2, TILE_LENGTH * (Math.sqrt(2.5) - 0.5), 0.5);
                 break;
 
             case 4:
