@@ -19,6 +19,7 @@ import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
+import org.opencv.core.TickMeter;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -130,8 +131,9 @@ public class Auton0 extends LinearOpMode {
                 break;
 
             case 1:
-                rotate(Math.toDegrees(Math.atan(0.5/3)));
-                move(0, TILE_LENGTH * 1.5 , 0.5);
+//                rotate(Math.toDegrees(Math.atan(0.5/3)));
+//                move(0, TILE_LENGTH * 1.5 , 0.5);
+                move(0, TILE_LENGTH * 232 / 188, 0.5);
                 break;
 
             case 4:
@@ -145,6 +147,7 @@ public class Auton0 extends LinearOpMode {
 
         switch(rings){
             case 1:
+                // This needs to be changed
                 move(0, TILE_LENGTH, 0.5);
                 break;
 
