@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.AnalogInputController;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 @TeleOp(name = "Pot Test")
 public class WobbleGoal extends LinearOpMode {
@@ -33,6 +34,9 @@ public class WobbleGoal extends LinearOpMode {
         }
 
         sleep(20000);
+
+        telemetry.addData("intake assist servo", arm + "\n");
+        telemetry.update();
     }
 
     class Pot{
