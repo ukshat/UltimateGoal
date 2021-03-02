@@ -27,8 +27,8 @@ public class TeleOpDiagonalDrive extends LinearOpMode {
         motors[2] = (DcMotorEx) hardwareMap.dcMotor.get("LeftRear");
         motors[3] = (DcMotorEx) hardwareMap.dcMotor.get("RightRear");
 
-        int w = 34;
-        int h = 80;
+        double w = 25.5;
+        double h = 63;
         double distance = Math.hypot(w, h);
         double speed = 0.5;
 
