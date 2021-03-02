@@ -1,45 +1,36 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.AnalogInputController;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-@Autonomous(name = "Pot Test")
+@TeleOp(name = "Pot Test")
 public class WobbleGoal extends LinearOpMode {
-    DcMotorEx wobble;
-    Pot pot;
+    Servo release;
+    Pot arm;
+
     @Override
     public void runOpMode() throws InterruptedException {
-        wobble = (DcMotorEx) hardwareMap.get("wobblemotor");
-        pot = new Pot();
+        release = hardwareMap.servo.get("wobbleservo");
+
+        arm = new Pot();
+        double armPosition = arm.getPosition();
         waitForStart();
 
-        if(gamepad1.x){
-            pot.setPosition(25);
-        }
-        if(gamepad1.y){
-            pot.setPosition(75);
-        }
+        if(gamepad1.b){
+            arm.setPosition(25);
+            if(armPosition == 25){
+                release.setPosition(0);
+            }
 
-        boolean y = true;
-        if(gamepad1.x){
-            if(y) {
-                y = false;
-            }
-            else {
-                y = true;
-            }
-            if(y){
-                pot.setPosition(25);
-            }
-            else {
-                pot.setPosition(100);
-            }
+        } else {
+            arm.setPosition(armPosition);
+            release.setPosition(1);
         }
-
 
         sleep(20000);
     }
