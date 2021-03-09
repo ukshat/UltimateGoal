@@ -292,10 +292,6 @@ public class Auton0 extends LinearOpMode {
         }
 
         public void setPosition(double newTarget){
-            telemetry.addData("Target", newTarget);
-            telemetry.update();
-
-            sleep(3000);
 
             if (shouldMove) {
                 this.target = newTarget;
@@ -307,17 +303,11 @@ public class Auton0 extends LinearOpMode {
                             motor.setVelocity(-100);
                             while (!shouldMove && target > getPosition() && opModeIsActive() && inp.getVoltage() < upperBound){
                                 sleep(20);
-
-                                telemetry.addData("Position", getPosition());
-                                telemetry.update();
                             }
                         } else {
                             motor.setVelocity(100);
                             while (!shouldMove && target < getPosition() && opModeIsActive() && inp.getVoltage() > lowerBound){
                                 sleep(20);
-
-                                telemetry.addData("Position", getPosition());
-                                telemetry.update();
                             }
                         }
 

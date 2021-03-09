@@ -30,6 +30,7 @@ public class AllMechs extends LinearOpMode {
         shooter = hardwareMap.dcMotor.get("shooter");
         intakeAssist = hardwareMap.servo.get("IntakeServo");
         release = hardwareMap.servo.get("wobbleservo");
+        arm = new Pot();
 
         //wait for driver to press play
         waitForStart();
@@ -42,7 +43,6 @@ public class AllMechs extends LinearOpMode {
             double intakePower = -1;
             double intakeAssistPower = 1;
             double shootingPower = gamepad1.right_trigger;
-            arm = new Pot();
             double armPosition = arm.getPosition();
             waitForStart();
 
