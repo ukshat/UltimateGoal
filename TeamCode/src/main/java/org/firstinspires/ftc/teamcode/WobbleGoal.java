@@ -36,6 +36,8 @@ public class WobbleGoal extends LinearOpMode {
             release.setPosition(1);
         }
 
+        System.out.println(arm.getPosition());
+
         sleep(20000);
 
         telemetry.addData("intake assist servo", arm + "\n");
