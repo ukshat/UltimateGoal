@@ -25,6 +25,7 @@ public class WobbleGoal extends LinearOpMode {
         System.out.println(arm.getPosition());
 
         if(gamepad1.b){
+            System.out.println(arm.getPosition());
             arm.setPosition(25);
             if(armPosition == 25){
                 release.setPosition(0);
