@@ -22,6 +22,8 @@ public class TeleOpDiagonalDrive extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
+        waitForStart();
+
         motors[0] = (DcMotorEx) hardwareMap.dcMotor.get("LeftFront");
         motors[1] = (DcMotorEx) hardwareMap.dcMotor.get("RightFront");
         motors[2] = (DcMotorEx) hardwareMap.dcMotor.get("LeftRear");
