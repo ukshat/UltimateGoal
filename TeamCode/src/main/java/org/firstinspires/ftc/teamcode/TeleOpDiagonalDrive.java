@@ -102,13 +102,13 @@ public class TeleOpDiagonalDrive extends LinearOpMode {
             double yPow = fWithMaxPow(currPosY, (int) distance, y) * 40 * TICKS_PER_INCH;
 
             //FL
-            motors[0].setVelocity((int) -yPow);
+            motors[0].setVelocity((int) -yPow + 0.2);
             //FR
-            motors[1].setVelocity((int) -xPow);
+            motors[1].setVelocity((int) -xPow + 0.2);
             //BL
-            motors[2].setVelocity((int) -xPow);
+            motors[2].setVelocity((int) -xPow + 0.2);
             //BR
-            motors[3].setVelocity((int) -yPow);
+            motors[3].setVelocity((int) -yPow + 0.2);
         }
 
         for (DcMotorEx m : motors) m.setVelocity(0);
