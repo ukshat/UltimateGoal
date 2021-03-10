@@ -21,7 +21,7 @@ public class WobbleGoal extends LinearOpMode {
         release = hardwareMap.servo.get("wobbleservo");
 
         double armPosition = arm.getPosition();
-        
+
         waitForStart();
 
         System.out.println(arm.getPosition());

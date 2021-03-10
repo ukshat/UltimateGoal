@@ -34,14 +34,17 @@ public class TeleOpDiagonalDrive extends LinearOpMode {
         double distance = Math.hypot(w, h);
         double speed = 0.5;
 
-        if(gamepad1.b) {
-            double degrees = Math.toDegrees(Math.atan2(h, w)) - 90;
-            move(degrees, distance, speed);
-        }
+        while(opModeIsActive()){
 
-        if(gamepad1.x) {
-            double degrees = 90 - Math.toDegrees(Math.atan2(h, w));
-            move(degrees, distance, speed);
+            if(gamepad1.b) {
+                double degrees = Math.toDegrees(Math.atan2(h, w)) - 90;
+                move(degrees, distance, speed);
+            }
+
+            if(gamepad1.x) {
+                double degrees = 90 - Math.toDegrees(Math.atan2(h, w));
+                move(degrees, distance, speed);
+            }
         }
 
     }
