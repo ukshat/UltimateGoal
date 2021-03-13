@@ -88,7 +88,7 @@ public class Auton0Wobble extends LinearOpMode {
 
         WobbleMech wobble = new WobbleMech();
 
-        ringPush = hardwareMap.servo.get("???");
+        ringPush = hardwareMap.servo.get("IntakeServo");
         ringPush.setPosition(0);
 
         runTime = new ElapsedTime();
@@ -130,7 +130,7 @@ public class Auton0Wobble extends LinearOpMode {
         //go to wobble drop zone
         switch(rings){
             case 0:
-                rotate(-180+ Math.toDegrees(Math.atan(0.5/3)));
+                rotate(-180 + Math.toDegrees(Math.atan(0.5/3)));
                 move(2, TILE_LENGTH * 0.5, 0.5);
                 break;
 
@@ -140,7 +140,7 @@ public class Auton0Wobble extends LinearOpMode {
                 break;
 
             case 4:
-                rotate(-180+ Math.toDegrees(Math.atan(0.5/3)));
+                rotate(-180 + Math.toDegrees(Math.atan(0.5/3)));
                 move(2, TILE_LENGTH * 2.5, 0.5);
                 break;
 
