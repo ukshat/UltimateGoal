@@ -10,21 +10,24 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @TeleOp(name = "Pot Test")
+//@Disabled
+
 public class WobbleGoal extends LinearOpMode {
     Servo release;
-    Pot arm;
+    Pot arm = new Pot();
 
     @Override
     public void runOpMode() throws InterruptedException {
         release = hardwareMap.servo.get("wobbleservo");
 
-        arm = new Pot();
         double armPosition = arm.getPosition();
+
         waitForStart();
 
         System.out.println(arm.getPosition());
 
         if(gamepad1.b){
+            System.out.println(arm.getPosition());
             arm.setPosition(25);
             if(armPosition == 25){
                 release.setPosition(0);
@@ -34,6 +37,8 @@ public class WobbleGoal extends LinearOpMode {
             arm.setPosition(armPosition);
             release.setPosition(1);
         }
+
+        System.out.println(arm.getPosition());
 
         sleep(20000);
 

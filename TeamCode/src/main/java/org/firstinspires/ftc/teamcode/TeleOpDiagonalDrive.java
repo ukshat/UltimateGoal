@@ -22,24 +22,29 @@ public class TeleOpDiagonalDrive extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
+        waitForStart();
+
         motors[0] = (DcMotorEx) hardwareMap.dcMotor.get("LeftFront");
         motors[1] = (DcMotorEx) hardwareMap.dcMotor.get("RightFront");
         motors[2] = (DcMotorEx) hardwareMap.dcMotor.get("LeftRear");
         motors[3] = (DcMotorEx) hardwareMap.dcMotor.get("RightRear");
 
-        double w = 25.5;
-        double h = 63;
+        double w = 34;
+        double h = 80;
         double distance = Math.hypot(w, h);
         double speed = 0.5;
 
-        if(gamepad1.b) {
-            double degrees = Math.toDegrees(Math.atan2(h, w)) - 90;
-            move(degrees, distance, speed);
-        }
+        while(opModeIsActive()){
 
-        if(gamepad1.x) {
-            double degrees = 90 - Math.toDegrees(Math.atan2(h, w));
-            move(degrees, distance, speed);
+            if(gamepad1.b) {
+                double degrees = Math.toDegrees(Math.atan2(h, w)) - 90;
+                move(degrees, distance, speed);
+            }
+
+            if(gamepad1.x) {
+                double degrees = 90 - Math.toDegrees(Math.atan2(h, w));
+                move(degrees, distance, speed);
+            }
         }
 
     }
@@ -97,20 +102,20 @@ public class TeleOpDiagonalDrive extends LinearOpMode {
             double yPow = fWithMaxPow(currPosY, (int) distance, y) * 40 * TICKS_PER_INCH;
 
             //FL
-            motors[0].setVelocity((int) yPow);
+            motors[0].setVelocity((int) -yPow + 0.2);
             //FR
-            motors[1].setVelocity((int) xPow);
+            motors[1].setVelocity((int) -xPow + 0.2);
             //BL
-            motors[2].setVelocity((int) xPow);
+            motors[2].setVelocity((int) -xPow + 0.2);
             //BR
-            motors[3].setVelocity((int) yPow);
+            motors[3].setVelocity((int) -yPow + 0.2);
         }
 
         for (DcMotorEx m : motors) m.setVelocity(0);
     }
 
     static double fWithMaxPow(int x, int n, double maxPow){
-        return maxPow * (1 - Math.pow(3.85 * Math.pow(x - n / 2, 2) / (n * n), 1.75));
+        return maxPow * (Math.pow(3.85 * Math.pow(x - n / 2, 2) - 1 / (n * n), 1.75));
     }
 
     void setDirection(int config) {
