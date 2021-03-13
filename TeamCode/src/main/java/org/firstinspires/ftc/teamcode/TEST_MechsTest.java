@@ -27,21 +27,6 @@ import org.openftc.easyopencv.OpenCvPipeline;
 @Autonomous(name = "Mech Test")
 public class TEST_MechsTest extends LinearOpMode {
 
-    // length of a tile
-    static final double TILE_LENGTH = 23.5;
-
-    //pid vals
-    static final double[] DC_PIDF_VALS = {1.17, 0.117, 0, 11.7};
-
-    // number of ticks in one inch
-    static final double TICKS_PER_INCH = 34.2795262044082261656;
-
-    // constant for offset between front/back to left/right
-    static final double HORIZONTAL_STRAFE = 36.0 / 30.75;
-
-    // stores the current direction of the robot
-    double currOrientation, startAngle;
-
     @Override
     public void runOpMode() throws InterruptedException {
 
