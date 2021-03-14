@@ -84,15 +84,15 @@ public class Auton0 extends LinearOpMode {
         params.angleUnit = BNO055IMU.AngleUnit.DEGREES;
         imu.initialize(params);
 
-        wobble = (DcMotorEx)hardwareMap.dcMotor.get("wobblemotor");
-//        claw = hardwareMap.servo.get("wobbleservo");
-//        claw.scaleRange(1.0/6.0, 5.0/6.0);
-
         initCam();
 
         WobbleMech wobble = new WobbleMech();
 
         runTime = new ElapsedTime();
+
+        wobble.setPosition(0);
+        sleep(5000);
+        wobble.close();
 
         waitForStart();
 
@@ -122,7 +122,7 @@ public class Auton0 extends LinearOpMode {
 
         rotate(Math.toDegrees(-Math.atan(0.5/3)) * 2.0/3);
 
-        launch();
+//        launch();
 
         int rings = pipeline.getRingCount();
 
@@ -147,6 +147,7 @@ public class Auton0 extends LinearOpMode {
 
         }
 
+        wobble.setPosition(100);
         wobble.open();
 
         sleep(500);
@@ -219,7 +220,7 @@ public class Auton0 extends LinearOpMode {
                             }
                         });
                     }
-                }).run();
+                }).start();
             }
             return input;
         }
@@ -258,7 +259,7 @@ public class Auton0 extends LinearOpMode {
         private volatile double target;
         private volatile boolean shouldMove = true;
         private boolean isClosed;
-        final double lowerBound = 0.3, upperBound = 1.35;
+        final double lowerBound = 0.3, upperBound = 2.0;
 
         public WobbleMech() {
 
@@ -315,7 +316,7 @@ public class Auton0 extends LinearOpMode {
 
                         motor.setVelocity(0);
                     }
-                }).run();
+                }).start();
             }
             else{
                 shouldMove = true;

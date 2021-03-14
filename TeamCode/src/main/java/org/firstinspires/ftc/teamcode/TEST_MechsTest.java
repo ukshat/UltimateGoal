@@ -50,10 +50,10 @@ public class TEST_MechsTest extends LinearOpMode {
 
         wobble.release();
 
-        sleep(10000);
+        sleep(30000);
 
-        sleep(10000);
-
+        int a = 0;
+        a++;
     }
 
     class WobbleMech {
@@ -65,7 +65,7 @@ public class TEST_MechsTest extends LinearOpMode {
         private volatile double target;
         private volatile boolean shouldMove = true;
         private boolean isClosed;
-        final double lowerBound = 0.3, upperBound = 1.35;
+        final double lowerBound = 0.3, upperBound = 2.186;
 
         public WobbleMech() {
 
@@ -84,8 +84,8 @@ public class TEST_MechsTest extends LinearOpMode {
 
         public void close (){
 
-            servo.setPosition(0);
             isClosed = true;
+            servo.setPosition(0);
         }
 
         public void release (){
