@@ -47,8 +47,6 @@ public class TEST_OrangePercentage extends LinearOpMode {
     BNO055IMU imu;
     BNO055IMU.Parameters params;
 
-    ElapsedTime runtime;
-
     RevColorSensorV3 color;
 
     OpenCvCamera webcam;
@@ -68,8 +66,6 @@ public class TEST_OrangePercentage extends LinearOpMode {
         motors[2] = (DcMotorEx) hardwareMap.dcMotor.get("LeftRear");
         motors[3] = (DcMotorEx) hardwareMap.dcMotor.get("RightRear");
 
-        runtime = new ElapsedTime();
-
         color = (RevColorSensorV3) hardwareMap.get("ColorSensorLeft");
 
         // init zero power behavior
@@ -85,8 +81,6 @@ public class TEST_OrangePercentage extends LinearOpMode {
         waitForStart();
 
         move(0,TILE_LENGTH * 1.5 + 6, 0.5);
-
-        runtime.reset();
 
         webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
 
@@ -168,7 +162,7 @@ public class TEST_OrangePercentage extends LinearOpMode {
                             }
                         });
                     }
-                }).run();
+                }).start();
             }
             return input;
         }

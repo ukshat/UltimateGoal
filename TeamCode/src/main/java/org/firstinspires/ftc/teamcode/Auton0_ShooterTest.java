@@ -25,7 +25,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 
 @Autonomous(name = "Autonomous")
-public class Auton0_WobbleMech extends LinearOpMode {
+public class Auton0_ShooterTest extends LinearOpMode {
 
     // length of a tile
     static final double TILE_LENGTH = 23.5;
@@ -42,10 +42,6 @@ public class Auton0_WobbleMech extends LinearOpMode {
     // stores the current direction of the robot
     double currOrientation, startAngle;
 
-    DcMotorEx shooter;
-
-    WobbleMech wobbleMech;
-
     Orientation orientation;
 
     volatile Mat img;
@@ -57,10 +53,6 @@ public class Auton0_WobbleMech extends LinearOpMode {
 
     ElapsedTime runTime;
 
-    OpenCvCamera webcam;
-    RingCounterPipeline pipeline = new RingCounterPipeline();
-    volatile boolean capturing = false;
-
     @Override
     public void runOpMode() throws InterruptedException {
         // init gyro
@@ -71,7 +63,6 @@ public class Auton0_WobbleMech extends LinearOpMode {
         motors[1] = (DcMotorEx) hardwareMap.dcMotor.get("RightFront");
         motors[2] = (DcMotorEx) hardwareMap.dcMotor.get("LeftRear");
         motors[3] = (DcMotorEx) hardwareMap.dcMotor.get("RightRear");
-        shooter   = (DcMotorEx) hardwareMap.dcMotor.get("shooter");
 
         // init zero power behavior
         for (int i = 0; i < 4 && opModeIsActive(); i++) motors[i].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -81,15 +72,21 @@ public class Auton0_WobbleMech extends LinearOpMode {
         params.angleUnit = BNO055IMU.AngleUnit.DEGREES;
         imu.initialize(params);
 
-        initCam();
 
-        wobbleMech = new WobbleMech();
+        WobbleMech wobble = new WobbleMech();
 
         runTime = new ElapsedTime();
 
+
+        Shooter shooter = new Shooter();
+
+        wobble.setPosition(0);
+        sleep(5000);
+        wobble.close();
+
         waitForStart();
 
-        runTime.reset();
+        wobble.setPosition(50);
 
         for (int i = 0; i < 4 && opModeIsActive(); i++){
             PIDFCoefficients pidfCoef = motors[i].getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -100,80 +97,23 @@ public class Auton0_WobbleMech extends LinearOpMode {
             motors[i].setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoef);
         }
 
-        wobbleMech.setPosition(100);
+        //Move to stack
+        move(0,     TILE_LENGTH * 1.5 + 6, 0.5);
 
-        while(wobbleMech.getPosition() < 99) sleep(20);
+        sleep(100);
 
-        wobbleMech.open();
+        move(0, TILE_LENGTH - 3, 0.5);
 
-        sleep(30000);
-    }
 
-    public void initCam() {
-        webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"));
-        webcam.setPipeline(pipeline);
-        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
-        {
-            @Override
-            public void onOpened() {}
-        });
+        sleep(100);
+
+        rotate(Math.toDegrees(-Math.atan(0.5/3)) * 2.0/3);
+
+
+        shooter.shoot();
     }
 
 
-    class RingCounterPipeline extends OpenCvPipeline
-    {
-        boolean viewportPaused;
-
-        private int ringCount = -1;
-
-        public int getRingCount() {
-            return ringCount;
-        }
-
-        @Override
-        public Mat processFrame(Mat input) {
-            img = input;
-            // enters this if statement if we have reached the rings and are attempting to capture an image
-            if(capturing){
-                // immediately set as false to ensure only one frame is processed
-                capturing = false;
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Mat mat = new Mat();
-                        Imgproc.cvtColor(img, mat, Imgproc.COLOR_RGB2HSV_FULL);
-
-                        Scalar lowHSV = new Scalar(27, 50, 50);
-                        Scalar highHSV = new Scalar(47, 255, 255);
-                        Core.inRange(mat, lowHSV, highHSV, mat);
-
-                        double percentOrange = Core.sumElems(mat).val[0] / (img.width() * img.height()) / 255;
-                        mat.release();
-                        if (percentOrange < 0.0545) {
-                            ringCount = 0;
-                        } else if (percentOrange < 0.185) {
-                            ringCount = 1;
-                        } else {
-                            ringCount = 4;
-                        }
-                        println("orange %", percentOrange);
-                        telemetry.update();
-
-                        webcam.closeCameraDeviceAsync(new OpenCvCamera.AsyncCameraCloseListener() {
-                            @Override
-                            public void onClose() {
-                            }
-                        });
-                    }
-                }).run();
-            }
-            return input;
-        }
-
-        @Override
-        public void onViewportTapped() {}
-
-    }
 
 
 
@@ -204,7 +144,7 @@ public class Auton0_WobbleMech extends LinearOpMode {
         private volatile double target;
         private volatile boolean shouldMove = true;
         private boolean isClosed;
-        final double lowerBound = 0.3, upperBound = 1.35;
+        final double lowerBound = 0.3, upperBound = 2.0;
 
         public WobbleMech() {
 
@@ -261,7 +201,7 @@ public class Auton0_WobbleMech extends LinearOpMode {
 
                         motor.setVelocity(0);
                     }
-                }).run();
+                }).start();
             }
             else{
                 shouldMove = true;
@@ -270,13 +210,41 @@ public class Auton0_WobbleMech extends LinearOpMode {
         }
     }
 
-    void dropGoal(){
-    }
+    class Shooter {
 
-    void launch(){
-        shooter.setVelocity(1000);
-        sleep(2000);
-        shooter.setVelocity(0);
+        private final DcMotorEx shooter, intake;
+        private final Servo stick;
+
+
+        public Shooter() {
+
+            shooter = hardwareMap.get(DcMotorEx.class, "shooter");
+            stick = hardwareMap.servo.get("IntakeServo");
+            intake = hardwareMap.get(DcMotorEx.class, "intake");
+
+        }
+
+        public void push() {
+            stick.setPosition(1);
+        }
+
+        public void pull() {
+            stick.setPosition(0);
+        }
+
+        public void shoot() {
+            shooter.setVelocity(1300);
+            push();
+            sleep(1500);
+            pull();
+//            intake.setVelocity(-1300);
+//            push();
+//            sleep(1500);
+//            pull();
+//            intake.setVelocity(0);
+//            shooter.setVelocity(0);
+        }
+
     }
 
     double map(double from){

@@ -45,10 +45,6 @@ public class Auton0 extends LinearOpMode {
     // stores the current direction of the robot
     double currOrientation, startAngle;
 
-    DcMotorEx shooter, wobble;
-
-    Servo claw;
-
     Orientation orientation;
 
     volatile Mat img;
@@ -74,7 +70,6 @@ public class Auton0 extends LinearOpMode {
         motors[1] = (DcMotorEx) hardwareMap.dcMotor.get("RightFront");
         motors[2] = (DcMotorEx) hardwareMap.dcMotor.get("LeftRear");
         motors[3] = (DcMotorEx) hardwareMap.dcMotor.get("RightRear");
-        shooter   = (DcMotorEx) hardwareMap.dcMotor.get("shooter");
 
         // init zero power behavior
         for (int i = 0; i < 4 && opModeIsActive(); i++) motors[i].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -86,6 +81,15 @@ public class Auton0 extends LinearOpMode {
 
         initCam();
 
+        for (int i = 0; i < 4 && opModeIsActive(); i++){
+            PIDFCoefficients pidfCoef = motors[i].getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
+            pidfCoef.p = DC_PIDF_VALS[0];
+            pidfCoef.i = DC_PIDF_VALS[1];
+            pidfCoef.d = DC_PIDF_VALS[2];
+            pidfCoef.f = DC_PIDF_VALS[3];
+            motors[i].setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoef);
+        }
+
         WobbleMech wobble = new WobbleMech();
 
         runTime = new ElapsedTime();
@@ -96,16 +100,9 @@ public class Auton0 extends LinearOpMode {
 
         waitForStart();
 
-        runTime.reset();
+        wobble.setPosition(50);
 
-        for (int i = 0; i < 4 && opModeIsActive(); i++){
-            PIDFCoefficients pidfCoef = motors[i].getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
-            pidfCoef.p = DC_PIDF_VALS[0];
-            pidfCoef.i = DC_PIDF_VALS[1];
-            pidfCoef.d = DC_PIDF_VALS[2];
-            pidfCoef.f = DC_PIDF_VALS[3];
-            motors[i].setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoef);
-        }
+        runTime.reset();
 
         //Move to stack
         move(0,     TILE_LENGTH * 1.5 + 6, 0.5);
@@ -118,11 +115,13 @@ public class Auton0 extends LinearOpMode {
 
         move(0, TILE_LENGTH - 3, 0.5);
 
+        wobble.setPosition(100);
+
         sleep(100);
 
         rotate(Math.toDegrees(-Math.atan(0.5/3)) * 2.0/3);
 
-//        launch();
+        //launch
 
         int rings = pipeline.getRingCount();
 
@@ -136,7 +135,7 @@ public class Auton0 extends LinearOpMode {
             case 1:
 //                rotate(Math.toDegrees(Math.atan(0.5/3)));
 //                move(0, TILE_LENGTH * 1.5 , 0.5);
-                rotate(3);
+                rotate(-3);
                 move(0, TILE_LENGTH * Math.sqrt(2.5), 0.5);
                 break;
 
@@ -147,10 +146,9 @@ public class Auton0 extends LinearOpMode {
 
         }
 
-        wobble.setPosition(100);
         wobble.open();
 
-        sleep(500);
+        sleep(250);
 
         switch(rings){
             case 1:
@@ -325,13 +323,41 @@ public class Auton0 extends LinearOpMode {
         }
     }
 
-    void dropGoal(){
-    }
+    class Shooter {
 
-    void launch(){
-        shooter.setVelocity(1000);
-        sleep(2000);
-        shooter.setVelocity(0);
+        private final DcMotorEx shooter, intake;
+        private final Servo stick;
+
+
+        public Shooter() {
+
+            shooter = hardwareMap.get(DcMotorEx.class, "shooter");
+            stick = hardwareMap.servo.get("IntakeServo");
+            intake = hardwareMap.get(DcMotorEx.class, "intake");
+
+        }
+
+        public void push() {
+            stick.setPosition(1);
+        }
+
+        public void pull() {
+            stick.setPosition(0);
+        }
+
+        public void shoot() {
+            shooter.setVelocity(1300);
+            push();
+            sleep(1500);
+            pull();
+            intake.setVelocity(-1300);
+            push();
+            sleep(1500);
+            pull();
+            intake.setVelocity(0);
+            shooter.setVelocity(0);
+        }
+
     }
 
     double map(double from){
