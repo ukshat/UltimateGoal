@@ -86,6 +86,11 @@ public class Auton0_ShooterTest extends LinearOpMode {
 
         waitForStart();
 
+        sleep(1000);
+
+        shooter.setRampState(true);
+        /*
+
         wobble.setPosition(50);
 
         for (int i = 0; i < 4 && opModeIsActive(); i++){
@@ -111,6 +116,8 @@ public class Auton0_ShooterTest extends LinearOpMode {
 
 
         shooter.shoot();
+
+        */
     }
 
 
@@ -212,37 +219,77 @@ public class Auton0_ShooterTest extends LinearOpMode {
 
     class Shooter {
 
-        private final DcMotorEx shooter, intake;
+        private final DcMotorEx shooter, intake, pushDownMotor;
         private final Servo stick;
-
+        private final AnalogInput rampPot;
+        private volatile boolean rampState = false; // true for down & ready to shoot, false for up, and not ready to shoot
+        public final static double upperBound = 1.46, lowerBound = 0.55;
 
         public Shooter() {
-
+            rampPot = hardwareMap.analogInput.get("shooterpot");
+            pushDownMotor = hardwareMap.get(DcMotorEx.class, "ramp");
             shooter = hardwareMap.get(DcMotorEx.class, "shooter");
             stick = hardwareMap.servo.get("IntakeServo");
             intake = hardwareMap.get(DcMotorEx.class, "intake");
 
         }
 
+        // true for down & ready to shoot, false for up, and not ready to shoot
+        public boolean getRampState(){
+            return rampState;
+        }
+
+        public void setRampState(boolean newState){
+            if(newState) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        pushDownMotor.setVelocity(300);
+
+                        while(rampPot.getVoltage() < upperBound) sleep(20);
+
+                        pushDownMotor.setVelocity(0);
+
+                        rampState = true;
+                    }
+                }).start();
+            }else{
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        pushDownMotor.setVelocity(300);
+
+                        while(rampPot.getVoltage() > lowerBound) sleep(20);
+
+                        pushDownMotor.setVelocity(0);
+
+                        rampState = false;
+                    }
+                }).start();
+            }
+        }
+
         public void push() {
-            stick.setPosition(1);
+            if(rampState) stick.setPosition(1);
         }
 
         public void pull() {
-            stick.setPosition(0);
+            if(rampState) stick.setPosition(0);
         }
 
         public void shoot() {
-            shooter.setVelocity(1300);
-            push();
-            sleep(1500);
-            pull();
-//            intake.setVelocity(-1300);
-//            push();
-//            sleep(1500);
-//            pull();
-//            intake.setVelocity(0);
-//            shooter.setVelocity(0);
+            if(rampState) {
+                shooter.setVelocity(1300);
+                push();
+                sleep(1500);
+                pull();
+    //            intake.setVelocity(-1300);
+    //            push();
+    //            sleep(1500);
+    //            pull();
+    //            intake.setVelocity(0);
+    //            shooter.setVelocity(0);
+            }
         }
 
     }
