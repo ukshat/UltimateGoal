@@ -259,7 +259,7 @@ public class Auton0_ShooterTest extends LinearOpMode {
                     public void run() {
                         pushDownMotor.setVelocity(300);
 
-                        while(rampPot.getVoltage() > lowerBound) sleep(20);
+                        while(rampPot.getVoltage() > lowerBound * 1.1) sleep(20);
 
                         pushDownMotor.setVelocity(0);
 
