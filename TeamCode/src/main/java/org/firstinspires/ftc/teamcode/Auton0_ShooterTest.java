@@ -80,15 +80,17 @@ public class Auton0_ShooterTest extends LinearOpMode {
 
         Shooter shooter = new Shooter();
 
-        wobble.setPosition(0);
-        sleep(5000);
-        wobble.close();
+//        wobble.setPosition(0);
+//        sleep(5000);
+//        wobble.close();
 
         waitForStart();
 
         sleep(1000);
 
         shooter.setRampState(true);
+
+        sleep(30000);
         /*
 
         wobble.setPosition(50);
@@ -223,13 +225,13 @@ public class Auton0_ShooterTest extends LinearOpMode {
         private final Servo stick;
         private final AnalogInput rampPot;
         private volatile boolean rampState = false; // true for down & ready to shoot, false for up, and not ready to shoot
-        public final static double upperBound = 1.46, lowerBound = 0.55;
+        public final static double upperBound = 1.2, lowerBound = 0.8; // 1.46, 0.55
 
         public Shooter() {
             rampPot = hardwareMap.analogInput.get("shooterpot");
             pushDownMotor = hardwareMap.get(DcMotorEx.class, "ramp");
             shooter = hardwareMap.get(DcMotorEx.class, "shooter");
-            stick = hardwareMap.servo.get("IntakeServo");
+            stick = hardwareMap.servo.get("shoot");
             intake = hardwareMap.get(DcMotorEx.class, "intake");
 
         }
@@ -244,9 +246,9 @@ public class Auton0_ShooterTest extends LinearOpMode {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        pushDownMotor.setVelocity(300);
+                        pushDownMotor.setVelocity(100);
 
-                        while(rampPot.getVoltage() < upperBound) sleep(20);
+                        while(rampPot.getVoltage() > lowerBound * 1.1) sleep(20);
 
                         pushDownMotor.setVelocity(0);
 
@@ -257,9 +259,9 @@ public class Auton0_ShooterTest extends LinearOpMode {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        pushDownMotor.setVelocity(300);
+                        pushDownMotor.setVelocity(-100);
 
-                        while(rampPot.getVoltage() > lowerBound * 1.1) sleep(20);
+                        while(rampPot.getVoltage() < upperBound) sleep(20);
 
                         pushDownMotor.setVelocity(0);
 
