@@ -88,7 +88,7 @@ public class Auton0_ShooterTest extends LinearOpMode {
 
         sleep(1000);
 
-        shooter.setRampState(true);
+        shooter.setRampState(false);
 
         sleep(30000);
         /*
@@ -225,7 +225,7 @@ public class Auton0_ShooterTest extends LinearOpMode {
         private final Servo stick;
         private final AnalogInput rampPot;
         private volatile boolean rampState = false; // true for down & ready to shoot, false for up, and not ready to shoot
-        public final static double upperBound = 1.2, lowerBound = 0.8; // 1.46, 0.55
+        public final static double upperBound = 1.46, lowerBound = 0.5; // 1.46, 0.55
 
         public Shooter() {
             rampPot = hardwareMap.analogInput.get("shooterpot");
@@ -246,7 +246,7 @@ public class Auton0_ShooterTest extends LinearOpMode {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        pushDownMotor.setVelocity(100);
+                        pushDownMotor.setVelocity(50);
 
                         while(rampPot.getVoltage() > lowerBound * 1.1) sleep(20);
 
