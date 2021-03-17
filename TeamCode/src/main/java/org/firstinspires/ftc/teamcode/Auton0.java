@@ -202,9 +202,9 @@ public class Auton0 extends LinearOpMode {
 
                         double percentOrange = Core.sumElems(mat).val[0] / (img.width() * img.height()) / 255;
                         mat.release();
-                        if (percentOrange < 0.0545) {
+                        if (percentOrange < 0.08) {
                             ringCount = 0;
-                        } else if (percentOrange < 0.185) {
+                        } else if (percentOrange < 0.175) {
                             ringCount = 1;
                         } else {
                             ringCount = 4;
