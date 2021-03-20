@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
-@TeleOp
+@Autonomous (name = "PIDF Tuning")
 public class PIDFTest extends LinearOpMode {
+
     DcMotorEx motor;
     double currentVelocity;
     double maxVelocity = 0.0;
@@ -14,7 +16,6 @@ public class PIDFTest extends LinearOpMode {
     public void runOpMode() {
         motor = hardwareMap.get(DcMotorEx.class, "CoreHex");
         waitForStart();
-        motor.setPower(1);
 
         while (opModeIsActive()) {
             sleep(100);

@@ -100,7 +100,7 @@ public class Auton0 extends LinearOpMode {
         runTime.reset();
 
         //Move to stack
-        move(0,     TILE_LENGTH * 1.5 + 6, 0.5);
+        move(0, TILE_LENGTH * 1.5 + 6, 0.5);
 
         webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
 
@@ -114,7 +114,9 @@ public class Auton0 extends LinearOpMode {
 
         sleep(100);
 
-        rotate(Math.toDegrees(-Math.atan(0.5/3)) * 2.0/3);
+        final int degrees = (int) (Math.toDegrees(-Math.atan(0.5/3)) * 2.0/3);
+
+        rotate(degrees);
 
         //launch
 
@@ -123,7 +125,7 @@ public class Auton0 extends LinearOpMode {
         //go to wobble drop zone
         switch(rings){
             case 0:
-                rotate(-180+ Math.toDegrees(Math.atan(0.5/3)));
+                rotate(180 - degrees);
                 move(2, TILE_LENGTH * 0.5, 0.5);
                 break;
 
@@ -135,7 +137,7 @@ public class Auton0 extends LinearOpMode {
                 break;
 
             case 4:
-                rotate(-180+ Math.toDegrees(Math.atan(0.5/3)));
+                rotate(180 - degrees);
                 move(2, TILE_LENGTH * 2.5, 0.5);
                 break;
 
@@ -204,8 +206,7 @@ public class Auton0 extends LinearOpMode {
                         } else {
                             ringCount = 4;
                         }
-                        println("orange %", percentOrange);
-                        telemetry.update();
+//                        println("orange %", percentOrange);
 
                         webcam.closeCameraDeviceAsync(new OpenCvCamera.AsyncCameraCloseListener() {
                             @Override
@@ -222,24 +223,6 @@ public class Auton0 extends LinearOpMode {
         public void onViewportTapped() {}
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
