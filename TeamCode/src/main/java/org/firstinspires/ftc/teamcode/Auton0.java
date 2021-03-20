@@ -82,12 +82,7 @@ public class Auton0 extends LinearOpMode {
         initCam();
 
         for (int i = 0; i < 4 && opModeIsActive(); i++){
-            PIDFCoefficients pidfCoef = motors[i].getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
-            pidfCoef.p = DC_PIDF_VALS[0];
-            pidfCoef.i = DC_PIDF_VALS[1];
-            pidfCoef.d = DC_PIDF_VALS[2];
-            pidfCoef.f = DC_PIDF_VALS[3];
-            motors[i].setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoef);
+            motors[i].setVelocityPIDFCoefficients(1.17, 0.117, 0, 11.7);
         }
 
         WobbleMech wobble = new WobbleMech();
@@ -250,10 +245,10 @@ public class Auton0 extends LinearOpMode {
 
     class WobbleMech {
 
-        private Servo servo;
+        private final Servo servo;
 
-        private DcMotorEx motor;
-        private AnalogInput inp;
+        private final DcMotorEx motor;
+        private final AnalogInput inp;
         private volatile double target;
         private volatile boolean shouldMove = true;
         private boolean isClosed;
@@ -266,6 +261,7 @@ public class Auton0 extends LinearOpMode {
             motor = (DcMotorEx) hardwareMap.get("wobblemotor");
             inp = hardwareMap.analogInput.get("wobblepot");
             close();
+            motor.setVelocityPIDFCoefficients(4.96, 0.496, 0, 49.6);
         }
 
         public boolean isClosed (){

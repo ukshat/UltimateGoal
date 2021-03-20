@@ -233,7 +233,9 @@ public class Auton0_ShooterTest extends LinearOpMode {
             shooter = hardwareMap.get(DcMotorEx.class, "shooter");
             stick = hardwareMap.servo.get("shoot");
             intake = hardwareMap.get(DcMotorEx.class, "intake");
-
+            intake.setVelocityPIDFCoefficients(4.96, 0.496, 0, 49.6);
+            shooter.setVelocityPIDFCoefficients(4.96, 0.496, 0, 49.6);
+            pushDownMotor.setVelocityPIDFCoefficients(4.96, 0.496, 0, 49.6);
         }
 
         // true for down & ready to shoot, false for up, and not ready to shoot
