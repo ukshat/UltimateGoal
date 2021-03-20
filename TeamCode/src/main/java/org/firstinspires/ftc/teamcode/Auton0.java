@@ -89,7 +89,7 @@ public class Auton0 extends LinearOpMode {
 
         runTime = new ElapsedTime();
 
-        wobble.setPosition(0);
+        wobble.reset();
         sleep(5000);
         wobble.close();
 
@@ -125,6 +125,7 @@ public class Auton0 extends LinearOpMode {
         //go to wobble drop zone
         switch(rings){
             case 0:
+                move(1, TILE_LENGTH / 10, 0.5);
                 rotate(180 - degrees);
                 move(2, TILE_LENGTH * 0.5, 0.5);
                 break;
@@ -251,6 +252,12 @@ public class Auton0 extends LinearOpMode {
 
             return isClosed;
 
+        }
+
+        public void reset() {
+            motor.setVelocity(100);
+            while (opModeIsActive() && inp.getVoltage() > lowerBound) sleep(20);
+            motor.setVelocity(0);
         }
 
         public void close (){
