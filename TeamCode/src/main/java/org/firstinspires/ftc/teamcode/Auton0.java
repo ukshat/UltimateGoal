@@ -90,7 +90,7 @@ public class Auton0 extends LinearOpMode {
         runTime = new ElapsedTime();
 
         wobble.reset();
-        sleep(5000);
+
         wobble.close();
 
         waitForStart();
@@ -125,9 +125,8 @@ public class Auton0 extends LinearOpMode {
         //go to wobble drop zone
         switch(rings){
             case 0:
-                move(1, TILE_LENGTH / 10, 0.5);
-                rotate(180 - degrees);
-                move(2, TILE_LENGTH * 0.5, 0.5);
+                rotate(120);
+//                move(2, TILE_LENGTH * 0.5, 0.5);
                 break;
 
             case 1:
@@ -143,6 +142,8 @@ public class Auton0 extends LinearOpMode {
                 break;
 
         }
+
+        while(wobble.getPosition() < 95) sleep(20);
 
         wobble.open();
 
