@@ -99,7 +99,7 @@ public class Auton0 extends LinearOpMode {
         runTime.reset();
 
         //Move to stack
-        move(0, TILE_LENGTH * 1.5 + 6, 0.5);
+        move(0, TILE_LENGTH * 1.5 + 6);
 
         webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
 
@@ -107,7 +107,7 @@ public class Auton0 extends LinearOpMode {
 
         capturing = true;
 
-        move(0, TILE_LENGTH - 3, 0.5);
+        move(0, TILE_LENGTH - 3);
 
         wobble.setPositionAsync(100);
 
@@ -128,13 +128,13 @@ public class Auton0 extends LinearOpMode {
                 break;
 
             case 1:
-                rotate(-3);
-                move(0, TILE_LENGTH * 1.58, 0.5);
+                rotate(2);
+                move(0, TILE_LENGTH * 1.58);
                 break;
 
             case 4:
                 rotate(93 - degrees);
-                move(1, TILE_LENGTH * 2.1, 0.5);
+                move(1, TILE_LENGTH * 2.1);
                 break;
 
         }
@@ -147,15 +147,15 @@ public class Auton0 extends LinearOpMode {
 
         switch(rings){
             case 0:
-                move(2, TILE_LENGTH * 0.5, 0.5);
+                move(2, TILE_LENGTH * 0.5);
                 break;
 
             case 1:
-                move(2, TILE_LENGTH, 0.5);
+                move(2, TILE_LENGTH);
                 break;
 
             case 4:
-                move(3, TILE_LENGTH * 1.6, 0.5);
+                move(3, TILE_LENGTH * 1.6);
 
         }
     }
@@ -200,14 +200,14 @@ public class Auton0 extends LinearOpMode {
 
                         double percentOrange = Core.sumElems(mat).val[0] / (img.width() * img.height()) / 255;
                         mat.release();
-                        if (percentOrange < 0.08) {
+                        if (percentOrange < 0.1) {
                             ringCount = 0;
-                        } else if (percentOrange < 0.175) {
+                        } else if (percentOrange < 0.31225) {
                             ringCount = 1;
                         } else {
                             ringCount = 4;
                         }
-//                        println("orange %", percentOrange);
+                        println("orange %", percentOrange);
 
                         webcam.closeCameraDeviceAsync(new OpenCvCamera.AsyncCameraCloseListener() {
                             @Override
@@ -244,7 +244,6 @@ public class Auton0 extends LinearOpMode {
             servo.setDirection(Servo.Direction.FORWARD);
             motor = (DcMotorEx) hardwareMap.get("wobblemotor");
             inp = hardwareMap.analogInput.get("wobblepot");
-            close();
             motor.setVelocityPIDFCoefficients(4.96, 0.496, 0, 49.6);
         }
 
@@ -277,15 +276,15 @@ public class Auton0 extends LinearOpMode {
         }
 
         public void setPosition(double newTarget) {
-            shouldMove = true;
+            target = newTarget;
             if (target > getPosition()) {
                 motor.setVelocity(-100);
-                while (!shouldMove && target > getPosition() && (opModeIsActive() || !isStarted()) && inp.getVoltage() < upperBound){
+                while (target > getPosition() && inp.getVoltage() < upperBound){
                     sleep(20);
                 }
             } else {
                 motor.setVelocity(100);
-                while (!shouldMove && target < getPosition() && (opModeIsActive() || !isStarted()) && inp.getVoltage() > lowerBound){
+                while (target < getPosition() && inp.getVoltage() > lowerBound){
                     sleep(20);
                 }
             }
@@ -476,7 +475,7 @@ public class Auton0 extends LinearOpMode {
      * @params distance distance at which to move robot
      * @params power speed at which motors will run -- affects speed of movement
      * */
-    void move(int config, double distance, double speed){
+    void move(int config, double distance){
         setDirection(config);
         for(int i = 0; i < 4 && opModeIsActive(); i++){
             // reset encoders
