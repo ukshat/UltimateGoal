@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -17,10 +16,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
-import org.opencv.core.Point;
-import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
-import org.opencv.core.TickMeter;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -60,6 +56,7 @@ public class Auton0 extends LinearOpMode {
     RingCounterPipeline pipeline = new RingCounterPipeline();
     volatile boolean capturing = false;
 
+
     @Override
     public void runOpMode() throws InterruptedException {
         // init gyro
@@ -89,13 +86,15 @@ public class Auton0 extends LinearOpMode {
 
         runTime = new ElapsedTime();
 
-        wobble.reset();
+        wobble.setPosition(0);
+
+        sleep(5000);
 
         wobble.close();
 
         waitForStart();
 
-        wobble.setPosition(50);
+        wobble.setPositionAsync(50);
 
         runTime.reset();
 
@@ -110,7 +109,7 @@ public class Auton0 extends LinearOpMode {
 
         move(0, TILE_LENGTH - 3, 0.5);
 
-        wobble.setPosition(100);
+        wobble.setPositionAsync(100);
 
         sleep(100);
 
@@ -126,19 +125,16 @@ public class Auton0 extends LinearOpMode {
         switch(rings){
             case 0:
                 rotate(120);
-//                move(2, TILE_LENGTH * 0.5, 0.5);
                 break;
 
             case 1:
-//                rotate(Math.toDegrees(Math.atan(0.5/3)));
-//                move(0, TILE_LENGTH * 1.5 , 0.5);
                 rotate(-3);
-                move(0, TILE_LENGTH * Math.sqrt(2.5), 0.5);
+                move(0, TILE_LENGTH * 1.58, 0.5);
                 break;
 
             case 4:
-                rotate(180 - degrees);
-                move(2, TILE_LENGTH * 2.5, 0.5);
+                rotate(93 - degrees);
+                move(1, TILE_LENGTH * 2.1, 0.5);
                 break;
 
         }
@@ -150,13 +146,16 @@ public class Auton0 extends LinearOpMode {
         sleep(250);
 
         switch(rings){
+            case 0:
+                move(2, TILE_LENGTH * 0.5, 0.5);
+                break;
+
             case 1:
-                // This needs to be changed
-                move(2, TILE_LENGTH * (Math.sqrt(2.5) - 0.5), 0.5);
+                move(2, TILE_LENGTH, 0.5);
                 break;
 
             case 4:
-                move(0, TILE_LENGTH * 2, 0.5);
+                move(3, TILE_LENGTH * 1.6, 0.5);
 
         }
     }
@@ -257,7 +256,7 @@ public class Auton0 extends LinearOpMode {
 
         public void reset() {
             motor.setVelocity(100);
-            while (opModeIsActive() && inp.getVoltage() > lowerBound) sleep(20);
+            while (inp.getVoltage() > lowerBound) sleep(20);
             motor.setVelocity(0);
         }
 
@@ -277,7 +276,23 @@ public class Auton0 extends LinearOpMode {
             return (inp.getVoltage() - lowerBound) * 100 / (upperBound - lowerBound);
         }
 
-        public void setPosition(double newTarget){
+        public void setPosition(double newTarget) {
+            shouldMove = true;
+            if (target > getPosition()) {
+                motor.setVelocity(-100);
+                while (!shouldMove && target > getPosition() && (opModeIsActive() || !isStarted()) && inp.getVoltage() < upperBound){
+                    sleep(20);
+                }
+            } else {
+                motor.setVelocity(100);
+                while (!shouldMove && target < getPosition() && (opModeIsActive() || !isStarted()) && inp.getVoltage() > lowerBound){
+                    sleep(20);
+                }
+            }
+            motor.setVelocity(0);
+        }
+
+        public void setPositionAsync(double newTarget){
 
             if (shouldMove) {
                 this.target = newTarget;
@@ -296,16 +311,15 @@ public class Auton0 extends LinearOpMode {
                                 sleep(20);
                             }
                         }
-
                         shouldMove = true;
 
                         motor.setVelocity(0);
                     }
                 }).start();
             }
-            else{
+            else {
                 shouldMove = true;
-                setPosition(newTarget);
+                setPositionAsync(newTarget);
             }
         }
     }
@@ -513,6 +527,14 @@ public class Auton0 extends LinearOpMode {
      * @params power speed at which motors will run -- affects speed of rotation
      * */
     void rotate(double degrees){
+
+        if (degrees > 175) {
+            rotate(degrees - 175);
+            degrees -= 175;
+        } else if (degrees < -175) {
+            rotate(degrees + 175);
+            degrees += 175;
+        }
 
         // Create the object used to keep track of the current angle of the robot
         Orientation orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
