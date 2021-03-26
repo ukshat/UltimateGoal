@@ -127,12 +127,13 @@ public class Auton0 extends LinearOpMode {
 
             case 1:
                 rotate(0.8);
-                move(0, TILE_LENGTH * 1.58);
+                move(0, TILE_LENGTH * 1.65);
+                move(1, 4);
                 break;
 
             case 4:
                 rotate(-degrees/3.0);
-                move(0, TILE_LENGTH * 2.1);
+                move(0, TILE_LENGTH * 1.93);
                 rotate(120 - degrees);
                 break;
 
@@ -154,7 +155,7 @@ public class Auton0 extends LinearOpMode {
                 break;
 
             case 4:
-                move(3, TILE_LENGTH * 1.6);
+                move(3, TILE_LENGTH * 2);
 
         }
     }
@@ -201,7 +202,7 @@ public class Auton0 extends LinearOpMode {
                         mat.release();
                         if (percentOrange < 0.1) {
                             ringCount = 0;
-                        } else if (percentOrange < 0.31225) {
+                        } else if (percentOrange < 0.26) {
                             ringCount = 1;
                         } else {
                             ringCount = 4;
