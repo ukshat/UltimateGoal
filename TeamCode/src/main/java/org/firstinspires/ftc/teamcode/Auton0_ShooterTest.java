@@ -24,7 +24,7 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 
-@Autonomous(name = "Autonomous")
+@Autonomous(name = "ShooterTest")
 public class Auton0_ShooterTest extends LinearOpMode {
 
     // length of a tile
@@ -88,7 +88,12 @@ public class Auton0_ShooterTest extends LinearOpMode {
 
         sleep(1000);
 
-        shooter.setRampState(true);
+        shooter.shoot();
+
+        sleep(30000);
+
+
+        /*shooter.setRampState(true);
 
         while(!shooter.getRampState()) sleep(20);
 
@@ -96,7 +101,7 @@ public class Auton0_ShooterTest extends LinearOpMode {
 
         shooter.setRampState(false);
 
-        sleep(30000);
+        sleep(30000);*/
         /*
 
         wobble.setPosition(50);
@@ -231,7 +236,7 @@ public class Auton0_ShooterTest extends LinearOpMode {
         private final Servo stick;
         private final AnalogInput rampPot;
         private volatile boolean rampState = false; // true for down & ready to shoot, false for up, and not ready to shoot
-        public final static double upperBound = 1.46, lowerBound = 0.55; // 1.46, 0.55
+        public final static double upperBound = 1.46, lowerBound = 0.54; // 1.46, 0.55
 
         public Shooter() {
             rampPot = hardwareMap.analogInput.get("shooterpot");
@@ -254,13 +259,11 @@ public class Auton0_ShooterTest extends LinearOpMode {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        pushDownMotor.setVelocity(50);
+                        pushDownMotor.setVelocity(61);
 
                         while(rampPot.getVoltage() > lowerBound * 1.75) sleep(20);
 
                         pushDownMotor.setVelocity(0);
-
-                        while(rampPot.getVoltage() > lowerBound * 1.1) sleep(20);
 
                         rampState = true;
                     }
@@ -295,12 +298,6 @@ public class Auton0_ShooterTest extends LinearOpMode {
                 push();
                 sleep(1500);
                 pull();
-    //            intake.setVelocity(-1300);
-    //            push();
-    //            sleep(1500);
-    //            pull();
-    //            intake.setVelocity(0);
-    //            shooter.setVelocity(0);
             }
         }
 

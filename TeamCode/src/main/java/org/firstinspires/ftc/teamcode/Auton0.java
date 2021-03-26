@@ -127,14 +127,14 @@ public class Auton0 extends LinearOpMode {
 
             case 1:
                 rotate(0.8);
-                move(0, TILE_LENGTH * 1.65);
+                move(0, TILE_LENGTH * 1.61);
                 move(1, 4);
                 break;
 
             case 4:
                 rotate(-degrees/3.0);
                 move(0, TILE_LENGTH * 1.93);
-                rotate(120 - degrees);
+                rotate(103 - degrees);
                 break;
 
         }
@@ -155,7 +155,7 @@ public class Auton0 extends LinearOpMode {
                 break;
 
             case 4:
-                move(3, TILE_LENGTH * 2);
+                move(3, TILE_LENGTH * 1.85);
 
         }
     }
@@ -321,43 +321,6 @@ public class Auton0 extends LinearOpMode {
                 setPositionAsync(newTarget);
             }
         }
-    }
-
-    class Shooter {
-
-        private final DcMotorEx shooter, intake;
-        private final Servo stick;
-
-
-        public Shooter() {
-
-            shooter = hardwareMap.get(DcMotorEx.class, "shooter");
-            stick = hardwareMap.servo.get("IntakeServo");
-            intake = hardwareMap.get(DcMotorEx.class, "intake");
-
-        }
-
-        public void push() {
-            stick.setPosition(1);
-        }
-
-        public void pull() {
-            stick.setPosition(0);
-        }
-
-        public void shoot() {
-            shooter.setVelocity(1300);
-            push();
-            sleep(1500);
-            pull();
-            intake.setVelocity(-1300);
-            push();
-            sleep(1500);
-            pull();
-            intake.setVelocity(0);
-            shooter.setVelocity(0);
-        }
-
     }
 
     double map(double from){
