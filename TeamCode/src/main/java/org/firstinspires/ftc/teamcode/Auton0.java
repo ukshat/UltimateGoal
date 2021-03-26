@@ -86,11 +86,9 @@ public class Auton0 extends LinearOpMode {
 
         runTime = new ElapsedTime();
 
-        wobble.setPosition(0);
-
-        sleep(5000);
-
         wobble.close();
+
+        wobble.setPosition(0);
 
         waitForStart();
 
@@ -128,13 +126,14 @@ public class Auton0 extends LinearOpMode {
                 break;
 
             case 1:
-                rotate(2);
+                rotate(0.8);
                 move(0, TILE_LENGTH * 1.58);
                 break;
 
             case 4:
-                rotate(93 - degrees);
-                move(1, TILE_LENGTH * 2.1);
+                rotate(-degrees/3.0);
+                move(0, TILE_LENGTH * 2.1);
+                rotate(120 - degrees);
                 break;
 
         }
