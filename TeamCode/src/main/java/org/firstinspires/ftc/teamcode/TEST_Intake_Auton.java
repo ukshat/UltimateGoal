@@ -24,7 +24,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 
 @Autonomous(name = "Autonomous")
-public class Auton0 extends LinearOpMode {
+public class TEST_Intake_Auton extends LinearOpMode {
 
     // length of a tile
     static final double TILE_LENGTH = 23.5;
@@ -46,6 +46,7 @@ public class Auton0 extends LinearOpMode {
     volatile Mat img;
 
     DcMotorEx[/*Front Left, Front Right, Back Left, Back Right*/] motors = new DcMotorEx[4];
+    DcMotorEx intake;
     // Variables used to initialize gyro
     BNO055IMU imu;
     BNO055IMU.Parameters params;
@@ -67,6 +68,7 @@ public class Auton0 extends LinearOpMode {
         motors[1] = (DcMotorEx) hardwareMap.dcMotor.get("RightFront");
         motors[2] = (DcMotorEx) hardwareMap.dcMotor.get("LeftRear");
         motors[3] = (DcMotorEx) hardwareMap.dcMotor.get("RightRear");
+        intake =    (DcMotorEx) hardwareMap.dcMotor.get("intake");
 
         // init zero power behavior
         for (int i = 0; i < 4 && opModeIsActive(); i++) motors[i].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -82,86 +84,18 @@ public class Auton0 extends LinearOpMode {
             motors[i].setVelocityPIDFCoefficients(1.17, 0.117, 0, 11.7);
         }
 
-        WobbleMech wobble = new WobbleMech();
-
         runTime = new ElapsedTime();
-
-        wobble.close();
-
-        wobble.setPosition(0);
-
-        Shooter shooter = new Shooter();
 
         waitForStart();
 
-        wobble.setPositionAsync(50);
+        intake.setVelocity(-1300);
 
-        runTime.reset();
+        sleep(2000);
 
-        //Move to stack
-        move(0, TILE_LENGTH * 1.5 + 6);
+        intake.setVelocity(0);
 
-        webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
+        sleep(30000);
 
-        sleep(100);
-
-        capturing = true;
-
-        shooter.setRampState(true);
-
-        move(0, TILE_LENGTH - 3);
-
-        wobble.setPositionAsync(100);
-
-        sleep(100);
-
-        final int degrees = (int) (Math.toDegrees(-Math.atan(0.5/3)) * 2.0/3);
-
-        rotate(degrees);
-
-        shooter.shoot();
-
-        int rings = pipeline.getRingCount();
-
-        //go to wobble drop zone
-        switch(rings){
-            case 0:
-                rotate(120);
-                break;
-
-            case 1:
-                rotate(0.8);
-                move(0, TILE_LENGTH * 1.61);
-                move(1, 4);
-                break;
-
-            case 4:
-                rotate(-degrees/3.0);
-                move(0, TILE_LENGTH * 1.93);
-                rotate(103 - degrees);
-                break;
-
-        }
-
-        while(wobble.getPosition() < 95) sleep(20);
-
-        wobble.open();
-
-        sleep(250);
-
-        switch(rings){
-            case 0:
-                move(2, TILE_LENGTH * 0.5);
-                break;
-
-            case 1:
-                move(2, TILE_LENGTH);
-                break;
-
-            case 4:
-                move(3, TILE_LENGTH * 1.85);
-
-        }
     }
 
     class Shooter {
