@@ -29,6 +29,9 @@ public class WobbleGoal extends LinearOpMode {
             if(gamepad1.b){
                 wobbleMech.setPosition(wobbleMech.lowerBound);
             }
+            if(gamepad1.x){
+                wobbleMech.setPosition(wobbleMech.upperBound);
+            }
             if(gamepad1.y){
                 wobbleMech.open();
             }
@@ -45,7 +48,7 @@ public class WobbleGoal extends LinearOpMode {
         private final DcMotorEx arm;
         private final AnalogInput inp;
         private boolean isClosed;
-        final double lowerBound = 0.3, upperBound = 1.433;
+        final double safeBound = 0.62, lowerBound = 1.0, upperBound = 2.21;
 
         public WobbleMech() {
             clasp = hardwareMap.servo.get("wobbleservo");
