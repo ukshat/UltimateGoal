@@ -9,100 +9,84 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import javax.crypto.Mac;
+
 @TeleOp(name = "Pot Test")
 //@Disabled
 
 public class WobbleGoal extends LinearOpMode {
-    Servo release;
-    Pot arm = new Pot();
+
+    private ElapsedTime runtime = new ElapsedTime();
 
     @Override
     public void runOpMode() throws InterruptedException {
-        release = hardwareMap.servo.get("wobbleservo");
 
-        double armPosition = arm.getPosition();
-
+        WobbleMech wobbleMech = new WobbleMech();
         waitForStart();
+        runtime.reset();
 
-        System.out.println(arm.getPosition());
-
-        if(gamepad1.b){
-            System.out.println(arm.getPosition());
-            arm.setPosition(25);
-            if(armPosition == 25){
-                release.setPosition(0);
+        while(opModeIsActive()){
+            if(gamepad1.b){
+                wobbleMech.setPosition(wobbleMech.lowerBound);
+            }
+            if(gamepad1.y){
+                wobbleMech.open();
+            }
+            if(gamepad1.a){
+                wobbleMech.close();
             }
 
-        } else {
-            arm.setPosition(armPosition);
-            release.setPosition(1);
         }
 
-        System.out.println(arm.getPosition());
-
-        sleep(20000);
-
-        telemetry.addData("intake assist servo", arm + "\n");
-        telemetry.update();
     }
 
-    class Pot{
+    class WobbleMech {
+        private final Servo clasp;
+        private final DcMotorEx arm;
+        private final AnalogInput inp;
+        private boolean isClosed;
+        final double lowerBound = 0.3, upperBound = 1.433;
 
-        DcMotorEx motor;
-        AnalogInput inp;
-        volatile double target;
-        volatile boolean shouldMove = true;
-        double lowerBound = 0.3, upperBound = 1.35;
-
-        public Pot() {
-            motor = (DcMotorEx) hardwareMap.get("wobblemotor");
+        public WobbleMech() {
+            clasp = hardwareMap.servo.get("wobbleservo");
+            clasp.setDirection(Servo.Direction.FORWARD);
+            arm = (DcMotorEx) hardwareMap.get("wobblemotor");
             inp = hardwareMap.analogInput.get("wobblepot");
         }
 
-        public double getPosition() {
-            return (inp.getVoltage() - lowerBound) * 100 / (upperBound - lowerBound);
+        public boolean isClosed (){
+            return isClosed;
+
         }
 
-        public void setPosition(double newTarget){
-            telemetry.addData("Target", newTarget);
-            telemetry.update();
+        public void close (){
+            clasp.setPosition(0);
+            isClosed = true;
+        }
 
-            sleep(3000);
+        public void open (){
+            clasp.setPosition(1);
+            isClosed = false;
+        }
 
-            if (shouldMove) {
-                this.target = newTarget;
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        shouldMove = false;
-                        if (target > getPosition()) {
-                            motor.setVelocity(-100);
-                            while (!shouldMove && target > getPosition() && opModeIsActive() && inp.getVoltage() < upperBound){
-                                sleep(20);
+        private void setPosition(double voltage) {
+           if(voltage > inp.getVoltage()){
+               arm.setVelocity(-100);
+               while(inp.getVoltage() < upperBound){
+                   sleep(20);
+               }
+               arm.setVelocity(0);
+           }
+           else {
+               arm.setVelocity(100);
+               while(inp.getVoltage() > lowerBound){
+                   sleep(20);
+               }
+               arm.setVelocity(0);
+           }
 
-                                telemetry.addData("Position", getPosition());
-                                telemetry.update();
-                            }
-                        } else {
-                            motor.setVelocity(100);
-                            while (!shouldMove && target < getPosition() && opModeIsActive() && inp.getVoltage() > lowerBound){
-                                sleep(20);
-
-                                telemetry.addData("Position", getPosition());
-                                telemetry.update();
-                            }
-                        }
-
-                        shouldMove = true;
-
-                        motor.setVelocity(0);
-                    }
-                }).run();
-            }
-            else{
-                shouldMove = true;
-                setPosition(newTarget);
-            }
         }
     }
+
 }
+

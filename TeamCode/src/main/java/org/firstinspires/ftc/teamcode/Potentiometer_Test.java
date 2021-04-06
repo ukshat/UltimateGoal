@@ -10,7 +10,7 @@ public class Potentiometer_Test extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        pot = hardwareMap.analogInput.get("shooterpot");
+        pot = hardwareMap.analogInput.get("wobblegoalpot");
         waitForStart();
 
         while(opModeIsActive()){
