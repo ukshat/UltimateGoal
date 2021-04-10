@@ -84,17 +84,20 @@ public class TEST_Intake_Auton extends LinearOpMode {
             motors[i].setVelocityPIDFCoefficients(1.17, 0.117, 0, 11.7);
         }
 
+        Shooter shooter = new Shooter();
         runTime = new ElapsedTime();
 
         waitForStart();
 
-        intake.setVelocity(-1300);
+        shooter.setRampState(true);
 
-        sleep(2000);
+        sleep(1000);
 
-        intake.setVelocity(0);
+        shooter.knockBack();
 
-        sleep(30000);
+        sleep(1000);
+
+        shooter.shoot();
 
     }
 
@@ -167,6 +170,14 @@ public class TEST_Intake_Auton extends LinearOpMode {
                 sleep(1500);
                 pull();
             }
+        }
+
+        public void knockBack(){
+            shooter.setVelocity(-50);
+
+            sleep(200);
+
+            shooter.setVelocity(0);
         }
 
     }
