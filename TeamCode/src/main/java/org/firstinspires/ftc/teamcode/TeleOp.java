@@ -113,9 +113,9 @@ public class TeleOp extends LinearOpMode {
             else
                 wobbleMech.close();
 
-            if(inp.getVoltage() - targetPosition < 0.1 && targetPosition == wobbleMech.upperBound)
+            if(inp.getVoltage() - targetPosition < 0.1)
                 arm.setVelocity(-100);
-            else if(inp.getVoltage() - targetPosition < 0.1 && targetPosition == wobbleMech.lowerBound)
+            else if(targetPosition - inp.getVoltage() < 0.1)
                 arm.setVelocity(100);
             else
                 arm.setVelocity(0);
