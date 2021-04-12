@@ -39,7 +39,7 @@ public class TeleOp extends LinearOpMode {
 
         intake = hardwareMap.dcMotor.get("intake");
         shooter = hardwareMap.dcMotor.get("shooter");
-        intakeAssist = hardwareMap.servo.get("IntakeServo");
+        intakeAssist = hardwareMap.servo.get("shoot");
 
         fl_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         fr_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
