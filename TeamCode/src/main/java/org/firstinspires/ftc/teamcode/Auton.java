@@ -170,10 +170,29 @@ public class Auton extends LinearOpMode {
 
             case 4:
                 move(3, TILE_LENGTH * 2);
+                break;
 
         }
 
         shooter.setRampState(true);
+        rotate(-degrees);
+
+        switch(rings){
+            case 0:
+                rotate(-115);
+                break;
+
+            case 1:
+                rotate(-0.8);
+                break;
+
+            case 4:
+                rotate(-4.0 * degrees / 3.0);
+                rotate(-103);
+                break;
+        }
+
+        sleep((int)(29 - time));
 
     }
 
