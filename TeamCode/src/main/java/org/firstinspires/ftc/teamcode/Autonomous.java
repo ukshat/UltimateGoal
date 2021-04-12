@@ -23,8 +23,8 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 
-@Autonomous(name = "Autonomous")
-public class Auton0 extends LinearOpMode {
+@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "Autonomous")
+public class Autonomous extends LinearOpMode {
 
     // length of a tile
     static final double TILE_LENGTH = 23.5;
