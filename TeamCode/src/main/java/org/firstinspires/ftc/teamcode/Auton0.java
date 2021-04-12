@@ -119,7 +119,11 @@ public class Auton0 extends LinearOpMode {
 
         rotate(degrees);
 
+        sleep(100);
+
         shooter.shoot();
+
+        shooter.setRampState(false);
 
         int rings = pipeline.getRingCount();
 
@@ -151,7 +155,7 @@ public class Auton0 extends LinearOpMode {
 
         switch(rings){
             case 0:
-                move(2, TILE_LENGTH * 0.5);
+                move(2, TILE_LENGTH * 0.8);
                 break;
 
             case 1:
@@ -162,6 +166,7 @@ public class Auton0 extends LinearOpMode {
                 move(3, TILE_LENGTH * 1.85);
 
         }
+
     }
 
     class Shooter {
@@ -228,10 +233,12 @@ public class Auton0 extends LinearOpMode {
 
         public void shoot() {
             if(rampState) {
-                shooter.setVelocity(1300);
+                shooter.setVelocity(1500);
+                sleep(100);
                 push();
                 sleep(1500);
                 pull();
+                shooter.setVelocity(0);
             }
         }
 

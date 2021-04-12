@@ -205,7 +205,11 @@ public class Auton0_2Rings extends LinearOpMode {
                     public void run() {
                         pushDownMotor.setVelocity(61);
 
+                        shooter.setVelocity(-50);
+
                         while(rampPot.getVoltage() > lowerBound * 1.75) sleep(20);
+
+                        shooter.setVelocity(0);
 
                         pushDownMotor.setVelocity(0);
 
@@ -240,7 +244,7 @@ public class Auton0_2Rings extends LinearOpMode {
             if(rampState) {
                 shooter.setVelocity(1300);
                 push();
-                sleep(1500);
+                sleep(700);
                 pull();
             }
         }

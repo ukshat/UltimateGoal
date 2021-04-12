@@ -24,7 +24,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 
 @Autonomous(name = "Autonomous")
-public class TEST_Intake_Auton extends LinearOpMode {
+public class Auton0_2RingTest extends LinearOpMode {
 
     // length of a tile
     static final double TILE_LENGTH = 23.5;
@@ -46,7 +46,6 @@ public class TEST_Intake_Auton extends LinearOpMode {
     volatile Mat img;
 
     DcMotorEx[/*Front Left, Front Right, Back Left, Back Right*/] motors = new DcMotorEx[4];
-    DcMotorEx intake;
     // Variables used to initialize gyro
     BNO055IMU imu;
     BNO055IMU.Parameters params;
@@ -68,7 +67,6 @@ public class TEST_Intake_Auton extends LinearOpMode {
         motors[1] = (DcMotorEx) hardwareMap.dcMotor.get("RightFront");
         motors[2] = (DcMotorEx) hardwareMap.dcMotor.get("LeftRear");
         motors[3] = (DcMotorEx) hardwareMap.dcMotor.get("RightRear");
-        intake =    (DcMotorEx) hardwareMap.dcMotor.get("intake");
 
         // init zero power behavior
         for (int i = 0; i < 4 && opModeIsActive(); i++) motors[i].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -84,20 +82,96 @@ public class TEST_Intake_Auton extends LinearOpMode {
             motors[i].setVelocityPIDFCoefficients(1.17, 0.117, 0, 11.7);
         }
 
-        Shooter shooter = new Shooter();
+        WobbleMech wobble = new WobbleMech();
+
         runTime = new ElapsedTime();
 
-        waitForStart();
-
-        shooter.setRampState(true);
+        wobble.open();
 
         sleep(5000);
 
+        wobble.close();
+
+        Shooter shooter = new Shooter();
+
+        wobble.setPosition(0);
+
+        waitForStart();
+
+        wobble.setPositionAsync(50);
+
+        runTime.reset();
+
+        //Move to stack
+        move(0, TILE_LENGTH * 1.5 + 6);
+
+        webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
+
+        sleep(100);
+
+        capturing = true;
+
+        shooter.setRampState(true);
+
+        move(0, TILE_LENGTH - 3);
+
+        wobble.setPositionAsync(100);
+
+        sleep(100);
+
+        final int degrees = (int) (Math.toDegrees(-Math.atan(0.5/3)) * 2.0/3);
+
+        rotate(degrees);
+
+        sleep(100);
+
         shooter.knockBack();
-
-        sleep(1000);
-
+        sleep(100);
         shooter.shoot();
+
+        shooter.setRampState(false);
+
+        int rings = pipeline.getRingCount();
+
+        //go to wobble drop zone
+        switch(rings){
+            case 0:
+                rotate(115);
+                break;
+
+            case 1:
+                rotate(0.8);
+                move(0, TILE_LENGTH * 1.61);
+                move(1, 4);
+                break;
+
+            case 4:
+                rotate(-degrees/3.0);
+                move(0, TILE_LENGTH * 1.93);
+                rotate(103 - degrees);
+                break;
+
+        }
+
+        while(wobble.getPosition() < 98) sleep(20);
+
+        wobble.open();
+
+        sleep(250);
+
+        switch(rings){
+            case 0:
+                move(2, TILE_LENGTH * 0.8);
+                break;
+
+            case 1:
+                move(2, TILE_LENGTH);
+                break;
+
+            case 4:
+                move(3, TILE_LENGTH * 2);
+
+        }
 
     }
 
@@ -143,7 +217,7 @@ public class TEST_Intake_Auton extends LinearOpMode {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        pushDownMotor.setVelocity(-100);
+                        pushDownMotor.setVelocity(-150);
 
                         while(rampPot.getVoltage() < upperBound) sleep(20);
 
@@ -164,18 +238,20 @@ public class TEST_Intake_Auton extends LinearOpMode {
         }
 
         public void shoot() {
-            if(rampState) {
+            if (rampState) {
                 shooter.setVelocity(1500);
+                sleep(200);
                 push();
-                sleep(1500);
+                sleep(800);
                 pull();
+                shooter.setVelocity(0);
             }
         }
 
         public void knockBack(){
-            shooter.setVelocity(-50);
+            shooter.setVelocity(-80);
 
-            sleep(1000);
+            sleep(700);
 
             shooter.setVelocity(0);
         }
