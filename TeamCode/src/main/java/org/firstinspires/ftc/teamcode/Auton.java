@@ -24,7 +24,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 
 @Autonomous(name = "Autonomous")
-public class Auton0_2RingTest extends LinearOpMode {
+public class Auton extends LinearOpMode {
 
     // length of a tile
     static final double TILE_LENGTH = 23.5;
@@ -172,6 +172,8 @@ public class Auton0_2RingTest extends LinearOpMode {
                 move(3, TILE_LENGTH * 2);
 
         }
+
+        shooter.setRampState(true);
 
     }
 
