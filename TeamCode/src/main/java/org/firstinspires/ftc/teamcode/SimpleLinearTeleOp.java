@@ -20,10 +20,6 @@ public class SimpleLinearTeleOp extends LinearOpMode {
     //declare OpMode members
     private ElapsedTime runtime = new ElapsedTime();
 
-    // created our color sensors
-    ColorSensor color1;
-    ColorSensor color2;
-
     // Create the four motors, one for each mecanum wheel
     private DcMotor fl_motor;
     private DcMotor fr_motor;
@@ -33,6 +29,7 @@ public class SimpleLinearTeleOp extends LinearOpMode {
     private DcMotor intake;
     private DcMotor shooter;
     private Servo intakeAssist;
+    private WobbleMech wobbleMech;
 
     @Override
     public void runOpMode() {
@@ -60,7 +57,7 @@ public class SimpleLinearTeleOp extends LinearOpMode {
         bl_motor.setDirection(DcMotor.Direction.REVERSE);
 
         //wait for driver to press play
-        WobbleMech wobbleMech = new WobbleMech();
+        wobbleMech = new WobbleMech();
         waitForStart();
         runtime.reset();
 
