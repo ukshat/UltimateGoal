@@ -163,8 +163,7 @@ public class SimpleLinearTeleOp extends LinearOpMode {
         // If the largest power is not out of bounds, there is no need to adjust values
 
         // Normalize the four powers and return a new array with them
-        double[] pows = {(normalizer * powers[0]), (normalizer * powers[1]), (normalizer * powers[2]), (normalizer * powers[3])};
-        return pows;
+        return new double[]{(normalizer * powers[0]), (normalizer * powers[1]), (normalizer * powers[2]), (normalizer * powers[3])};
     }
 
     /**
