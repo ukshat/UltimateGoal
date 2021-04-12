@@ -115,8 +115,6 @@ public class SimpleLinearTeleOp extends LinearOpMode {
                 wobbleMech.close();
             }
 
-
-
             //showing elapsed game time and wheel power
             telemetry.addData("Status", "RunTime: " + runtime.toString());
             telemetry.addData("left front motor", powers[0]);
