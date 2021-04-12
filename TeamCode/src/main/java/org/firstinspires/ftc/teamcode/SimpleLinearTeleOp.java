@@ -8,6 +8,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.hardware.AnalogInput;
+import com.qualcomm.robotcore.hardware.AnalogInputController;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 @TeleOp(name="Basic: Linear OpMode", group="Linear Opmode")
 //@Disabled
@@ -27,11 +30,9 @@ public class SimpleLinearTeleOp extends LinearOpMode {
     private DcMotor bl_motor;
     private DcMotor br_motor;
 
-    private Servo wobbleGoal;
-    private DcMotor leftIntake;
-    private DcMotor rightIntake;
-    private DcMotor leftShoot;
-    private DcMotor rightShoot;
+    private DcMotor intake;
+    private DcMotor shooter;
+    private Servo intakeAssist;
 
     @Override
     public void runOpMode() {
@@ -41,14 +42,9 @@ public class SimpleLinearTeleOp extends LinearOpMode {
         bl_motor = hardwareMap.dcMotor.get("LeftRear");
         br_motor = hardwareMap.dcMotor.get("RightRear");
 
-        color1 = hardwareMap.colorSensor.get("ColorSensorLeft");
-        color2 = hardwareMap.colorSensor.get("ColorSensorRight");
-
-        wobbleGoal = hardwareMap.servo.get("Wobble Goal");
-        leftIntake = hardwareMap.dcMotor.get("Left Intake Wheel");
-        rightIntake = hardwareMap.dcMotor.get("Right Intake Wheel");
-        leftShoot = hardwareMap.dcMotor.get("Left Shooting Wheel");
-        rightShoot = hardwareMap.dcMotor.get("Right Shooting Wheel");
+        intake = hardwareMap.dcMotor.get("intake");
+        shooter = hardwareMap.dcMotor.get("shooter");
+        intakeAssist = hardwareMap.servo.get("IntakeServo");
 
         fl_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         fr_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -63,36 +59,17 @@ public class SimpleLinearTeleOp extends LinearOpMode {
         fl_motor.setDirection(DcMotor.Direction.REVERSE);
         bl_motor.setDirection(DcMotor.Direction.REVERSE);
 
-        leftShoot.setDirection(DcMotor.Direction.REVERSE);
-
         //wait for driver to press play
+        WobbleMech wobbleMech = new WobbleMech();
         waitForStart();
         runtime.reset();
 
         while (opModeIsActive()) {
 
-            Gamepad activeGamepad = gamepad1;
-
-            // if the left stick on gamepad 2 is pressed we change the active gamepad to gamepad2
-            if(gamepad2.left_stick_button){
-                activeGamepad = gamepad2;
-            }
-
-            // if the left stick on gamepad 1 is pressed we change the active gamepad to gamepad1
-            if(gamepad1.left_stick_button){
-                activeGamepad = gamepad1;
-            }
-
-            double intake = 1;
-            double shooting = activeGamepad.right_trigger;
-            double wobble = 1;
-
-            // Create variables to hold the direction that the left stick was moved
-            double x = activeGamepad.left_stick_x;
-            double y = activeGamepad.left_stick_y;
-
             // Create a variable to hold the amount of rotation
-            double rotation = activeGamepad.right_stick_x;
+            double rotation = gamepad1.right_stick_x;
+            double x = gamepad1.left_stick_x;
+            double y = gamepad1.left_stick_y;
 
             // Calculate motor powers and assign to an array
             double[] powers = calculateMotorPower(x, y, rotation);
@@ -103,59 +80,45 @@ public class SimpleLinearTeleOp extends LinearOpMode {
             bl_motor.setPower(powers[2]);
             br_motor.setPower(powers[3]);
 
+            double intakePower = 1;
+            double intakeAssistPower = 1;
+            double shootingPower = gamepad2.right_trigger;
+            waitForStart();
+
             // if gamepad is equal to a it sets the button for the intake to a
-            if(activeGamepad.a){
-                leftIntake.setPower(intake);
-                rightIntake.setPower(intake);
+            if (gamepad1.a) {
+                intake.setPower(intakePower);
+            } else {
+                intake.setPower(0);
             }
 
-            // if right trigger is more than 0.4 it sets the button for the shooting
-            if(shooting > 0.4){
-                rightShoot.setPower(activeGamepad.right_trigger);
-                leftShoot.setPower(activeGamepad.right_trigger);
+            // if gamepad is equal to a it sets the button for the intake to right trigger
+            if (shootingPower > 0.5) {
+                shooter.setPower(1.0);
+                intakeAssist.setPosition(intakeAssistPower);
+            } else {
+                shooter.setPower(0);
+                intakeAssist.setPosition(0);
             }
 
-            // if gamepad is equal to y it sets the button for the wobble power to y
-            if(activeGamepad.y) {
-                wobbleGoal.setPosition(wobble);
+            if(gamepad2.b){
+                wobbleMech.setPosition(wobbleMech.upperBound);
+                wobbleMech.open();
+            }
+            else {
+                wobbleMech.setPosition(wobbleMech.safeBound);
+                wobbleMech.close();
+            }
+            if(gamepad2.x){
+                wobbleMech.setPosition(wobbleMech.lowerBound);
+                wobbleMech.open();
+            }
+            else {
+                wobbleMech.setPosition(wobbleMech.safeBound);
+                wobbleMech.close();
             }
 
-            if(activeGamepad.x) {
-                // if none of the color sensors see white keep moving forward
-                while(color1.red() < 200 && color2.red() < 200){
-                    fl_motor.setPower(0.4);
-                    fr_motor.setPower(0.4);
-                    bl_motor.setPower(0.4);
-                    br_motor.setPower(0.4);
-                }
 
-                // if the left color sensor see's white but the right doesn't turn the robot left until
-                // they both see white
-                while(color1.red() > 200 && color2.red() < 200){
-                    fl_motor.setPower(0);
-                    fr_motor.setPower(0.1);
-                    bl_motor.setPower(0.1);
-                    br_motor.setPower(0);
-                }
-
-                // if the right color sensor see's white but the left doesn't turn the robot left until
-                // they both see white
-                while(color1.red() < 200 && color2.red() > 200){
-                    fl_motor.setPower(0.1);
-                    fr_motor.setPower(0);
-                    bl_motor.setPower(0);
-                    br_motor.setPower(0.1);
-                }
-
-                // if both of the color sensors see white move the robot back a little bit so that the
-                // robot is on the launch zone and ready to shoot
-                while(color1.red() > 200 && color2.red() > 200){
-                    fl_motor.setPower(-0.1);
-                    fr_motor.setPower(-0.1);
-                    bl_motor.setPower(-0.1);
-                    br_motor.setPower(-0.1);
-                }
-            }
 
             //showing elapsed game time and wheel power
             telemetry.addData("Status", "RunTime: " + runtime.toString());
@@ -164,10 +127,9 @@ public class SimpleLinearTeleOp extends LinearOpMode {
             telemetry.addData("left back motor", powers[2]);
             telemetry.addData("right back motor", powers[3]);
 
-            telemetry.addData("left intake wheel motor", intake);
-            telemetry.addData("right intake wheel motor", intake);
-            telemetry.addData("left shooting wheel motor", shooting);
-            telemetry.addData("right shooting wheel motor", shooting);
+            telemetry.addData("intake wheel motor", intakePower + "\n");
+            telemetry.addData("shooting wheel motor", shootingPower + "\n");
+            telemetry.addData("intake assist servo", intakePower + "\n");
             telemetry.update();
 
         }
@@ -222,6 +184,57 @@ public class SimpleLinearTeleOp extends LinearOpMode {
             }
         }
         return largest;
+    }
+
+    class WobbleMech {
+        private final Servo clasp;
+        private final DcMotorEx arm;
+        private final AnalogInput inp;
+        private boolean isClosed;
+        final double safeBound = 0.62, lowerBound = 1.0, upperBound = 2.21;
+
+        public WobbleMech() {
+            clasp = hardwareMap.servo.get("wobbleservo");
+            clasp.setDirection(Servo.Direction.FORWARD);
+            arm = (DcMotorEx) hardwareMap.get("wobblemotor");
+            inp = hardwareMap.analogInput.get("wobblepot");
+        }
+
+        public boolean isClosed (){
+            return isClosed;
+
+        }
+
+        public void close (){
+            if(isClosed){
+                return;
+            }
+            clasp.setPosition(0);
+            isClosed = true;
+        }
+
+        public void open (){
+            clasp.setPosition(1);
+            isClosed = false;
+        }
+
+        private void setPosition(double voltage) {
+            if(voltage > inp.getVoltage()){
+                arm.setVelocity(-100);
+                while(inp.getVoltage() < lowerBound){
+                    sleep(20);
+                }
+                arm.setVelocity(0);
+            }
+            else {
+                arm.setVelocity(100);
+                while(inp.getVoltage() > safeBound){
+                    sleep(20);
+                }
+                arm.setVelocity(0);
+            }
+
+        }
     }
 
 }
