@@ -142,7 +142,7 @@ public class Auton extends LinearOpMode {
             case 1:
                 rotate(0.8);
                 move(0, TILE_LENGTH * 1.61);
-                move(1, 4);
+                move(1, 7);
                 break;
 
             case 4:
@@ -162,19 +162,21 @@ public class Auton extends LinearOpMode {
         switch(rings){
             case 0:
                 move(2, TILE_LENGTH * 0.8);
+                shooter.setRampState(true);
                 break;
 
             case 1:
                 move(2, TILE_LENGTH);
+                shooter.setRampState(true);
                 break;
 
             case 4:
-                move(3, TILE_LENGTH * 2);
+                shooter.setRampState(true);
+                move(3, TILE_LENGTH * 1.85);
                 break;
 
         }
 
-        shooter.setRampState(true);
         rotate(-degrees);
 
         switch(rings){
@@ -192,7 +194,7 @@ public class Auton extends LinearOpMode {
                 break;
         }
 
-        sleep((int)(29 - time));
+        stop();
 
     }
 
@@ -211,7 +213,7 @@ public class Auton extends LinearOpMode {
             stick = hardwareMap.servo.get("shoot");
             intake = hardwareMap.get(DcMotorEx.class, "intake");
             intake.setVelocityPIDFCoefficients(4.96, 0.496, 0, 49.6);
-            shooter.setVelocityPIDFCoefficients(4.96, 0.496, 0, 49.6);
+            shooter.setVelocityPIDFCoefficients(5.5, 0.496, 0, 49.6);
             pushDownMotor.setVelocityPIDFCoefficients(4.96, 0.496, 0, 49.6);
         }
 
