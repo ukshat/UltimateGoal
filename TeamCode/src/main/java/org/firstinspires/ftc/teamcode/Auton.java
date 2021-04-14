@@ -54,148 +54,135 @@ public class Auton extends LinearOpMode {
 
     OpenCvCamera webcam;
     RingCounterPipeline pipeline = new RingCounterPipeline();
-    volatile boolean capturing = false;
+    volatile boolean capturing = false, shouldTerminate = false;
 
 
     @Override
     public void runOpMode() throws InterruptedException {
-        // init gyro
-        imu = (BNO055IMU) hardwareMap.get("imu");
 
-        // init motors
-        motors[0] = (DcMotorEx) hardwareMap.dcMotor.get("LeftFront");
-        motors[1] = (DcMotorEx) hardwareMap.dcMotor.get("RightFront");
-        motors[2] = (DcMotorEx) hardwareMap.dcMotor.get("LeftRear");
-        motors[3] = (DcMotorEx) hardwareMap.dcMotor.get("RightRear");
+        try {
+            // init gyro
+            imu = (BNO055IMU) hardwareMap.get("imu");
 
-        // init zero power behavior
-        for (int i = 0; i < 4 && opModeIsActive(); i++) motors[i].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            // init motors
+            motors[0] = (DcMotorEx) hardwareMap.dcMotor.get("LeftFront");
+            motors[1] = (DcMotorEx) hardwareMap.dcMotor.get("RightFront");
+            motors[2] = (DcMotorEx) hardwareMap.dcMotor.get("LeftRear");
+            motors[3] = (DcMotorEx) hardwareMap.dcMotor.get("RightRear");
 
-        // init gyro parameters
-        params = new BNO055IMU.Parameters();
-        params.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-        imu.initialize(params);
+            // init zero power behavior
+            for (int i = 0; i < 4 && opModeIsActive(); i++)
+                motors[i].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        initCam();
+            // init gyro parameters
+            params = new BNO055IMU.Parameters();
+            params.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+            imu.initialize(params);
 
-        for (int i = 0; i < 4 && opModeIsActive(); i++){
-            motors[i].setVelocityPIDFCoefficients(1.17, 0.117, 0, 11.7);
+            initCam();
+
+            for (int i = 0; i < 4 && opModeIsActive(); i++) {
+                motors[i].setVelocityPIDFCoefficients(1.17, 0.117, 0, 11.7);
+            }
+
+            WobbleMech wobble = new WobbleMech();
+
+            runTime = new ElapsedTime();
+
+            wobble.open();
+
+            sleep(5000);
+
+            wobble.close();
+
+            Shooter shooter = new Shooter();
+
+            wobble.setPosition(0);
+
+            waitForStart();
+
+            wobble.setPositionAsync(50);
+
+            runTime.reset();
+
+            //Move to stack
+            move(0, TILE_LENGTH * 1.5 + 6);
+
+            webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
+
+            capturing = true;
+
+            shooter.setRampState(true);
+
+            move(0, TILE_LENGTH - 3);
+
+            wobble.setPositionAsync(100);
+
+            sleep(10);
+
+            final int degrees = (int) (Math.toDegrees(-Math.atan(0.5 / 3)) * 2.0 / 3);
+
+            rotate(degrees);
+
+            shooter.knockBack();
+
+            shooter.shoot();
+
+            shooter.setRampState(false);
+
+            int rings = pipeline.getRingCount();
+
+            //go to wobble drop zone
+            switch (rings) {
+                case 0:
+                    rotate(115);
+                    break;
+
+                case 1:
+                    rotate(0.8);
+                    move(0, TILE_LENGTH * 1.61);
+                    move(1, 7);
+                    break;
+
+                case 4:
+                    rotate(-degrees / 3.0);
+                    move(0, TILE_LENGTH * 1.93);
+                    rotate(103 - degrees);
+                    break;
+
+            }
+
+            while (wobble.getPosition() < 98) sleep(20);
+
+            wobble.open();
+
+            sleep(100);
+
+            switch (rings) {
+                case 0:
+                    move(2, TILE_LENGTH * 0.8);
+                    break;
+
+                case 1:
+                    move(2, TILE_LENGTH);
+                    break;
+
+                case 4:
+                    move(3, TILE_LENGTH * 1.85);
+                    break;
+
+            }
+
+            rotate(-degrees);
+
+            if (rings == 0) rotate(-115);
+
+            stop();
+        } catch (Exception e) {
+            println("Error", e.getStackTrace());
+            shouldTerminate = true;
+            stop();
         }
-
-        WobbleMech wobble = new WobbleMech();
-
-        runTime = new ElapsedTime();
-
-        wobble.open();
-
-        sleep(5000);
-
-        wobble.close();
-
-        Shooter shooter = new Shooter();
-
-        wobble.setPosition(0);
-
-        waitForStart();
-
-        wobble.setPositionAsync(50);
-
-        runTime.reset();
-
-        //Move to stack
-        move(0, TILE_LENGTH * 1.5 + 6);
-
-        webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
-
-        sleep(100);
-
-        capturing = true;
-
-        shooter.setRampState(true);
-
-        move(0, TILE_LENGTH - 3);
-
-        wobble.setPositionAsync(100);
-
-        sleep(100);
-
-        final int degrees = (int) (Math.toDegrees(-Math.atan(0.5/3)) * 2.0/3);
-
-        rotate(degrees);
-
-        sleep(100);
-
-        shooter.knockBack();
-        sleep(100);
-        shooter.shoot();
-
-        shooter.setRampState(false);
-
-        int rings = pipeline.getRingCount();
-
-        //go to wobble drop zone
-        switch(rings){
-            case 0:
-                rotate(115);
-                break;
-
-            case 1:
-                rotate(0.8);
-                move(0, TILE_LENGTH * 1.61);
-                move(1, 7);
-                break;
-
-            case 4:
-                rotate(-degrees/3.0);
-                move(0, TILE_LENGTH * 1.93);
-                rotate(103 - degrees);
-                break;
-
-        }
-
-        while(wobble.getPosition() < 98) sleep(20);
-
-        wobble.open();
-
-        sleep(250);
-
-        switch(rings){
-            case 0:
-                move(2, TILE_LENGTH * 0.8);
-                shooter.setRampState(true);
-                break;
-
-            case 1:
-                move(2, TILE_LENGTH);
-                shooter.setRampState(true);
-                break;
-
-            case 4:
-                shooter.setRampState(true);
-                move(3, TILE_LENGTH * 1.85);
-                break;
-
-        }
-
-        rotate(-degrees);
-
-        switch(rings){
-            case 0:
-                rotate(-115);
-                break;
-
-            case 1:
-                rotate(-0.8);
-                break;
-
-            case 4:
-                rotate(-4.0 * degrees / 3.0);
-                rotate(-103);
-                break;
-        }
-
-        stop();
-
     }
 
     class Shooter {
@@ -227,26 +214,38 @@ public class Auton extends LinearOpMode {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        pushDownMotor.setVelocity(61);
+                        try {
+                            pushDownMotor.setVelocity(70);
 
-                        while(rampPot.getVoltage() > lowerBound * 1.75) sleep(20);
+                            while (rampPot.getVoltage() > lowerBound * 1.75 && opModeIsActive() && !shouldTerminate)
+                                sleep(20);
 
-                        pushDownMotor.setVelocity(0);
+                            pushDownMotor.setVelocity(0);
 
-                        rampState = true;
+                            rampState = true;
+                        } catch (Exception e) {
+                            println("Error", e.getStackTrace());
+                            shouldTerminate = true;
+                        }
                     }
                 }).start();
             } else {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        pushDownMotor.setVelocity(-150);
+                        try {
+                            pushDownMotor.setVelocity(-150);
 
-                        while(rampPot.getVoltage() < upperBound) sleep(20);
+                            while (rampPot.getVoltage() < upperBound && opModeIsActive() && !shouldTerminate)
+                                sleep(20);
 
-                        pushDownMotor.setVelocity(0);
+                            pushDownMotor.setVelocity(0);
 
-                        rampState = false;
+                            rampState = false;
+                        } catch (Exception e) {
+                            println("Error", e.getStackTrace());
+                            shouldTerminate = true;
+                        }
                     }
                 }).start();
             }
@@ -265,16 +264,16 @@ public class Auton extends LinearOpMode {
                 shooter.setVelocity(1500);
                 sleep(200);
                 push();
-                sleep(800);
+                sleep(400);
                 pull();
                 shooter.setVelocity(0);
             }
         }
 
         public void knockBack(){
-            shooter.setVelocity(-80);
+            shooter.setVelocity(-120);
 
-            sleep(700);
+            sleep(300);
 
             shooter.setVelocity(0);
         }

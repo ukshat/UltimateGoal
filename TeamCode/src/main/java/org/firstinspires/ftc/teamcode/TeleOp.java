@@ -23,11 +23,13 @@ public class TeleOp extends LinearOpMode {
 
     private DcMotor intake;
     private DcMotor shooter;
+    private DcMotorEx pushDownMotor;
     private Servo intakeAssist;
     private WobbleMech wobbleMech;
 
     private AnalogInput inp;
     private DcMotorEx arm;
+    private AnalogInput pushDownPot;
 
     @Override
     public void runOpMode() {
@@ -40,6 +42,8 @@ public class TeleOp extends LinearOpMode {
         intake = hardwareMap.dcMotor.get("intake");
         shooter = hardwareMap.dcMotor.get("shooter");
         intakeAssist = hardwareMap.servo.get("shoot");
+        pushDownMotor = hardwareMap.get(DcMotorEx.class, "ramp");
+        pushDownMotor.setVelocityPIDFCoefficients(4.96, 0.496, 0, 49.6);
 
         fl_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         fr_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -52,6 +56,7 @@ public class TeleOp extends LinearOpMode {
 
         inp = hardwareMap.analogInput.get("wobblepot");
         arm = (DcMotorEx) hardwareMap.get("wobblemotor");
+        pushDownPot = hardwareMap.analogInput.get("shooterpot");
 
         //set some motors to reverse so that the motors direction is the same
         fl_motor.setDirection(DcMotor.Direction.REVERSE);
@@ -61,6 +66,10 @@ public class TeleOp extends LinearOpMode {
         wobbleMech = new WobbleMech();
         waitForStart();
         runtime.reset();
+
+        pushDownMotor.setVelocity(70);
+        while(pushDownPot.getVoltage() > 0.54 * 1.75) sleep(20);
+        pushDownMotor.setVelocity(0);
 
         double targetPosition = inp.getVoltage();
 
