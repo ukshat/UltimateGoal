@@ -60,7 +60,7 @@ public class Auton extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        try {
+//        try {
             // init gyro
             imu = (BNO055IMU) hardwareMap.get("imu");
 
@@ -177,12 +177,12 @@ public class Auton extends LinearOpMode {
 
             if (rings == 0) rotate(-115);
 
-            stop();
-        } catch (Exception e) {
-            println("Error", e.getStackTrace());
-            shouldTerminate = true;
-            stop();
-        }
+//            stop();
+//        } catch (Exception e) {
+//            println("Error", e.getStackTrace());
+//            shouldTerminate = true;
+//            stop();
+//        }
     }
 
     class Shooter {
