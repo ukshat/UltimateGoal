@@ -163,6 +163,7 @@ public class Auton extends LinearOpMode {
                         sleep(75);
 
                     //stop motors
+
                     for(int i = 0; i < 4 && opModeIsActive(); i++){
                         motors[i].setPower(0);
                     }
