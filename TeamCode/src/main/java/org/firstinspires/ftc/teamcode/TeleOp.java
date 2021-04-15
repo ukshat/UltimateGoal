@@ -89,7 +89,7 @@ public class TeleOp extends LinearOpMode {
             bl_motor.setPower(powers[2]);
             br_motor.setPower(powers[3]);
 
-            double intakePower = -0.5;
+            double intakePower = -1;
             double intakeAssistPower = 1;
             double shootingPower = gamepad2.right_trigger;
             waitForStart();
