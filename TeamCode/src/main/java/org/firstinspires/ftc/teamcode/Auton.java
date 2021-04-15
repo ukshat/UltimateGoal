@@ -226,6 +226,7 @@ public class Auton extends LinearOpMode {
                         } catch (Exception e) {
                             println("Error", e.getStackTrace());
                             shouldTerminate = true;
+                            pushDownMotor.setVelocity(0);
                         }
                     }
                 }).start();
@@ -245,6 +246,7 @@ public class Auton extends LinearOpMode {
                         } catch (Exception e) {
                             println("Error", e.getStackTrace());
                             shouldTerminate = true;
+                            pushDownMotor.setVelocity(0);
                         }
                     }
                 }).start();
