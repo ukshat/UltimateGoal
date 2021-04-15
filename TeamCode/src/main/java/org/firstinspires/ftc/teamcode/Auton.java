@@ -141,7 +141,31 @@ public class Auton extends LinearOpMode {
                 case 1:
                     rotate(0.8);
                     move(0, TILE_LENGTH * 1.61);
-                    move(1, 7);
+
+                    double distance = 7;
+                    setDirection(1);
+                    for(int i = 0; i < 4 && opModeIsActive(); i++){
+                        // reset encoders
+                        motors[i].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                        // if left/right, multiply by horizontal strafe constant
+                        motors[i].setTargetPosition((int)(distance * TICKS_PER_INCH * HORIZONTAL_STRAFE));
+                        motors[i].setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    }
+
+                    // stores the total distance to move
+                    final int totalTick = motors[0].getTargetPosition();
+
+                    for(DcMotorEx motor : motors) motor.setPower(0.6);
+
+                    // continue the while loop until all motors complete movement
+                    while ((motors[0].isBusy() || motors[1].isBusy() || motors[2].isBusy() || motors[3].isBusy()) && opModeIsActive())
+                        // delay
+                        sleep(75);
+
+                    //stop motors
+                    for(int i = 0; i < 4 && opModeIsActive(); i++){
+                        motors[i].setPower(0);
+                    }
                     break;
 
                 case 4:
