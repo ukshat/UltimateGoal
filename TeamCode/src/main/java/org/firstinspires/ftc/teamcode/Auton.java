@@ -287,7 +287,7 @@ public class Auton extends LinearOpMode {
 
         public void shoot() {
             if (rampState) {
-                shooter.setVelocity(6000);
+                shooter.setVelocity(1500);
                 sleep(200);
                 push();
                 sleep(400);
